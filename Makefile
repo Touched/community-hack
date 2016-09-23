@@ -12,6 +12,8 @@ export BINARY := $(BUILD)/linked.o
 export ARMIPS := armips
 export ROM_CODE := BPRE
 export LD := $(PREFIX)ld
+export PREPROC := ../../pokeruby/tools/preproc/preproc
+export CHARMAP := ../../pokeruby/charmap.txt
 export INCLUDE := ../headers/build/include
 export ASFLAGS := -mthumb
 export CFLAGS := -g -O0 -Wall -mthumb -std=c11 -I $(INCLUDE) -mcpu=arm7tdmi \
@@ -53,4 +55,4 @@ $(BINARY): $(OBJECTS)
 
 %.s.o: %.s
 	@mkdir -p $(BUILD)/$(@D)
-	$(AS) $(ASFLAGS) -c $< -o $(BUILD)/$@
+	$(PREPROC) $< $(CHARMAP) | $(AS) $(ASFLAGS) -o $(BUILD)/$@
