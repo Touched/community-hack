@@ -3,12 +3,10 @@
 
         .global battle_string_intro_hook
 battle_string_intro_hook:
-        push {r1-r3}
         bl is_multi_battle
-	pop {r1-r3}
         cmp r0, #0
         beq not_multi
-        ldr r7, string_multi_battle_intro
+        adr r7, string_multi_battle_intro
         b return
 
 not_multi:
@@ -20,4 +18,4 @@ return:
 
         .align 2
 string_multi_battle_intro:
-        .string "{STRING 25} {STRING 26} and\n{STRING 25} {STRING 26}\lwant to battle!\p$"
+        .string "{STRING 28} {STRING 29} and\n{STRING 28} {STRING 29}\lwant to battle!\p$"
