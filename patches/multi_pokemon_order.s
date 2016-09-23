@@ -15,3 +15,10 @@
         .org 0x08011318
         nop
         nop
+
+        // Make the Pokeball readout (when enemy is switching pokemon)
+	// split down the middle.
+        .org 0x08049088
+        ldr r1, =mutli_enemy_pokeball_readout_hook|1
+        bx r1
+        .pool

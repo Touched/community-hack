@@ -3,7 +3,7 @@
 
 static u16 multi_second_opponent_id(void)
 {
-    return trainerbattle_flag_id + 1;
+    return trainerbattle_flag_id - 1;
 }
 
 bool is_multi_battle(void)
