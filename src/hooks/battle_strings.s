@@ -5,14 +5,16 @@
 battle_string_intro_hook:
         bl is_multi_battle
         cmp r0, #0
-        beq not_multi
+        beq 0f
         adr r7, string_multi_battle_intro
-        b return
+        b 1f
 
-not_multi:
+0:
+        @@ Load standard battle intro string
         ldr r7, =0x083FD366
 
-return:
+1:
+        @@ Render the string
         ldr r1, =0x080D77DC|1
         bx r1
 
