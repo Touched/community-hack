@@ -24,7 +24,7 @@ battle_string_intro_hook:
 
         .align 2
 string_multi_battle_intro:
-        .string "{STRING 28} {STRING 29} and\n{STRING 28} {STRING 29}\lwant to battle!\p$"
+        .string "{STRING 28} {STRING 29} and\n{STRING 49} {STRING 50}\lwant to battle!\p$"
 
         .thumb
         .align 2
@@ -53,4 +53,4 @@ battle_string_sendout_hook:
         .align 2
 string_multi_battle_sendout:
         .string "{STRING 28} {STRING 29} sent\nout {STRING 6}!\p"
-        .string "{STRING 28} {STRING 29} sent\nout {STRING 8}!$"
+        .string "{STRING 49} {STRING 50} sent\nout {STRING 8}!$"

@@ -10,3 +10,11 @@
         ldr r0, =battle_string_sendout_hook|1
         bx r0
         .pool
+
+        // Additional battle buffers
+        .org 0x080D789A
+        cmp r0, #(0x30 + 2)
+
+        // Repoint existing table
+        .org 0x080D78AC
+        .word repointed_battle_buffers

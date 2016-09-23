@@ -60,3 +60,14 @@ u8 multi_load_trainer_sprite(void)
 
     return trainer_data[trainer_id].sprite;
 }
+
+pchar* multi_buffer_trainer2_class(void)
+{
+    u16 trainer_id = trainer_data[multi_second_opponent_id()].class;
+    return trainer_class_names[trainer_id];
+}
+
+pchar* multi_buffer_trainer2_name(void)
+{
+    return trainer_data[multi_second_opponent_id()].name;
+}
