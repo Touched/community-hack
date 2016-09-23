@@ -3,3 +3,15 @@
         ldr r0, =multi_init_pokemon_order_hook|1
         bx r0
         .pool
+
+        // Load the parties for both trainers
+        .org 0x0800FF8C
+        ldr r1, =multi_init_parties_hook|1
+        bx r1
+        .pool
+
+        // Stop the opponent being purged
+        // TOOD: Cap the enemy's party at 3 (see 08038646 in Emerald)
+        .org 0x08011318
+        nop
+        nop

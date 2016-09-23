@@ -29,3 +29,18 @@ void multi_init_pokemon_order(void)
         b_pokemon_team_id_by_side[3] = 3;
     }
 }
+
+void multi_init_parties(void)
+{
+    if ((battle_type_flags & 0x80908) == 8) {
+        pokemon_purge_opponent();
+    }
+
+    setup_opponent_party(party_opponent, trainerbattle_flag_id);
+
+    if (true || battle_type_flags & BATTLE_FLAG_MULTI) {
+        /* Load the second half of the party */
+        /* TODO: Get trainer ID from somewhere */
+        setup_opponent_party(&party_opponent[3], trainerbattle_flag_id + 1);
+    }
+}
