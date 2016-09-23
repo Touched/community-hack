@@ -2,5 +2,6 @@
 #define CONFIG_H
 
 #define BATTLE_FLAG_MULTI 0x800000
+#define MULTI_SECOND_OPPONENT_TRAINER_ID 0x4000
 
 #endif /* CONFIG_H */
