@@ -20,11 +20,11 @@ opponent_cmd07_x_hook:
         ldrb r0, [r1]
         cmp r0, #1
         beq opponent_cmd07_x_hook_opponent_a
-        mov r0, #0x98
+        mov r0, #0xc8
         b opponent_cmd07_x_hook_return
 
 opponent_cmd07_x_hook_opponent_a:
-        mov r0, #0xC8
+        mov r0, #0x98
         b opponent_cmd07_x_hook_return
 
 opponent_cmd07_x_hook_opponent_single:
