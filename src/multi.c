@@ -1,6 +1,11 @@
 #include <pokeagb/pokeagb.h>
 #include "config.h"
 
+static u16 multi_second_opponent_id(void)
+{
+    return trainerbattle_flag_id + 1;
+}
+
 bool is_multi_battle(void)
 {
     return (battle_type_flags & BATTLE_FLAG_MULTI) == BATTLE_FLAG_MULTI;
@@ -41,6 +46,17 @@ void multi_init_parties(void)
     if (true || battle_type_flags & BATTLE_FLAG_MULTI) {
         /* Load the second half of the party */
         /* TODO: Get trainer ID from somewhere */
-        setup_opponent_party(&party_opponent[3], trainerbattle_flag_id + 1);
+        setup_opponent_party(&party_opponent[3], multi_second_opponent_id());
     }
+}
+
+u8 multi_load_trainer_sprite(void)
+{
+    u16 trainer_id = trainerbattle_flag_id;
+
+    if (battle_type_flags & BATTLE_FLAG_MULTI && b_active_side == 1) {
+        trainer_id = multi_second_opponent_id();
+    }
+
+    return trainer_data[trainer_id].sprite;
 }

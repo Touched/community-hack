@@ -36,3 +36,12 @@ opponent_cmd07_x_hook_return:
         mov r0, r5
         ldr r2, =0x08037D88|1
         bx r2
+
+        .thumb
+        .align 2
+
+        .global opponent_cmd07_sprite_hook
+opponent_cmd07_sprite_hook:
+        bl multi_load_trainer_sprite
+        ldr r1, =0x08037D3A|1
+        bx r1
