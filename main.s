@@ -8,6 +8,7 @@
         .include "patches/battle_sequence.s"
         .include "patches/battle_strings.s"
         .include "patches/multi_pokemon_order.s"
+        .include "patches/overworld.s"
 
         .org 0x09000000
         .importobj "build/linked.o"

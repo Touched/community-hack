@@ -16,7 +16,7 @@ export PREPROC := ../../pokeruby/tools/preproc/preproc
 export CHARMAP := ../../pokeruby/charmap.txt
 export INCLUDE := ../headers/build/include
 export ASFLAGS := -mthumb
-export CFLAGS := -g -O0 -Wall -mthumb -std=c11 -I $(INCLUDE) -mcpu=arm7tdmi \
+export CFLAGS := -g -O2 -Wall -mthumb -std=c11 -I $(INCLUDE) -mcpu=arm7tdmi \
 	-march=armv4t -mno-thumb-interwork -fno-inline -fno-builtin -mlong-calls -DROM_$(ROM_CODE)
 export LDFLAGS := -T layout.ld -T ../headers/build/linker/$(ROM_CODE).ld -r
 
