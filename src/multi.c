@@ -15,7 +15,9 @@ bool is_multi_battle(void)
 void multi_opponent_slide_out(void)
 {
     /* Reconfigure the battle to display the correct loss message */
-    battle_configure_by_script(trainers_spotted.trainers[0].script + 1);
+    if (trainers_spotted.count == 2) {
+        battle_configure_by_script(trainers_spotted.trainers[1].script + 1);
+    }
 
     b_active_side = 1;
     dp01_build_cmdbuf_x09(0);

@@ -59,7 +59,7 @@ void task_overworld_mutli_trainers(u8 id)
 
     switch (task->priv[0]) {
     case 0:
-        overworld_multi_run_script(0);
+        overworld_multi_run_script(1);
         task->priv[0]++;
         mutli_set_second_trainer(trainerbattle_flag_id);
         break;
@@ -71,7 +71,7 @@ void task_overworld_mutli_trainers(u8 id)
         break;
 
     case 2:
-        overworld_multi_run_script(1);
+        overworld_multi_run_script(0);
         task->priv[0]++;
         break;
 
