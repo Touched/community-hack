@@ -10,6 +10,10 @@
         .include "patches/overworld.s"
         .include "patches/switching.s"
 
+        // Only do this if you haven't repointed your battle script
+	// command table
+        .include "patches/move_commands.s"
+
         .org 0x09000000
         .importobj "build/linked.o"
         .close

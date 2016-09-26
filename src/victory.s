@@ -18,7 +18,10 @@ battle_script_victory:
         @@ Skip sliding in the second trainer if a non-multi battle
         BS_CMP_WORD BS_OP_FLAGS_CLEAR, battle_type_flags, 0x800000, 2f
 
-        @@ SLIDE OUT (0xf8, 0x1)
+        @@ Callasm to trainer slide out
+        .byte 0xf8
+        .word multi_opponent_slide_out
+
         BS_WAITSTATE
 
         BS_TRAINER_SLIDE_IN 3

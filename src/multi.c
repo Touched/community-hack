@@ -11,6 +11,13 @@ bool is_multi_battle(void)
     return (battle_type_flags & BATTLE_FLAG_MULTI) == BATTLE_FLAG_MULTI;
 }
 
+void multi_opponent_slide_out(void)
+{
+    b_active_side = 1;
+    dp01_build_cmdbuf_x09(0);
+    dp01_battle_side_mark_buffer_for_execution(b_active_side);
+}
+
 bool is_multi_or_tag_battle(void)
 {
     return battle_type_flags & (BATTLE_FLAG_MULTI | BATTLE_FLAG_PARTNER);
