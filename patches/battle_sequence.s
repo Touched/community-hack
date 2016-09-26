@@ -18,3 +18,20 @@
         ldr r0, =0x08035DB0|1
         bx r0
         .pool
+
+        // Victory Sequence
+        .org 0x08015724
+        .word battle_script_victory
+
+        // Money Calculation
+        .org 0x08025904
+        ldr r2, =multi_money_calc_hook|1
+        bx r2
+        .pool
+
+        // Convert the middle section of the money calculator into its
+	// own function so we can call it once per trainer
+        .org 0x080259C4
+        ldr r0, =multi_money_calc_return_hook|1
+        bx r0
+        .pool

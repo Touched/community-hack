@@ -1,7 +1,7 @@
 #include <pokeagb/pokeagb.h>
 #include "config.h"
 
-static u16 multi_second_opponent_id(void)
+u16 multi_second_opponent_id(void)
 {
     return var_load(MULTI_SECOND_OPPONENT_TRAINER_ID);
 }
