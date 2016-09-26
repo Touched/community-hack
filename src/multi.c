@@ -12,6 +12,16 @@ bool is_multi_battle(void)
     return (battle_type_flags & BATTLE_FLAG_MULTI) == BATTLE_FLAG_MULTI;
 }
 
+void multi_trainer_flags_set(void)
+{
+    // TODO: Find a function that calculates trainer flag from trainer ID
+    flag_set(trainerbattle_flag_id + 0x500);
+
+    if (battle_type_flags & BATTLE_FLAG_MULTI) {
+        flag_set(multi_second_opponent_id() + 0x500);
+    }
+}
+
 void multi_opponent_slide_out(void)
 {
     /* Reconfigure the battle to display the correct loss message */

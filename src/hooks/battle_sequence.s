@@ -70,3 +70,13 @@ multi_money_calc_return_hook:
         pop {r4-r7, pc}
 
 @@@ --------------------------------------------------------------------------
+
+        .thumb
+        .align 2
+
+        .global multi_trainer_flags_set_hook
+multi_trainer_flags_set_hook:
+        bl multi_trainer_flags_set
+        pop {pc}
+
+@@@ --------------------------------------------------------------------------

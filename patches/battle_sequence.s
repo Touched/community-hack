@@ -42,3 +42,9 @@
         // This appears to be a holdover from the Wally Battle from RS
         .org 0x083fe440
         .word string_multi_battle_won
+
+        // Set second trainer flag
+        .org 0x08080404
+        ldr r1, =multi_trainer_flags_set_hook|1
+        bx r1
+        .pool
