@@ -1,5 +1,6 @@
 #include <pokeagb/pokeagb.h>
 #include "config.h"
+#include "overworld.h"
 
 u16 multi_second_opponent_id(void)
 {
@@ -13,6 +14,9 @@ bool is_multi_battle(void)
 
 void multi_opponent_slide_out(void)
 {
+    /* Reconfigure the battle to display the correct loss message */
+    battle_configure_by_script(trainers_spotted.trainers[0].script + 1);
+
     b_active_side = 1;
     dp01_build_cmdbuf_x09(0);
     dp01_battle_side_mark_buffer_for_execution(b_active_side);
