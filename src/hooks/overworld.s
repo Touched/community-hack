@@ -10,6 +10,8 @@ overworld_register_trainer_hook:
         ldr r0, =0x08081BDA|1
         bx r0
 
+@@@ --------------------------------------------------------------------------
+
         .thumb
         .align 2
 
@@ -19,3 +21,5 @@ overworld_trainer_battle_flags_hook:
         bl overworld_trainer_battle_flags
         ldr r1, =0x0808046C|1
         bx r1
+
+@@@ --------------------------------------------------------------------------
