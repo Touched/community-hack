@@ -58,3 +58,7 @@ string_multi_battle_sendout:
         .string "{STRING 49} {STRING 50} sent\nout {STRING 8}!$"
 
 @@@ --------------------------------------------------------------------------
+
+        .global string_multi_battle_won
+string_multi_battle_won:
+        .string "{STRING 28} {STRING 29} and\n{STRING 49} {STRING 50}\lwere defeated!\p$"

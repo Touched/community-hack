@@ -35,3 +35,10 @@
         ldr r0, =multi_money_calc_return_hook|1
         bx r0
         .pool
+
+        // Take an unused string from FireRed and replace it with our
+	// multi-battle virtory message
+        // The original string was: "You throw a BALL now, right? I... I`ll do my best!"
+        // This appears to be a holdover from the Wally Battle from RS
+        .org 0x083fe440
+        .word string_multi_battle_won
