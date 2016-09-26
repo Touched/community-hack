@@ -72,3 +72,73 @@ mb_opponent_faint_switch_ub_hook:
         bx r2
 
 @@@ --------------------------------------------------------------------------
+
+        .thumb
+        .align 2
+
+        .global mb_ai_suitable_pokemon_lb1_hook
+mb_ai_suitable_pokemon_lb1_hook:
+        str r4, [sp, #8]
+        bl multi_get_party_index_lower_bound
+        mov r7, r0
+	lsl r0, r7, #2
+        ldr r1, =0x0825E45C
+        add r1, r0
+        mov r8, r1
+        ldr r1, =0x08039F20|1
+        bx r1
+
+@@@ --------------------------------------------------------------------------
+
+        .thumb
+        .align 2
+
+        .global mb_ai_suitable_pokemon_ub1_hook
+mb_ai_suitable_pokemon_ub1_hook:
+        add r8, r2
+        add r7, #1
+        bl multi_get_party_index_upper_bound
+        cmp r7, r0
+        blt 0f
+        ldr r0, =0x0803A008|1
+        bx r0
+
+0:
+        ldr r0, =0x08039F20|1
+        bx r0
+
+@@@ --------------------------------------------------------------------------
+
+        .thumb
+        .align 2
+
+        .global mb_ai_suitable_pokemon_lb2_hook
+mb_ai_suitable_pokemon_lb2_hook:
+        str r2, [sp, #4]
+        mov r4, #6
+        str r4, [sp, #8]
+        bl multi_get_party_index_lower_bound
+        mov r7, r0
+        ldr r1, =0x0803A09C|1
+        bx r1
+
+@@@ --------------------------------------------------------------------------
+
+        .thumb
+        .align 2
+
+        .global mb_ai_suitable_pokemon_ub2_hook
+mb_ai_suitable_pokemon_ub2_hook:
+        ldr r7, [sp, #24]
+        bl multi_get_party_index_upper_bound
+        cmp r7, r0
+        blt 0f
+        mov r7, r0
+        ldr r1, =0x0803A160|1
+        bx r1
+
+0:
+	ldr r0, =0x0803A09C|1
+        bx r0
+
+@@@ --------------------------------------------------------------------------
