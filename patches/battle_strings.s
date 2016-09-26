@@ -18,3 +18,8 @@
         // Repoint existing table
         .org 0x080D78AC
         .word repointed_battle_buffers
+
+        .org 0x080D75E2
+        bx r7
+        .org 0x080D75EC
+        .word battle_string_switchin_hook|1

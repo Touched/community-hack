@@ -1,7 +1,3 @@
-	@@ TODO: Add buffers x2e and x2f for the other TRAINER
-
-        .align 2
-
         .thumb
         .align 2
 
@@ -62,3 +58,35 @@ string_multi_battle_sendout:
         .global string_multi_battle_won
 string_multi_battle_won:
         .string "{STRING 28} {STRING 29} and\n{STRING 49} {STRING 50}\lwere defeated!\p$"
+
+@@@ --------------------------------------------------------------------------
+
+        .thumb
+        .align 2
+
+        .global battle_string_switchin_hook
+battle_string_switchin_hook:
+        bl is_multi_battle
+        cmp r0, #0
+        beq 1f
+
+0:
+        ldr r7, =battle_script_active_side
+        ldrb r7, [r7]
+        cmp r7, #1
+        beq 1f
+        adr r7, string_multi_battle_switchin_trainerB
+        b 2f
+
+1:
+        ldr r7, =0x083FD3E4
+
+2:
+        ldr r0, =0x80D77DC|1
+        bx r0
+
+        .align 2
+string_multi_battle_switchin_trainerB:
+        .string "{STRING 49} {STRING 50} sent\nout {STRING 8}!$"
+
+@@@ --------------------------------------------------------------------------
