@@ -61,7 +61,6 @@ void task_overworld_mutli_trainers(u8 id)
     case 0:
         overworld_multi_run_script(0);
         task->priv[0]++;
-        mutli_set_second_trainer(trainerbattle_flag_id);
         break;
 
     case 1:
@@ -82,6 +81,12 @@ void task_overworld_mutli_trainers(u8 id)
         break;
 
     case 4:
+        /* Ugly hack. Makes sure the trainers are in the right order. */
+        /* FIXME: Rewrite battle_configure_script to support multiple trainers */
+        battle_configure_by_script(trainers_spotted.trainers[1].script + 1);
+        mutli_set_second_trainer(trainerbattle_flag_id);
+        battle_configure_by_script(trainers_spotted.trainers[0].script + 1);
+
         /*
          * Jump halfway into the battle init script to actually start
          * the battle.

@@ -71,7 +71,7 @@ void multi_opponent_slide_out(void)
     /* FIXME: Get rid of this hack. Store the messages elsewhere */
     if (trainers_spotted.count == 2) {
         u8 temp = trainerbattle_flag_id;
-        battle_configure_by_script(trainers_spotted.trainers[0].script + 1);
+        battle_configure_by_script(trainers_spotted.trainers[1].script + 1);
         trainerbattle_flag_id = temp;
     }
 
