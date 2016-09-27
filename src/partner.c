@@ -4,6 +4,11 @@
 
 static void (*multi_partner_table[COMMAND_MAX])(void);
 
+bool is_partner_battle(void)
+{
+    return battle_type_flags & BATTLE_FLAG_MULTI;
+}
+
 void multi_bx_partner(void);
 
 void multi_bx_partner_init(void)

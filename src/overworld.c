@@ -1,6 +1,7 @@
 #include <pokeagb/pokeagb.h>
 #include "config.h"
 #include "overworld.h"
+#include "partner.h"
 
 /*
  * First half of the battle init script. This handles the trainer
@@ -21,10 +22,14 @@ u8 multi_battle_script_fragment[] = {
 
 void overworld_trainer_battle_flags(void)
 {
-   battle_type_flags = BATTLE_FLAG_TRAINER;
+    battle_type_flags = BATTLE_FLAG_TRAINER;
 
     if (trainers_spotted.count == 2) {
         battle_type_flags |= BATTLE_FLAG_MULTI | BATTLE_FLAG_DOUBLE;
+    }
+
+    if (is_partner_battle()) {
+        battle_type_flags |= BATTLE_FLAG_PARTNER;
     }
 }
 
