@@ -49,3 +49,14 @@ opponent_cmd07_sprite_hook:
         bx r1
 
 @@@ --------------------------------------------------------------------------
+
+        .thumb
+        .align 2
+
+        .global opponent_cmd08_sprite_hook
+opponent_cmd08_sprite_hook:
+        bl multi_load_trainer_sprite
+        ldr r1, =0x08037F0E|1
+        bx r1
+
+@@@ --------------------------------------------------------------------------

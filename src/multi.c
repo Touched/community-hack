@@ -177,7 +177,7 @@ u8 multi_load_trainer_sprite(void)
 {
     u16 trainer_id = trainerbattle_flag_id;
 
-    if (battle_type_flags & BATTLE_FLAG_MULTI && b_active_side == 1) {
+    if (battle_type_flags & BATTLE_FLAG_MULTI && b_active_side == 3) {
         trainer_id = multi_second_opponent_id();
     }
 
