@@ -22,6 +22,49 @@ void multi_trainer_flags_set(void)
     }
 }
 
+static u32 multi_money_calc_for_trainer(u16 trainer_id)
+{
+    struct Trainer* trainer = &trainer_data[trainer_id];
+
+    /* Find level of the last Pokemon in trainer's party */
+    u8 level = 0;
+    if (trainer->flags & TRAINER_PARTY_MOVESET) {
+        struct TrainerPokemonMoves* pokemon = (struct TrainerPokemonMoves*) trainer->party;
+        level = pokemon[trainer->party_size - 1].base.level;
+    } else {
+        struct TrainerPokemonBase* pokemon = (struct TrainerPokemonBase*) trainer->party;
+        level = pokemon[trainer->party_size - 1].level;
+    }
+
+    struct TrainerMoneyRate* rate;
+    for (rate = trainer_class_money_rate; rate->class != trainer->class; rate++) {
+        if (rate->class == 0xFF) {
+            /* Default to the first class's rate */
+            rate = trainer_class_money_rate;
+            break;
+        }
+    }
+
+    u32 money = rate->money * level * battle_stuff->money_multiplier * 4;
+
+    if (battle_type_flags & BATTLE_FLAG_DOUBLE && !(battle_type_flags & BATTLE_FLAG_MULTI)) {
+        money *= 2;
+    }
+
+    return money;
+}
+
+u32 multi_money_calc(void)
+{
+    u16 money = multi_money_calc_for_trainer(trainerbattle_flag_id);
+
+    if (battle_type_flags & BATTLE_FLAG_MULTI) {
+        money += multi_money_calc_for_trainer(multi_second_opponent_id());
+    }
+
+    return money;
+}
+
 void multi_opponent_slide_out(void)
 {
     /* Reconfigure the battle to display the correct loss message */

@@ -29,13 +29,6 @@
         bx r2
         .pool
 
-        // Convert the middle section of the money calculator into its
-	// own function so we can call it once per trainer
-        .org 0x080259C4
-        ldr r0, =multi_money_calc_return_hook|1
-        bx r0
-        .pool
-
         // Take an unused string from FireRed and replace it with our
 	// multi-battle virtory message
         // The original string was: "You throw a BALL now, right? I... I`ll do my best!"
