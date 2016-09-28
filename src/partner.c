@@ -17,6 +17,18 @@ pchar* partner_load_name(void)
     return &trainer_data[100].name;
 }
 
+pchar* partner_load_class(void)
+{
+    /* TODO: Load a class from somewhere */
+    return trainer_class_names[trainer_data[100].class];
+}
+
+u8 partner_load_backsprite_index(void)
+{
+    /* TODO: Load a backsprite index from somewhere */
+    return 5;
+}
+
 void multi_bx_partner(void);
 
 void multi_bx_partner_init(void)

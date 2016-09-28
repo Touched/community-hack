@@ -13,7 +13,7 @@
 
         // Additional battle buffers
         .org 0x080D789A
-        cmp r0, #(0x30 + 2)
+        cmp r0, #(0x30 + 4)
 
         // Repoint existing table
         .org 0x080D78AC
