@@ -1,4 +1,5 @@
 #include <pokeagb/pokeagb.h>
+#include "config.h"
 
 #define COMMAND_MAX 0x39
 
@@ -6,7 +7,14 @@ static void (*multi_partner_table[COMMAND_MAX])(void);
 
 bool is_partner_battle(void)
 {
+    /* TODO: Have a custom flag */
     return battle_type_flags & BATTLE_FLAG_MULTI;
+}
+
+pchar* partner_load_name(void)
+{
+    /* TODO: Load a name from somewhere */
+    return &trainer_data[100].name;
 }
 
 void multi_bx_partner(void);

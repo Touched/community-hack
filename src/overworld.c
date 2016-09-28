@@ -29,7 +29,7 @@ void overworld_trainer_battle_flags(void)
     }
 
     if (is_partner_battle()) {
-        battle_type_flags |= BATTLE_FLAG_PARTNER;
+        // battle_type_flags |= BATTLE_FLAG_PARTNER;
     }
 }
 

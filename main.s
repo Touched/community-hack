@@ -9,6 +9,7 @@
         .include "patches/multi_pokemon_order.s"
         .include "patches/overworld.s"
         .include "patches/switching.s"
+        .include "patches/tag_team.s"
 
         // Only do this if you haven't repointed your battle script
 	// command table
