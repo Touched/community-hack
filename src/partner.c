@@ -147,86 +147,8 @@ void multi_bx_partner(void)
     }
 }
 
-#define WRAP_COMMAND(name, address)                     \
-    void name(void) {                                   \
-        ((void (*)(void)) address)();                   \
-        if ((u32) b_x[b_active_side] == 0x0802E3B4 + 1) {        \
-            multi_partner_finish_exec();                \
-        }                                               \
-    }
-
-#define WRAP_COMMAND2(name, address)                    \
-    void name(void) {                                   \
-        ((void (*)(void)) address)();                   \
-        if ((u32) b_x[b_active_side] == 0x08035A98 + 1) {        \
-            multi_partner_finish_exec();                \
-        }                                               \
-    }
-
-WRAP_COMMAND(player_cmd00, 0x8030B91);
-WRAP_COMMAND(player_cmd01, 0x80313B1);
-WRAP_COMMAND(player_cmd02, 0x8031439);
-WRAP_COMMAND(player_cmd03, 0x8031E8D);
-WRAP_COMMAND(player_cmd04, 0x8031F01);
-WRAP_COMMAND(player_cmd05, 0x8031F69);
-WRAP_COMMAND(player_cmd06, 0x8032161);
-WRAP_COMMAND(player_cmd07, 0x803227D);
-WRAP_COMMAND(player_cmd08, 0x8032429);
-WRAP_COMMAND(player_cmd09, 0x8032591);
-WRAP_COMMAND(player_cmd0a, 0x8032651);
-WRAP_COMMAND(player_cmd0b, 0x803273D);
-WRAP_COMMAND(player_cmd0c, 0x803275D);
-WRAP_COMMAND(player_cmd0d, 0x80327B1);
-WRAP_COMMAND(player_cmd0e, 0x8032811);
-WRAP_COMMAND(player_cmd0f, 0x8032841);
-WRAP_COMMAND(player_cmd10, 0x8032AFD);
-WRAP_COMMAND(player_cmd11, 0x8032B71);
-WRAP_COMMAND(player_cmd12, 0x8032BD5);
-WRAP_COMMAND(player_cmd13, 0x8032C49);
-WRAP_COMMAND(player_cmd14, 0x8032C91);
-WRAP_COMMAND(player_cmd15, 0x8032CED);
-WRAP_COMMAND(player_cmd16, 0x8032D51);
-WRAP_COMMAND(player_cmd17, 0x8032E29);
-WRAP_COMMAND(player_cmd18, 0x8032E4D);
-WRAP_COMMAND(player_cmd19, 0x8032F4D);
-WRAP_COMMAND(player_cmd1a, 0x8032FE9);
-WRAP_COMMAND(player_cmd1b, 0x8033061);
-WRAP_COMMAND(player_cmd1c, 0x80330C9);
-WRAP_COMMAND(player_cmd1d, 0x8033135);
-WRAP_COMMAND(player_cmd1e, 0x8033141);
-WRAP_COMMAND(player_cmd1f, 0x80331F5);
-WRAP_COMMAND(player_cmd20, 0x8033225);
-WRAP_COMMAND(player_cmd21, 0x8033231);
-WRAP_COMMAND(player_cmd22, 0x8033245);
-WRAP_COMMAND(player_cmd23, 0x8033259);
-WRAP_COMMAND(player_cmd24, 0x803326D);
-WRAP_COMMAND(player_cmd25, 0x8033281);
-WRAP_COMMAND(player_cmd26, 0x803329D);
-WRAP_COMMAND(player_cmd27, 0x80332D5);
-WRAP_COMMAND(player_cmd28, 0x80332ED);
-WRAP_COMMAND(player_cmd29, 0x8033315);
-WRAP_COMMAND(player_cmd2a, 0x8033385);
-WRAP_COMMAND(player_cmd2b, 0x8033391);
-WRAP_COMMAND(player_cmd2c, 0x80333D5);
-WRAP_COMMAND(player_cmd2d, 0x8033405);
-WRAP_COMMAND(player_cmd2e, 0x8033445);
-WRAP_COMMAND(player_cmd2f, 0x8033479);
-WRAP_COMMAND(player_cmd30, 0x803376D);
-WRAP_COMMAND(player_cmd31, 0x8033879);
-WRAP_COMMAND(player_cmd32, 0x80338C9);
-WRAP_COMMAND(player_cmd33, 0x80338ED);
-WRAP_COMMAND(player_cmd34, 0x803394D);
-WRAP_COMMAND(player_cmd35, 0x80339B5);
-WRAP_COMMAND(player_cmd36, 0x8033A11);
-WRAP_COMMAND(player_cmd37, 0x8033A79);
-WRAP_COMMAND(player_cmd38, 0x8033AC5);
-
-WRAP_COMMAND2(enemy_cmd12, 0x08038595);
-WRAP_COMMAND2(enemy_cmd14, 0x080385B1);
-
 /* TODO: Hook tai_switching_and_items to make it look at the player
  * party (see emerald) */
-
 static void partner_cmd14_pick_move(void)
 {
     u16* moves = (u16*) &b_buffer_A[b_active_side];
@@ -266,63 +188,75 @@ static void partner_cmd11_message(void)
     multi_partner_finish_exec();
 }
 
+static void partner_cmd12_select_action(void)
+{
+    /* FIXME: Rewrite this function */
+    ((void(*)(void)) (0x08039C84|1))();
+    multi_partner_finish_exec();
+}
 
+#define WRAP_COMMAND_ADDRESS(x) ((void (*)(void)) (x))
+
+/*
+ * Most of these are just reused from the player's command table to
+ * save rewriting them all.
+ */
 static void (*multi_partner_table[COMMAND_MAX])(void) = {
-    player_cmd00,
-    player_cmd01,
-    player_cmd02,
-    player_cmd03,
-    player_cmd04,
-    player_cmd05,
-    player_cmd06,
-    player_cmd07,               /* see 0805B664 */
-    player_cmd08,
-    player_cmd09,
-    player_cmd0a,
-    player_cmd0b,
-    player_cmd0c,
-    player_cmd0d,
-    player_cmd0e,
-    player_cmd0f,
-    partner_cmd10_message,
+    WRAP_COMMAND_ADDRESS(0x8030B91),
+    WRAP_COMMAND_ADDRESS(0x80313B1),
+    WRAP_COMMAND_ADDRESS(0x8031439),
+    WRAP_COMMAND_ADDRESS(0x8031E8D),
+    WRAP_COMMAND_ADDRESS(0x8031F01),
+    WRAP_COMMAND_ADDRESS(0x8031F69),
+    WRAP_COMMAND_ADDRESS(0x8032161),
+    WRAP_COMMAND_ADDRESS(0x803227D),
+    WRAP_COMMAND_ADDRESS(0x8032429),
+    WRAP_COMMAND_ADDRESS(0x8032591),
+    WRAP_COMMAND_ADDRESS(0x8032651),
+    WRAP_COMMAND_ADDRESS(0x803273D),
+    WRAP_COMMAND_ADDRESS(0x803275D),
+    WRAP_COMMAND_ADDRESS(0x80327B1),
+    WRAP_COMMAND_ADDRESS(0x8032811),
+    WRAP_COMMAND_ADDRESS(0x8032841),
+    WRAP_COMMAND_ADDRESS(0x8032AFD),
     partner_cmd11_message,
-    enemy_cmd12,
-    player_cmd13,
+    partner_cmd12_select_action,
+    WRAP_COMMAND_ADDRESS(0x8032C49),
     partner_cmd14_pick_move,
-    player_cmd15,
-    player_cmd16,
-    player_cmd17,
-    player_cmd18,
-    player_cmd19,
-    player_cmd1a,
-    player_cmd1b,
-    player_cmd1c,
-    player_cmd1d,
-    player_cmd1e,
-    player_cmd1f,
-    player_cmd20,
-    player_cmd21,
-    player_cmd22,
-    player_cmd23,
-    player_cmd24,
-    player_cmd25,
-    player_cmd26,
-    player_cmd27,
-    player_cmd28,
-    player_cmd29,
-    player_cmd2a,
-    player_cmd2b,
-    player_cmd2c,
-    player_cmd2d,
-    player_cmd2e,
-    player_cmd2f,
-    player_cmd30,
-    player_cmd31,
-    player_cmd32,
-    player_cmd33,
-    player_cmd34,
-    player_cmd35,
-    player_cmd36,
-    player_cmd37,
-    player_cmd38,
+    WRAP_COMMAND_ADDRESS(0x8032CED),
+    WRAP_COMMAND_ADDRESS(0x8032D51),
+    WRAP_COMMAND_ADDRESS(0x8032E29),
+    WRAP_COMMAND_ADDRESS(0x8032E4D),
+    WRAP_COMMAND_ADDRESS(0x8032F4D),
+    WRAP_COMMAND_ADDRESS(0x8032FE9),
+    WRAP_COMMAND_ADDRESS(0x8033061),
+    WRAP_COMMAND_ADDRESS(0x80330C9),
+    WRAP_COMMAND_ADDRESS(0x8033135),
+    WRAP_COMMAND_ADDRESS(0x8033141),
+    WRAP_COMMAND_ADDRESS(0x80331F5),
+    WRAP_COMMAND_ADDRESS(0x8033225),
+    WRAP_COMMAND_ADDRESS(0x8033231),
+    WRAP_COMMAND_ADDRESS(0x8033245),
+    WRAP_COMMAND_ADDRESS(0x8033259),
+    WRAP_COMMAND_ADDRESS(0x803326D),
+    WRAP_COMMAND_ADDRESS(0x8033281),
+    WRAP_COMMAND_ADDRESS(0x803329D),
+    WRAP_COMMAND_ADDRESS(0x80332D5),
+    WRAP_COMMAND_ADDRESS(0x80332ED),
+    WRAP_COMMAND_ADDRESS(0x8033315),
+    WRAP_COMMAND_ADDRESS(0x8033385),
+    WRAP_COMMAND_ADDRESS(0x8033391),
+    WRAP_COMMAND_ADDRESS(0x80333D5),
+    WRAP_COMMAND_ADDRESS(0x8033405),
+    WRAP_COMMAND_ADDRESS(0x8033445),
+    WRAP_COMMAND_ADDRESS(0x8033479),
+    WRAP_COMMAND_ADDRESS(0x803376D),
+    WRAP_COMMAND_ADDRESS(0x8033879),
+    WRAP_COMMAND_ADDRESS(0x80338C9),
+    WRAP_COMMAND_ADDRESS(0x80338ED),
+    WRAP_COMMAND_ADDRESS(0x803394D),
+    WRAP_COMMAND_ADDRESS(0x80339B5),
+    WRAP_COMMAND_ADDRESS(0x8033A11),
+    WRAP_COMMAND_ADDRESS(0x8033A79),
+    WRAP_COMMAND_ADDRESS(0x8033AC5),
 };

@@ -129,3 +129,36 @@ tag_team_backsprite_pal_hook:
 1:
         ldr r2, =0x08033528|1
         bx r2
+
+
+@@@ --------------------------------------------------------------------------
+
+        .thumb
+        .align 2
+
+        .global tag_team_tbl1_exec_complete_hook
+tag_team_tbl1_exec_complete_hook:
+        push {r0}
+        @@ Ensure this is a tag team battle
+        bl is_partner_battle
+        cmp r0, #0
+        beq 0f
+
+        @@ Ensure the active bank is the player's ally
+        ldrb r0, [r4]
+        cmp r0, #2
+        bne 0f
+
+        @@ We should use the partner's thing
+        ldr r1, =multi_bx_partner
+        b 1f
+
+0:
+        @@ The standard player command executer
+        ldr r1, =0x0802E3B4|1
+
+1:
+        pop {r0}
+        str r1, [r0]
+        ldr r0, =0x0802E34E|1
+        bx r0

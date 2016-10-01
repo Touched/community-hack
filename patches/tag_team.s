@@ -55,3 +55,10 @@
         bx r0
         .org 0x080335D8
         .word tag_team_backsprite_pal_hook|1
+
+        // Hook the table execution completion functions to set the
+	// correct bank.
+        .org 0x0802E34C
+        bx r1
+        .org 0x0802E384
+        .word tag_team_tbl1_exec_complete_hook|1
