@@ -51,7 +51,8 @@ $(BINARY): $(OBJECTS)
 
 %.c.o: %.c $(call rwildcard,$(SRC),*.h)
 	@mkdir -p $(BUILD)/$(@D)
-	$(CC) $(CFLAGS) -c $< -o $(BUILD)/$@
+	$(CC) $(CFLAGS) -E -c $< -o $*.i
+	$(PREPROC) $*.i $(CHARMAP) | $(CC) $(CFLAGS) -x c -o $(BUILD)/$@ -c -
 
 %.s.o: %.s
 	@mkdir -p $(BUILD)/$(@D)
