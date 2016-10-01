@@ -68,3 +68,9 @@
         ldr r1, =tag_team_obedience_hook|1
         bx r1
         .pool
+
+        // Make the Pokeball readout split for the player
+        .org 0x08048FAC
+        ldr r1, =tag_team_pokeball_readout_hook|1
+        bx r1
+        .pool

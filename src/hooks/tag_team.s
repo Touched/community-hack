@@ -186,3 +186,32 @@ tag_team_obedience_hook:
 1:
         ldr r1, =0x0801D4F4|1
         bx r1
+
+        .thumb
+        .align 2
+
+@@@ --------------------------------------------------------------------------
+
+        .global tag_team_pokeball_readout_hook
+tag_team_pokeball_readout_hook:
+        bl is_partner_battle
+        cmp r0, #0
+        bne 1f
+        mov r3, r10
+        ldr r0, [r3]
+        mov r1, #0x40
+        and r0, r1
+        cmp r0, #0
+        bne 1f
+
+0:
+        @@ Render normally
+        ldr r0, =0x08048FEC|1
+        bx r0
+
+1:
+        @@ Render split
+        ldr r0, =0x08048FB6|1
+        bx r0
+
+@@@ --------------------------------------------------------------------------
