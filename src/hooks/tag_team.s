@@ -162,3 +162,27 @@ tag_team_tbl1_exec_complete_hook:
         str r1, [r0]
         ldr r0, =0x0802E34E|1
         bx r0
+
+@@@ --------------------------------------------------------------------------
+
+        .thumb
+        .align 2
+
+        .global tag_team_obedience_hook
+tag_team_obedience_hook:
+        lsl r0, #0x18
+        cmp r0, #0
+        beq 1f
+	bl is_partner_attacker
+        cmp r0, #0
+        beq 0f
+        b 1f
+
+0:
+        ldr r0, =0x827
+        ldr r1, =0x0801D488|1
+        bx r1
+
+1:
+        ldr r1, =0x0801D4F4|1
+        bx r1

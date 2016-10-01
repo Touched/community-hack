@@ -103,6 +103,11 @@ bool is_partner_battle(void)
     return battle_type_flags & BATTLE_FLAG_MULTI;
 }
 
+bool is_partner_attacker(void)
+{
+    return battle_get_per_side_status(b_attacker) == BANK_PLAYER_ALLY;
+}
+
 pchar* partner_load_name(void)
 {
     struct TagTeamPartner* partner = get_partner();

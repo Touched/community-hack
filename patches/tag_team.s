@@ -62,3 +62,9 @@
         bx r1
         .org 0x0802E384
         .word tag_team_tbl1_exec_complete_hook|1
+
+        // Make sure the ally's Pokemon cannot disobey
+        .org 0x0801D480
+        ldr r1, =tag_team_obedience_hook|1
+        bx r1
+        .pool
