@@ -1,9 +1,101 @@
 #include <pokeagb/pokeagb.h>
 #include "config.h"
+#include "partner.h"
 
 #define COMMAND_MAX 0x39
 
 static void (*multi_partner_table[COMMAND_MAX])(void);
+
+struct TagTeamPartner tag_team_partners[] = {
+    {
+        .name = _"MAY",
+        .gender = GENDER_FEMALE,
+        .class = 1,
+        .sprite = 3,
+        .party_size = 1,
+        {
+            {
+                .nickname = _"",
+                .species = SPECIES_MARSHTOMP,
+                .item = ITEM_ORANBERRY,
+                .moves = { MOVE_MUD_SHOT, MOVE_SURF },
+                .level = 18
+            }
+        }
+    }
+};
+
+#define TAG_TEAM_MAX_PARTNER_INDEX (sizeof(tag_team_partners) / sizeof(struct TagTeamPartner))
+
+/* TODO: Inline */
+struct TagTeamPartner* get_partner(void)
+{
+    /* TODO: Get this index from somewhere (script variable?) */
+    u8 index = 0;
+
+    if (index > TAG_TEAM_MAX_PARTNER_INDEX) {
+        index = 0;
+    }
+
+    return &tag_team_partners[index];
+}
+
+void partner_load_pokemon(struct TagTeamPartner* partner,
+                          u32 tid,
+                          struct Pokemon* slot,
+                          struct TagTeamPokemon* pokemon)
+{
+    /* Generate the PID and possibly filter it */
+    u32 pid = rand() | (rand() << 16);
+    if (pokemon->pid_hook) {
+        pid = pokemon->pid_hook(pid, pokemon, pokemon->pid_hook_data);
+    }
+
+    pokemon_make_full(slot, pokemon->species, pokemon->level, 0xFF, true, pid, 1, tid);
+
+    /* Set OT and origin information */
+    struct PokemonBase* base = (struct PokemonBase*) slot;
+    pokemon_setattr(base, REQUEST_OT_GENDER, &partner->gender);
+    pokemon_setattr(base, REQUEST_OT_NAME, &partner->name);
+
+    /* TODO: Figure out how to make catch location blank */
+
+    /* Set the provided attributes*/
+    if (*pokemon->nickname != 0xFF) {
+        pokemon_setattr(base, REQUEST_NICK, pokemon->nickname);
+    }
+
+    if (pokemon->item) {
+        pokemon_setattr(base, REQUEST_HELD_ITEM, &pokemon->item);
+    }
+
+    for (u8 i = 0; i < 4; i++) {
+        pokemon_setattr(base, REQUEST_MOVE1 + i, &pokemon->moves[i]);
+    }
+}
+
+void partner_load_party(void)
+{
+    struct TagTeamPartner* partner = get_partner();
+
+    u8 party_size = partner->party_size;
+    if (party_size > TAG_TEAM_PARTNER_MAX_PARTY_SIZE) {
+        party_size = TAG_TEAM_PARTNER_MAX_PARTY_SIZE;
+    }
+
+    for (u8 i = 0; i < TAG_TEAM_PARTNER_MAX_PARTY_SIZE; i++) {
+        struct Pokemon* slot = &party_player[3 + i];
+
+        if (i < party_size) {
+            struct TagTeamPokemon* pokemon = &partner->party[i];
+
+            /* TODO: Use a proper trainer ID */
+            partner_load_pokemon(partner, rand(), slot, pokemon);
+        } else {
+            pokemon_slot_purge_full(slot);
+        }
+    }
+}
 
 bool is_partner_battle(void)
 {
@@ -13,20 +105,20 @@ bool is_partner_battle(void)
 
 pchar* partner_load_name(void)
 {
-    /* TODO: Load a name from somewhere */
-    return &trainer_data[100].name;
+    struct TagTeamPartner* partner = get_partner();
+    return partner->name;
 }
 
 pchar* partner_load_class(void)
 {
-    /* TODO: Load a class from somewhere */
-    return trainer_class_names[trainer_data[100].class];
+    struct TagTeamPartner* partner = get_partner();
+    return trainer_class_names[partner->class];
 }
 
 u8 partner_load_backsprite_index(void)
 {
-    /* TODO: Load a backsprite index from somewhere */
-    return 5;
+    struct TagTeamPartner* partner = get_partner();
+    return partner->sprite;
 }
 
 void multi_bx_partner(void);

@@ -164,6 +164,10 @@ void multi_init_pokemon_order(void)
         b_pokemon_team_id_by_side[1] = 0;
         b_pokemon_team_id_by_side[3] = 3;
     }
+
+    if (is_partner_battle()) {
+        b_pokemon_team_id_by_side[BANK_PLAYER_ALLY] = 3;
+    }
 }
 
 void multi_init_parties(void)
@@ -179,6 +183,10 @@ void multi_init_parties(void)
         /* Load the second half of the party */
         /* TODO: Get trainer ID from somewhere */
         setup_opponent_party(&party_opponent[3], multi_second_opponent_id());
+    }
+
+    if (is_partner_battle()) {
+        partner_load_party();
     }
 }
 
