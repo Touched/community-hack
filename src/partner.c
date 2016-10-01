@@ -169,10 +169,10 @@ static void partner_cmd14_pick_move(void)
     if (move->target & (MOVE_TARGET_USER | MOVE_TARGET_EVERYONE)) {
         b_defender = b_active_side;
     } else if (move->target & MOVE_TARGET_BOTH) {
-        b_defender = 1;//battle_get_side_with_given_state(0);
+        b_defender = battle_get_side_with_given_state(1);
 
         if (absent_flags_for_banks & (1 << b_defender)) {
-            b_defender = 3;//battle_get_side_with_given_state(2);
+            b_defender = battle_get_side_with_given_state(3);
         }
     } else {
         /* TODO: Add bank picking logic to AI scripts, as in Emerald */
