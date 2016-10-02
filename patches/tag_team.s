@@ -74,3 +74,11 @@
         ldr r1, =tag_team_pokeball_readout_hook|1
         bx r1
         .pool
+
+        // Fix pagination of the summary screen (pressing up or down
+	// on the summary menu) so that it loops through the player's
+	// half of the party before moving onto the ally's half.
+        .org 0x0813B19E
+        nop
+        .org 0x0813B1A6
+        nop
