@@ -155,27 +155,29 @@ void multi_bx_partner(void)
  * party (see emerald) */
 static void partner_cmd14_pick_move(void)
 {
-    u16* moves = (u16*) &b_buffer_A[b_active_side];
+    u16* moves = (u16*) &b_buffer_A[b_active_side][4];
 
-    tai_prepare_struct();
-    u8 move_slot = tai_pick_move();
-    move_slot = 1;
+    u8 move_count = 0;
+    for (u8 i = 0; i < 4; i++) {
+        if (moves[i]) {
+            move_count++;
+        }
+    }
+
+    u8 move_slot = rand() % move_count;
     u16 move_index = moves[move_slot];
 
     struct MoveData* move = &pokemon_moves[move_index];
-
-    /* FIXME: Targeting logic is broken.  */
     if (move->target & (MOVE_TARGET_USER | MOVE_TARGET_EVERYONE)) {
         b_defender = b_active_side;
     } else if (move->target & MOVE_TARGET_BOTH) {
-        b_defender = battle_get_side_with_given_state(1);
+        b_defender = 1;
 
         if (absent_flags_for_banks & (1 << b_defender)) {
-            b_defender = battle_get_side_with_given_state(3);
+            b_defender = 3;
         }
     } else {
-        /* TODO: Add bank picking logic to AI scripts, as in Emerald */
-        b_defender = rand() % 2 + 1;
+        b_defender = ((rand() % 2) << 1) | 1;
     }
 
     dp01_build_cmdbuf_x21_a_bb(1, 10, move_slot | (b_defender << 8));
