@@ -27,7 +27,6 @@ struct TagTeamPartner tag_team_partners[] = {
 
 #define TAG_TEAM_MAX_PARTNER_INDEX (sizeof(tag_team_partners) / sizeof(struct TagTeamPartner))
 
-/* TODO: Inline */
 struct TagTeamPartner* get_partner(void)
 {
     /* TODO: Get this index from somewhere (script variable?) */
