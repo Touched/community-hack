@@ -82,3 +82,10 @@
         nop
         .org 0x0813B1A6
         nop
+
+        // Stop the ally Pokemon from gaining experience (treat it as
+	// level 100)
+        .org 0x08021CFC
+        ldr r1, =tag_team_partner_exp_gain_hook|1
+        bx r1
+        .pool

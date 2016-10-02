@@ -192,6 +192,9 @@ tag_team_obedience_hook:
 
 @@@ --------------------------------------------------------------------------
 
+        .thumb
+        .align 2
+
         .global tag_team_pokeball_readout_hook
 tag_team_pokeball_readout_hook:
         bl is_partner_battle
@@ -212,6 +215,50 @@ tag_team_pokeball_readout_hook:
 1:
         @@ Render split
         ldr r0, =0x08048FB6|1
+        bx r0
+@@@ --------------------------------------------------------------------------
+
+        .thumb
+        .align 2
+
+        .global tag_team_partner_exp_gain_hook
+tag_team_partner_exp_gain_hook:
+        cmp r0, #100
+        bne 0f
+        ldr r1, [r5]
+        add r1, #0x53
+        b 2f
+
+0:
+        bl is_partner_battle
+        cmp r0, #0
+        beq 1f
+
+        @@ Check if the partner is active
+        @@ There doesn't seem to be a better way to check if the
+	@@ partner is the active bank.
+
+        @@ Get the active party index in the player's party
+        ldr r0, [r5]
+        ldrb r1, [r0, #0x10]
+
+	@@ Get the current party index on the field in bank 2 (ally)
+        ldr r0, =b_pokemon_team_id_by_side
+        ldrh r0, [r0, #4]
+
+        @@ If these indices are equal the partner was active, so skip
+	@@ experience gain
+        cmp r1, r0
+        beq 2f
+
+1:
+        @@ Gain experience
+        ldr r0, =0x08021D24|1
+        bx r0
+
+2:
+	@@ Skip experience gain
+        ldr r0, =0x08021D02|1
         bx r0
 
 @@@ --------------------------------------------------------------------------
