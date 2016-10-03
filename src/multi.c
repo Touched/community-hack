@@ -106,32 +106,40 @@ void multi_battle_add_second_opponent(void)
 
 u8 multi_opponent_should_send_out(u8 side)
 {
-    /* Make sure enemy trainers only use the half of the team that
-     * belongs to them. */
+    /*
+     * Make sure trainers only use the half of the team that belongs
+     * to them.
+     */
 
-    struct Pokemon* party = party_opponent;
+    struct Pokemon* party = NULL;
+    u8 lower = 0, upper = 6;
 
+    /* Figure out what indices to look through */
     if (battle_side_get_owner(side) == SIDE_OPPONENT) {
-        u8 team_half = side == BANK_OPPONENT_ALLY;
-        u8 lower = 3 * team_half;
-        u8 upper = lower + 3;
+        party = party_opponent;
+        lower = 3 * (side == BANK_OPPONENT_ALLY);
+        upper = lower + 3;
+    } else {
+        party = party_player;
 
-        for (u8 i = lower; i < upper; i++) {
-            struct PokemonBase* pokemon = (struct PokemonBase*) &party[i];
-            enum PokemonSpecies species = pokemon_getattr(pokemon, REQUEST_SPECIES2, NULL);
-            u16 hp = pokemon_getattr(pokemon, REQUEST_CURRENT_HP, NULL);
-
-            if (hp && species && species != SPECIES_MAX) {
-                return 0;
-            }
+        if (is_partner_battle()) {
+            lower = 3 * (side == BANK_PLAYER_ALLY);
+            upper = lower + 3;
         }
-
-        return 1;
     }
 
-    /* FIXME: Do player half for both tag and non-tag battles */
+    /* Check if there is a healthy Pokemon */
+    for (u8 i = lower; i < upper; i++) {
+        struct PokemonBase* pokemon = (struct PokemonBase*) &party[i];
+        enum PokemonSpecies species = pokemon_getattr(pokemon, REQUEST_SPECIES2, NULL);
+        u16 hp = pokemon_getattr(pokemon, REQUEST_CURRENT_HP, NULL);
 
-    return 0;
+        if (hp && species && species != SPECIES_MAX) {
+            return 0;
+        }
+    }
+
+    return 1;
 }
 
 u8 multi_get_party_index_lower_bound(void)
