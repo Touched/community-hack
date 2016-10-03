@@ -37,10 +37,9 @@ struct TagTeamPartner tag_team_partners[] = {
 
 struct TagTeamPartner* get_partner(void)
 {
-    /* TODO: Get this index from somewhere (script variable?) */
-    u8 index = 0;
+    u16 index = var_load(BATTLE_PARTNER_ID_VAR);
 
-    if (index > TAG_TEAM_MAX_PARTNER_INDEX) {
+    if (index >= TAG_TEAM_MAX_PARTNER_INDEX) {
         index = 0;
     }
 

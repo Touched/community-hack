@@ -110,7 +110,9 @@ tag_team_backsprite_pal_hook:
         ldrb r0, [r0]
         cmp r0, #2
         bne 0f
+        push {r1-r3}
         bl partner_load_backsprite_index
+        pop {r1-r3}
         b 1f
 
 0:
