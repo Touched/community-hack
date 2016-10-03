@@ -29,9 +29,8 @@ void overworld_trainer_battle_flags(void)
         battle_type_flags |= BATTLE_FLAG_MULTI | BATTLE_FLAG_DOUBLE;
     }
 
-    if (is_partner_battle()) {
-        // battle_type_flags |= BATTLE_FLAG_PARTNER;
-    }
+    /* TODO: Check if tag team mode was enabled */
+    battle_type_flags |= BATTLE_FLAG_TAG_TEAM | BATTLE_FLAG_DOUBLE;
 }
 
 /*
