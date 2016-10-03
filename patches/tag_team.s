@@ -1,7 +1,8 @@
 	// Quick hack to enable the tag team party menu
-        // FIXME: Do it properly
-        .org 0x0811FA2E
-        mov r0, #1
+        .org 0x0811FA20
+        ldr r0, =tag_team_is_tag_team_hook|1
+        bx r0
+        .pool
 
         // Load the partner's name in the Pokemon menu
         .org 0x08127AE8
@@ -10,21 +11,22 @@
         .pool
 
         // Fix backsprite x coordinates in tag team
-        // TODO: Load custom backsprite (see 0803227C dp01t_07_1_trainer_enter_field)
         .org 0x08032280
         ldr r1, =tag_team_partner_slide_in_xpos_hook|1
         bx r1
         .pool
 
         // Send command 0x24 to partner bank (send out Pokemon)
-        // FIXME: Actually check for tag team flag, don't nop
-        .org 0x08013762
-        nop
+        .org 0x08013758
+        ldr r0, =tag_team_partner_sendout_pokemon_hook|1
+        bx r0
+        .pool
 
-        // Make the player only throw one Pokeball
-        // FIXME: Actually check for tag team flag, don't nop
-        .org 0x080336AA
-        nop
+        // Make the player only throws one Pokeball
+        .org 0x080336A0
+        ldr r0, =tag_team_partner_throw_pokeball_hook|1
+        bx r0
+        .pool
 
         // Needed to continue from send out to the fight menu
         // FIXME: Find out why this isn't being executed, don't nop
@@ -37,7 +39,6 @@
         nop
 
         // Send out message
-        // TODO: Move this to battle strings?
         .org 0x080D7444
         ldr r7, =tag_team_sendout_string_hook|1
         bx r7

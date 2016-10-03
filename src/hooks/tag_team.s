@@ -30,18 +30,10 @@ call_via_r2:
         .global tag_team_partner_slide_in_xpos_hook
 tag_team_partner_slide_in_xpos_hook:
         push {r7}
-        bl is_partner_battle
-        cmp r0, #0
-        beq 0f
-        ldr r2, =0x0803228E|1
-        bx r2
-
-0:
-        ldr r0, =battle_type_flags
-        ldr r0, [r0]
-        mov r1, #0x40
-        ldr r2, =0x08032288|1
-        bx r2
+        bl is_link_or_partner_battle
+        mvn r0, r0
+        ldr r1, =0x0803228A|1
+        bx r1
 
 @@@ --------------------------------------------------------------------------
 
@@ -256,5 +248,38 @@ tag_team_partner_exp_gain_hook:
 	@@ Skip experience gain
         ldr r0, =0x08021D02|1
         bx r0
+
+@@@ --------------------------------------------------------------------------
+
+        .thumb
+        .align 2
+
+        .global tag_team_partner_sendout_pokemon_hook
+tag_team_partner_sendout_pokemon_hook:
+        bl is_link_or_partner_battle
+        ldr r1, =0x08013760|1
+        bx r1
+
+@@@ --------------------------------------------------------------------------
+
+        .thumb
+        .align 2
+
+        .global tag_team_partner_throw_pokeball_hook
+tag_team_partner_throw_pokeball_hook:
+        bl is_link_or_partner_battle
+        ldr r1, =0x080336A8|1
+        bx r1
+
+@@@ --------------------------------------------------------------------------
+
+        .thumb
+        .align 2
+
+        .global tag_team_is_tag_team_hook
+tag_team_is_tag_team_hook:
+        push {lr}
+        bl is_link_or_partner_battle
+        pop {pc}
 
 @@@ --------------------------------------------------------------------------

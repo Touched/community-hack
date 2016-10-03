@@ -126,6 +126,11 @@ bool is_partner_battle(void)
     return battle_type_flags & BATTLE_FLAG_TAG_TEAM;
 }
 
+bool is_link_or_partner_battle(void)
+{
+    return is_partner_battle() || (battle_type_flags & BATTLE_FLAG_PARTNER);
+}
+
 bool is_partner_attacker(void)
 {
     return battle_get_per_side_status(b_attacker) == BANK_PLAYER_ALLY;
