@@ -43,3 +43,14 @@ multi_trainer_flags_set_hook:
         pop {pc}
 
 @@@ --------------------------------------------------------------------------
+
+        .thumb
+        .align 2
+
+        .global multi_trainer_sendout_pokemon_hook
+multi_trainer_sendout_pokemon_hook:
+        bl is_link_or_multi_battle
+        ldr r1, =0x080135D6|1
+        bx r1
+
+@@@ --------------------------------------------------------------------------

@@ -13,6 +13,11 @@ bool is_multi_battle(void)
     return (battle_type_flags & BATTLE_FLAG_MULTI) == BATTLE_FLAG_MULTI;
 }
 
+bool is_link_or_multi_battle(void)
+{
+    return is_multi_battle() || (battle_type_flags & BATTLE_FLAG_PARTNER);
+}
+
 void multi_trainer_flags_set(void)
 {
     // TODO: Find a function that calculates trainer flag from trainer ID

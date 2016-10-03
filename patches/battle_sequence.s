@@ -5,10 +5,10 @@
         .pool
 
         // Sends command x2F (send out opponent pokemon) to bank 3 (opponent ally)
-        // FIXME: Actually check for the multi/partner battle flag
-	// instead of nopping the check out
-        .org 0x080135D8
-        nop
+        .org 0x080135D0
+        bx r0
+        .org 0x08013620
+        .word multi_trainer_sendout_pokemon_hook|1
 
         // Allow the player to send out their pokemon after the enemy
 	// has sent out theirs
