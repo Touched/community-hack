@@ -178,8 +178,6 @@ void multi_bx_partner(void)
     }
 }
 
-/* TODO: Hook tai_switching_and_items to make it look at the player
- * party (see emerald) */
 static void partner_cmd14_pick_move(void)
 {
     u16* moves = (u16*) &b_buffer_A[b_active_side][4];
