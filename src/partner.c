@@ -122,7 +122,6 @@ void partner_load_party(void)
 
 bool is_partner_battle(void)
 {
-    /* TODO: Have a custom flag */
     return battle_type_flags & BATTLE_FLAG_TAG_TEAM;
 }
 
