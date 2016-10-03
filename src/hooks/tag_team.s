@@ -61,7 +61,7 @@ tag_team_sendout_string_hook:
 
 0:
         @@ Link multi battle string
-        ldr r7, =0x083FD466
+        ldr r7, =0x083FD4B5
 
 1:
         @@ Render string
@@ -70,8 +70,8 @@ tag_team_sendout_string_hook:
 
 2:
         @@ Single battle send out
-        ldr r1, =0x080D744E|1
-        bx r1
+        ldr r7, =0x083FD466
+        b 1b
 
         .align 2
 string_partner_battle_sendout:
