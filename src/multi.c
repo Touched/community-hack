@@ -20,11 +20,10 @@ bool is_link_or_multi_battle(void)
 
 void multi_trainer_flags_set(void)
 {
-    // TODO: Find a function that calculates trainer flag from trainer ID
-    flag_set(trainerbattle_flag_id + 0x500);
+    trainer_flag_set(trainerbattle_flag_id);
 
     if (battle_type_flags & BATTLE_FLAG_MULTI) {
-        flag_set(multi_second_opponent_id() + 0x500);
+        trainer_flag_set(multi_second_opponent_id());
     }
 }
 
