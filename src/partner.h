@@ -2,7 +2,7 @@
 #define PARTNER_H
 
 bool is_partner_battle(void);
-void partner_load_party(void);
+void partner_unload_pokemon(void);
 
 #define TAG_TEAM_PARTNER_MAX_NAME_LEN 8
 #define TAG_TEAM_PARTNER_MAX_PARTY_SIZE 3

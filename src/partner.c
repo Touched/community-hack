@@ -1,6 +1,7 @@
 #include <pokeagb/pokeagb.h>
 #include "config.h"
 #include "partner.h"
+#include "battle.h"
 
 #define COMMAND_MAX 0x39
 
@@ -46,6 +47,12 @@ struct TagTeamPartner* get_partner(void)
     return &tag_team_partners[index];
 }
 
+void partner_unload_pokemon(void)
+{
+    memcpy(&party_player[3], extension_state.party_backup, sizeof(struct Pokemon) * 3);
+    free(extension_state.party_backup);
+}
+
 void partner_load_pokemon(struct TagTeamPartner* partner,
                           u32 tid,
                           struct Pokemon* slot,
@@ -82,6 +89,16 @@ void partner_load_pokemon(struct TagTeamPartner* partner,
 
 void partner_load_party(void)
 {
+    /*
+     * Back up the player's party so we can partially overwrite it
+     * with the partner's team.
+     */
+    extension_state.party_backup = malloc(sizeof(struct Pokemon) * 3);
+    if (!extension_state.party_backup) {
+        return;
+    }
+    memcpy(extension_state.party_backup, &party_player[3], sizeof(struct Pokemon) * 3);
+
     struct TagTeamPartner* partner = get_partner();
 
     u8 party_size = partner->party_size;

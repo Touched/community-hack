@@ -10,6 +10,7 @@
         .include "patches/overworld.s"
         .include "patches/switching.s"
         .include "patches/tag_team.s"
+        .include "patches/battle.s"
 
         // Only do this if you haven't repointed your battle script
 	// command table

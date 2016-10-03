@@ -8,6 +8,8 @@ struct BattleExtensionState {
         u8 count;
         struct TrainerSpotted trainers[2];
     } spotted;
+
+    void* party_backup;
 };
 
 extern struct BattleExtensionState extension_state;
