@@ -242,14 +242,10 @@ tag_team_partner_exp_gain_hook:
         ldr r0, [r5]
         ldrb r1, [r0, #0x10]
 
-	@@ Get the current party index on the field in bank 2 (ally)
-        ldr r0, =b_pokemon_team_id_by_side
-        ldrh r0, [r0, #4]
-
-        @@ If these indices are equal the partner was active, so skip
+        @@ If the index is in the partner's half of the party, skip
 	@@ experience gain
-        cmp r1, r0
-        beq 2f
+        cmp r1, #3
+        bge 2f
 
 1:
         @@ Gain experience
