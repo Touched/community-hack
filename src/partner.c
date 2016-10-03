@@ -12,14 +12,21 @@ struct TagTeamPartner tag_team_partners[] = {
         .gender = GENDER_FEMALE,
         .class = 1,
         .sprite = 3,
-        .party_size = 1,
+        .party_size = 2,
         {
             {
                 .nickname = _"",
-                .species = SPECIES_MARSHTOMP,
+                .species = SPECIES_DIGLETT,
                 .item = ITEM_ORANBERRY,
                 .moves = { MOVE_MUD_SHOT, MOVE_SURF },
-                .level = 18
+                .level = 1
+            },
+            {
+                .nickname = _"",
+                .species = SPECIES_DIGLETT,
+                .item = ITEM_ORANBERRY,
+                .moves = { MOVE_MUD_SHOT, MOVE_SURF },
+                .level = 1
             }
         }
     }
@@ -202,12 +209,31 @@ static void partner_cmd12_select_action(void)
     /* Switch */
     /* dp01_build_cmdbuf_x21_a_bb(1, 2, 0); */
 
-    /* Run (Infinite loop in a trainer battle) */
-    /* dp01_build_cmdbuf_x21_a_bb(1, 3, 0); */
-
     /* Bag */
     /* dp01_build_cmdbuf_x21_a_bb(1, 1, 0); */
 
+    multi_partner_finish_exec();
+}
+
+static void partner_cmd16_switch(void)
+{
+    /* TODO: Actually pick a viable Pokemon instead of just picking
+     * the next available one */
+    u8 i = 0;
+    for (i = 3; i < 6; i++) {
+        if (i == b_pokemon_team_id_by_side[BANK_PLAYER] ||
+            i == b_pokemon_team_id_by_side[BANK_PLAYER_ALLY]) {
+            continue;
+        }
+
+        if (pokemon_getattr(&party_player[i], REQUEST_CURRENT_HP, NULL)) {
+            break;
+        }
+    }
+
+    /* Perform switchout */
+    battle_stuff->team_id_by_side_5C[b_active_side] = i;
+    dp01_build_cmdbuf_x22(1, i, 0);
     multi_partner_finish_exec();
 }
 
@@ -240,7 +266,7 @@ static void (*multi_partner_table[COMMAND_MAX])(void) = {
     WRAP_COMMAND_ADDRESS(0x8032C49), /* 13 */
     partner_cmd14_pick_move,         /* 14 */
     WRAP_COMMAND_ADDRESS(0x8032CED), /* 15 */
-    WRAP_COMMAND_ADDRESS(0x8032D51), /* 16 */
+    partner_cmd16_switch,            /* 16 */
     WRAP_COMMAND_ADDRESS(0x8032E29), /* 17 */
     WRAP_COMMAND_ADDRESS(0x8032E4D), /* 18 */
     WRAP_COMMAND_ADDRESS(0x8032F4D), /* 19 */
