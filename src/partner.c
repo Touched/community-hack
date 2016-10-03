@@ -196,8 +196,18 @@ static void partner_cmd11_message(void)
 
 static void partner_cmd12_select_action(void)
 {
-    /* FIXME: Rewrite this function */
-    ((void(*)(void)) (0x08039C84|1))();
+    /* Attack */
+    dp01_build_cmdbuf_x21_a_bb(1, 0, (b_active_side ^ 1) << 8);
+
+    /* Switch */
+    /* dp01_build_cmdbuf_x21_a_bb(1, 2, 0); */
+
+    /* Run (Infinite loop in a trainer battle) */
+    /* dp01_build_cmdbuf_x21_a_bb(1, 3, 0); */
+
+    /* Bag */
+    /* dp01_build_cmdbuf_x21_a_bb(1, 1, 0); */
+
     multi_partner_finish_exec();
 }
 
