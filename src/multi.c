@@ -191,10 +191,8 @@ void multi_init_parties(void)
 
     setup_opponent_party(party_opponent, trainerbattle_flag_id);
 
-    /* FIXME: Remove the true */
-    if (true || battle_type_flags & BATTLE_FLAG_MULTI) {
+    if (battle_type_flags & BATTLE_FLAG_MULTI) {
         /* Load the second half of the party */
-        /* TODO: Get trainer ID from somewhere */
         setup_opponent_party(&party_opponent[3], multi_second_opponent_id());
     }
 
