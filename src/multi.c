@@ -1,6 +1,6 @@
 #include <pokeagb/pokeagb.h>
 #include "config.h"
-#include "overworld.h"
+#include "battle.h"
 #include "partner.h"
 
 u16 multi_second_opponent_id(void)
@@ -70,9 +70,9 @@ void multi_opponent_slide_out(void)
 {
     /* Reconfigure the battle to display the correct loss message */
     /* FIXME: Get rid of this hack. Store the messages elsewhere */
-    if (trainers_spotted.count == 2) {
+    if (extension_state.spotted.count == 2) {
         u8 temp = trainerbattle_flag_id;
-        battle_configure_by_script(trainers_spotted.trainers[1].script + 1);
+        battle_configure_by_script(extension_state.spotted.trainers[1].script + 1);
         trainerbattle_flag_id = temp;
     }
 

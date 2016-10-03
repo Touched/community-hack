@@ -1,6 +1,7 @@
 #include <pokeagb/pokeagb.h>
 #include "config.h"
 #include "overworld.h"
+#include "battle.h"
 #include "partner.h"
 
 /*
@@ -24,7 +25,7 @@ void overworld_trainer_battle_flags(void)
 {
     battle_type_flags = BATTLE_FLAG_TRAINER;
 
-    if (trainers_spotted.count == 2) {
+    if (extension_state.spotted.count == 2) {
         battle_type_flags |= BATTLE_FLAG_MULTI | BATTLE_FLAG_DOUBLE;
     }
 
@@ -39,7 +40,7 @@ void overworld_trainer_battle_flags(void)
  */
 void overworld_multi_run_script(u8 spotted_trainer_id)
 {
-    struct TrainerSpotted* trainer = &trainers_spotted.trainers[spotted_trainer_id];
+    struct TrainerSpotted* trainer = &extension_state.spotted.trainers[spotted_trainer_id];
     struct NpcState* npc = &npc_states[trainer->id];
 
     scripting_npc = trainer->id;
@@ -88,9 +89,9 @@ void task_overworld_mutli_trainers(u8 id)
     case 4:
         /* Ugly hack. Makes sure the trainers are in the right order. */
         /* FIXME: Rewrite battle_configure_script to support multiple trainers */
-        battle_configure_by_script(trainers_spotted.trainers[1].script + 1);
+        battle_configure_by_script(extension_state.spotted.trainers[1].script + 1);
         mutli_set_second_trainer(trainerbattle_flag_id);
-        battle_configure_by_script(trainers_spotted.trainers[0].script + 1);
+        battle_configure_by_script(extension_state.spotted.trainers[0].script + 1);
 
         /*
          * Jump halfway into the battle init script to actually start
@@ -110,7 +111,7 @@ u8 overworld_handle_trainer_spot(void)
      * stuff because it's useless.
      */
 
-    trainers_spotted.count = 0;
+    extension_state.spotted.count = 0;
     for (u8 i = 0; i < NPC_STATE_ID_MAX; i++) {
         struct NpcState* npc = &npc_states[i];
 
@@ -123,7 +124,7 @@ u8 overworld_handle_trainer_spot(void)
                     }
 
                     /* We've found enough opponents */
-                    if (trainers_spotted.count > 1) {
+                    if (extension_state.spotted.count > 1) {
                         break;
                     }
                 }
@@ -131,9 +132,9 @@ u8 overworld_handle_trainer_spot(void)
         }
     }
 
-    if (trainers_spotted.count == 1) {
+    if (extension_state.spotted.count == 1) {
         /* TODO: reset state data */
-        struct TrainerSpotted* trainer = &trainers_spotted.trainers[0];
+        struct TrainerSpotted* trainer = &extension_state.spotted.trainers[0];
         struct NpcState* npc = &npc_states[trainer->id];
 
         scripting_npc = trainer->id;
@@ -145,7 +146,7 @@ u8 overworld_handle_trainer_spot(void)
         add_task_trainer_walk(npc, trainer->distance - 1);
 
         return 1;
-    } else if (trainers_spotted.count == 2) {
+    } else if (extension_state.spotted.count == 2) {
         /* TODO: reset state data */
         if (!task_is_running(task_overworld_mutli_trainers)) {
             task_add(task_overworld_mutli_trainers, 0x50);
@@ -160,5 +161,5 @@ u8 overworld_handle_trainer_spot(void)
 void overworld_register_trainer(u8 npc_id, void* script, u8 distance)
 {
     struct TrainerSpotted trainer = { npc_id, distance, script };
-    trainers_spotted.trainers[trainers_spotted.count++] = trainer;
+    extension_state.spotted.trainers[extension_state.spotted.count++] = trainer;
 }

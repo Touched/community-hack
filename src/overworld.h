@@ -12,11 +12,4 @@ struct TrainerSpotted {
     void *script;
 };
 
-struct TrainerSpotState {
-    u8 count;
-    struct TrainerSpotted trainers[2];
-};
-
-extern struct TrainerSpotState trainers_spotted;
-
 #endif /* OVERWORLD_H */
