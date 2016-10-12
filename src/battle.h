@@ -2,6 +2,7 @@
 #define BATTLE_H
 
 #include "overworld.h"
+#include "mega/mega.h"
 
 struct BattleExtensionState {
     struct {
@@ -10,6 +11,7 @@ struct BattleExtensionState {
     } spotted;
 
     void* party_backup;
+    struct MegaEvolutionState* mega_evolution;
 };
 
 extern struct BattleExtensionState extension_state;
