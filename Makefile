@@ -14,9 +14,9 @@ export ROM_CODE := BPRE
 export LD := $(PREFIX)ld
 export PREPROC := ../../pokeruby/tools/preproc/preproc
 export CHARMAP := ../../pokeruby/charmap.txt
-export INCLUDE := ../headers/build/include
+export INCLUDE := -I ../headers/build/include -I $(SRC)
 export ASFLAGS := -mthumb
-export CFLAGS := -g -O2 -Wall -mthumb -std=c11 -I $(INCLUDE) -mcpu=arm7tdmi \
+export CFLAGS := -g -O2 -Wall -mthumb -std=c11 $(INCLUDE) -mcpu=arm7tdmi \
 	-march=armv4t -mno-thumb-interwork -fno-inline -fno-builtin -mlong-calls -DROM_$(ROM_CODE)
 export LDFLAGS := -T layout.ld -T ../headers/build/linker/$(ROM_CODE).ld -r
 
@@ -33,18 +33,25 @@ C_OBJ=$(C_SRC:%=%.o)
 S_OBJ=$(S_SRC:%=%.o)
 OBJECTS=$(C_OBJ) $(S_OBJ)
 
+# Generated
+IMAGES=$(call rwildcard,images,*.png)
+
 #-------------------------------------------------------------------------------
 
-.PHONY: all clean test
+.PHONY: all clean test generated images
 
-all: main.s $(BINARY) $(call rwildcard,patches,*.s)
+all: generated main.s $(BINARY) $(call rwildcard,patches,*.s)
 	$(ARMIPS) main.s
 
 clean:
 	rm -rf build
+	rm -rf $(SRC)/generated
 
 test:
 	$(MAKE) -f test/Makefile
+
+generated: images
+images: $(IMAGES:images/%.png=$(SRC)/generated/images/%.c)
 
 $(BINARY): $(OBJECTS)
 	$(LD) $(LDFLAGS) -o $@ $(addprefix $(BUILD)/,$^)
@@ -57,3 +64,7 @@ $(BINARY): $(OBJECTS)
 %.s.o: %.s
 	@mkdir -p $(BUILD)/$(@D)
 	$(PREPROC) $< $(CHARMAP) | $(AS) $(ASFLAGS) -o $(BUILD)/$@
+
+$(SRC)/generated/images/%.c: images/%.png images/%.grit
+	@mkdir -p $(@D)
+	grit $< -o $@ -ff$(<:%.png=%.grit)
