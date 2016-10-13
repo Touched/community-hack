@@ -13,7 +13,7 @@ export ARMIPS := armips
 export ROM_CODE := BPRE
 export LD := $(PREFIX)ld
 export PREPROC := ../../pokeruby/tools/preproc/preproc
-export CHARMAP := ../../pokeruby/charmap.txt
+export CHARMAP := charmap.txt
 export INCLUDE := -I ../headers/build/include -I $(SRC)
 export ASFLAGS := -mthumb
 export CFLAGS := -g -O2 -Wall -mthumb -std=c11 $(INCLUDE) -mcpu=arm7tdmi \
