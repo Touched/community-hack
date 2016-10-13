@@ -1,5 +1,13 @@
-	// Allow button presses on the fight menu to be intercepted
-        .org 0x0802EA2C
-        bx r0
-        .org 0x0802EA74
-        .word mega_move_menu_controls_hook|1
+        .org 0x0802E79C
+        .word mega_ui_menu|1
+
+        .org 0x0802F398
+        .word mega_ui_menu|1
+
+        .org 0x0802F3FC
+        .word mega_ui_menu|1
+
+        .org 0x08032C8C
+        .word mega_ui_menu|1
+
+        // TODO: Hook 080E7988

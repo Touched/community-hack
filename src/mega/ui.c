@@ -37,6 +37,8 @@ void mega_ui_menu_draw_activation_text(void)
     const pchar deactivate[] = _"Press A to\ndeactivate";
     const pchar activate[] = _"Press A to\nactivate";
     pchar* str = extension_state.mega_evolution->trigger[b_active_side] ? deactivate : activate;
+
+    /* Draw to the same rbox that the "Switch which?" text is drawn to */
     battle_draw_rbox(str, 11);
 }
 
@@ -59,9 +61,6 @@ void mega_ui_menu_draw(void)
     rboxes[HIJACKED_RBOX_ID].x = 6;
     rboxes[HIJACKED_RBOX_ID].y = 57;
     battle_draw_rbox(mega_evolve, HIJACKED_RBOX_ID);
-
-    /* Draw to the same rbox that the "Switch which?" text is drawn to */
-    mega_ui_menu_draw_activation_text();
 }
 
 void mega_ui_menu_reset(void)
@@ -70,49 +69,85 @@ void mega_ui_menu_reset(void)
     rboxes[HIJACKED_RBOX_ID].width = 3;
     rboxes[HIJACKED_RBOX_ID].x = 21;
     rboxes[HIJACKED_RBOX_ID].y = 55;
-    battle_menu_fight_draw();
 }
 
-/* Returns true if we should hijack the button press from the fight menu */
-bool mega_ui_menu_button_hijack(void)
-{
+const struct ScrollArrows arrows = {
+    /* Arrow configuration */
+    { { 2, 0x50, 0x75 },
+      { 3, 0x50, 0x9B } },
+
+    /* Arrow IDs */
+    { 0, 1 },
+
+    /* Tile and Palette tags */
+    0,
+    1,
+};
+
 #define KEY_PRESSED(x) (super.buttons.new_remapped & x)
+
+void mega_ui_menu(void);
+
+void mega_ui_menu_second_page(void)
+{
     struct MegaEvolutionUI* ui = &extension_state.mega_evolution->ui;
-    u8 index = move_index_per_chosen_side[b_active_side];
 
-    if (ui->page == 0) {
-        if (KEY_PRESSED(KEY_DOWN)) {
-            /* We can only page down if we're on the bottom row of moves */
-            if (index == 2 || index == 3) {
-                /* Page down */
-                ui->page = 1;
-                audio_play(SOUND_GENERIC_CLINK);
-                mega_ui_menu_draw();
-                return true;
-            }
-        }
-    } else {
-        if (KEY_PRESSED(KEY_UP)) {
-            /* Page up */
-            ui->page = 0;
-            audio_play(SOUND_GENERIC_CLINK);
-            mega_ui_menu_reset();
-        } else if (KEY_PRESSED(KEY_B)) {
-            /* Go back to the main battle menu if B is pressed */
-            ui->page = 0;
-            return false;
-        } else if (KEY_PRESSED(KEY_A)) {
-            /* Toggle mega evolution */
+    if (KEY_PRESSED(KEY_UP)) {
+        /* Page up */
+        ui->page = 0;
+        audio_play(SOUND_GENERIC_CLINK);
+        mega_ui_menu_reset();
+        battle_menu_fight_draw();
+        b_x[b_active_side] = mega_ui_menu;
+    } else if (KEY_PRESSED(KEY_B)) {
+        /* Go back to the main battle menu and cancel trigger if B is pressed */
+        ui->page = 0;
+        extension_state.mega_evolution->trigger[b_active_side] = 0;
+        tasks[ui->arrow_task].function = textbox_task_delete_scroll_arrows;
+        ui->loaded = false;
+        mega_ui_menu_reset();
 
-            /* TODO: Get better sound effect(s) */
-            audio_play(SOUND_DAMAGE_ICE_FLOOR);
-            extension_state.mega_evolution->trigger[b_active_side] ^= 1;
-            mega_ui_menu_draw_activation_text();
-        }
+        /* This handles the B button */
+        battle_fight_menu();
+    } else if (KEY_PRESSED(KEY_A)) {
+        /* Toggle mega evolution */
+        /* TODO: Get better sound effect(s) */
+        audio_play(SOUND_DAMAGE_ICE_FLOOR);
+        extension_state.mega_evolution->trigger[b_active_side] ^= 1;
+        mega_ui_menu_draw_activation_text();
+    }
+}
 
-        return true;
+void mega_ui_menu(void)
+{
+    struct MegaEvolutionUI* ui = &extension_state.mega_evolution->ui;
+
+    /* Load the scroll indicator arrows */
+    if (!ui->loaded) {
+        ui->arrow_task = textbox_spawn_scroll_arrows(&arrows, &ui->page);
+        ui->loaded = true;
     }
 
-    return false;
-#undef KEY_PRESSED
+    if (KEY_PRESSED(KEY_DOWN)) {
+        u8 index = move_index_per_chosen_side[b_active_side >> 1];
+
+        /* We can only page down if we're on the bottom row of moves */
+        if (index == 2 || index == 3) {
+            ui->page = 1;
+            audio_play(SOUND_GENERIC_CLINK);
+            mega_ui_menu_draw_activation_text();
+            mega_ui_menu_draw();
+            b_x[b_active_side] = mega_ui_menu_second_page;
+            return;
+        }
+    }
+
+    /* Use the original fight menu */
+    battle_fight_menu();
+
+    /* Delete the scroll indicators if we're exiting the menu */
+    if (b_x[b_active_side] != mega_ui_menu) {
+        tasks[ui->arrow_task].function = textbox_task_delete_scroll_arrows;
+        ui->loaded = false;
+    }
 }

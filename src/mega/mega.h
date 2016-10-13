@@ -41,7 +41,14 @@ struct MegaEvolutionUI {
     /**
      * The page on the fight menu.
      */
-    u8 page;
+    u16 page;
+
+    bool loaded;
+
+    /**
+     * Task ID for the scroll arrows.
+     */
+    u8 arrow_task;
 
     /**
      * Object ID for the indicators. These replace the level (Lv.)
