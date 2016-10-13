@@ -123,17 +123,23 @@ void mega_ui_menu_second_page(void)
     }
 }
 
+bool mega_ui_should_display(void)
+{
+    return true;
+}
+
 void mega_ui_menu(void)
 {
     struct MegaEvolutionUI* ui = &extension_state.mega_evolution->ui;
 
     /* Load the scroll indicator arrows */
-    if (!ui->loaded) {
+    if (mega_ui_should_display() && !ui->loaded) {
         ui->arrow_task = textbox_spawn_scroll_arrows(&arrows, &ui->page);
         ui->loaded = true;
     }
 
-    if (KEY_PRESSED(KEY_DOWN)) {
+    /* Only allow paging down if the scroll indicators were loaded */
+    if (ui->loaded && KEY_PRESSED(KEY_DOWN)) {
         u8 index = move_index_per_chosen_side[b_active_side >> 1];
 
         /* We can only page down if we're on the bottom row of moves */
