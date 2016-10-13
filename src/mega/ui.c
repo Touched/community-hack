@@ -54,7 +54,7 @@ void mega_ui_menu_draw(void)
 
     rboxid_update(HIJACKED_RBOX_ID, 3);
 
-    battle_menu_erase_cursor(move_index_per_chosen_side[b_active_side]);
+    battle_menu_erase_cursor(move_index_per_chosen_side[b_active_side >> 1]);
 
     /* Draw the text underneath the icon */
     /* rboxes[HIJACKED_RBOX_ID].width = 10; */
