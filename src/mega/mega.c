@@ -1,6 +1,7 @@
 #include "mega.h"
 #include "../battle.h"
 #include "../partner.h"
+#include "../multi.h"
 
 static void mega_register_for_bank(enum BattleBank bank, union MegaEvolutionEntry* entry)
 {

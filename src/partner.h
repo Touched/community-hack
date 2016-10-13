@@ -2,8 +2,8 @@
 #define PARTNER_H
 
 bool is_partner_battle(void);
-bool is_multi_battle(void);
 void partner_unload_pokemon(void);
+u16 partner_count_item(enum Item item);
 
 #define TAG_TEAM_PARTNER_MAX_NAME_LEN 8
 #define TAG_TEAM_PARTNER_MAX_PARTY_SIZE 3

@@ -46,6 +46,12 @@ struct TagTeamPartner* get_partner(void)
     return &tag_team_partners[index];
 }
 
+u16 partner_count_item(enum Item item)
+{
+    /* TODO: Allow partner's to have items */
+    return 0;
+}
+
 void partner_unload_pokemon(void)
 {
     memcpy(&party_player[3], extension_state.party_backup, sizeof(struct Pokemon) * 3);
