@@ -57,18 +57,18 @@ void mega_ui_menu_draw(void)
     battle_menu_erase_cursor(move_index_per_chosen_side[b_active_side]);
 
     /* Draw the text underneath the icon */
-    rboxes[HIJACKED_RBOX_ID].width = 10;
-    rboxes[HIJACKED_RBOX_ID].x = 6;
-    rboxes[HIJACKED_RBOX_ID].y = 57;
-    battle_draw_rbox(mega_evolve, HIJACKED_RBOX_ID);
+    /* rboxes[HIJACKED_RBOX_ID].width = 10; */
+    /* rboxes[HIJACKED_RBOX_ID].x = 6; */
+    /* rboxes[HIJACKED_RBOX_ID].y = 57; */
+    /* battle_draw_rbox(mega_evolve, HIJACKED_RBOX_ID); */
 }
 
 void mega_ui_menu_reset(void)
 {
     /* Move the PP rbox back to it's original location */
-    rboxes[HIJACKED_RBOX_ID].width = 3;
-    rboxes[HIJACKED_RBOX_ID].x = 21;
-    rboxes[HIJACKED_RBOX_ID].y = 55;
+    /* rboxes[HIJACKED_RBOX_ID].width = 3; */
+    /* rboxes[HIJACKED_RBOX_ID].x = 21; */
+    /* rboxes[HIJACKED_RBOX_ID].y = 55; */
 }
 
 const struct ScrollArrows arrows = {
