@@ -39,9 +39,9 @@ struct MegaEvolution {
 
 struct MegaEvolutionUI {
     /**
-     * Object ID for the trigger button.
+     * The page on the fight menu.
      */
-    u8 trigger;
+    u8 page;
 
     /**
      * Object ID for the indicators. These replace the level (Lv.)
