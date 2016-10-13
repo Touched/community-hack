@@ -51,8 +51,8 @@ struct MegaEvolutionUI {
     u8 arrow_task;
 
     /**
-     * Object ID for the indicators. These replace the level (Lv.)
-     * symbol.
+     * Object IDs for the indicators that show if a Pokemon is a
+     * mega/primal or not. They show up on the healthbar.
      */
     u8 indicators[BATTLE_SIDES];
 };
