@@ -54,7 +54,7 @@ void mega_ui_menu_draw(void)
 
     rboxid_update(HIJACKED_RBOX_ID, 3);
 
-    battle_menu_erase_cursor(move_index_chosen_per_side[b_active_side >> 1]);
+    battle_menu_erase_cursor(move_index_chosen_per_side[b_active_side]);
 
     /* Draw the text underneath the icon */
     /* rboxes[HIJACKED_RBOX_ID].width = 10; */
@@ -140,7 +140,7 @@ void mega_ui_menu(void)
 
     /* Only allow paging down if the scroll indicators were loaded */
     if (ui->loaded && KEY_PRESSED(KEY_DOWN)) {
-        u8 index = move_index_chosen_per_side[b_active_side >> 1];
+        u8 index = move_index_chosen_per_side[b_active_side];
 
         /* We can only page down if we're on the bottom row of moves */
         if (index == 2 || index == 3) {
