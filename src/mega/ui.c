@@ -125,7 +125,8 @@ void mega_ui_menu_second_page(void)
 
 bool mega_ui_should_display(void)
 {
-    return true;
+    union MegaEvolutionEntry* entry = mega_find_for_pokemon(&battle_data[b_active_side]);
+    return entry && entry->mega.variant != MEGA_TYPE_PRIMAL;
 }
 
 void mega_ui_menu(void)
