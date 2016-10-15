@@ -19,8 +19,6 @@ struct SpriteTiles indicator_tiles = {
 
 struct OamData indicator_oam = {};
 
-void mega_ui_indicator_callback(struct Object* object);
-
 const struct Template indicator_template = {
     MEGA_INDICATOR_GRAPHICS_TAG,
     MEGA_INDICATOR_PALETTE_TAG,
@@ -28,24 +26,18 @@ const struct Template indicator_template = {
     SPRITE_NO_ANIMATION,
     NULL,
     SPRITE_NO_ROTSCALE,
-    mega_ui_indicator_callback,
-};
-
-struct IndicatorCallbackPrivate {
-    u8 side;
-    u8 frames;
+    oac_nullsub,
 };
 
 void mega_ui_load_indicator(u8 side)
 {
-    u8 id = template_instanciate_forward_search(&indicator_template, 10, 10, 0);
+    u8 id = template_instanciate_forward_search(&indicator_template, 0, 0, 0);
 
     struct MegaEvolutionUI* ui = &extension_state.mega_evolution->ui;
     ui->indicators[side] = id;
 
-    struct IndicatorCallbackPrivate* state = (struct IndicatorCallbackPrivate*) objects[id].private;
-    state->side = side;
-    state->frames = 0;
+    /* Hide the indicator */
+    objects[id].bitfield2 |= 4;
 }
 
 void mega_ui_load_indicators(u8 state)
@@ -63,23 +55,36 @@ void mega_ui_load_indicators(u8 state)
     }
 }
 
-void mega_ui_indicator_callback(struct Object* object)
+void mega_ui_indicator_blink_callback(struct Object* object)
 {
-    struct MegaEvolutionState* mega = extension_state.mega_evolution;
-    struct IndicatorCallbackPrivate* state = (struct IndicatorCallbackPrivate*) object->private;
-
-    if (mega->trigger[state->side]) {
-        /* Blink */
-        if (state->frames-- <= 0) {
-            object->bitfield2 ^= 4;
-            state->frames = FPS / 2;
-        }
-    } else {
-        state->frames = 0;
-
-        /* Hidden */
-        object->bitfield2 |= 4;
-
-        /* object->bitfield2 &= ~4; */
+    if (object->private[0]++ >= FPS / 2) {
+        /* Toggle visibility */
+        object->bitfield2 ^= 4;
+        object->private[0] = 0;
     }
+}
+
+void mega_ui_indicator_blinking(enum BattleBank bank, bool enable)
+{
+    struct MegaEvolutionUI* ui = &extension_state.mega_evolution->ui;
+    u8 id = ui->indicators[bank];
+    struct Object* object = &objects[id];
+
+    if (enable) {
+        object->callback = mega_ui_indicator_blink_callback;
+        object->private[0] = 0;
+        object->bitfield2 &= ~4; /* show */
+    } else {
+        object->callback = oac_nullsub;
+        object->bitfield2 |= 4; /* hide */
+    }
+}
+
+void mega_ui_indicator_type(enum BattleBank bank, u8 type)
+{
+    struct MegaEvolutionUI* ui = &extension_state.mega_evolution->ui;
+    u8 id = ui->indicators[bank];
+
+    /* Change the tile the indicator uses relative to the first tile */
+    objects[id].final_oam.tile_num = objects[id].anim_data_offset + type;
 }
