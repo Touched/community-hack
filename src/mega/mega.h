@@ -55,6 +55,11 @@ struct MegaEvolutionUI {
      * mega/primal or not. They show up on the healthbar.
      */
     u8 indicators[BATTLE_SIDES];
+
+    /**
+     * Keep track of whether the player has requested Mega Evolution.
+     */
+    bool activated[BATTLE_SIDES];
 };
 
 struct MegaEvolutionState {

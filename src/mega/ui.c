@@ -36,7 +36,7 @@ void mega_ui_menu_draw_activation_text(void)
 {
     const pchar deactivate[] = _"Press A to\ndeactivate";
     const pchar activate[] = _"Press A to\nactivate";
-    pchar* str = extension_state.mega_evolution->trigger[b_active_side] ? deactivate : activate;
+    pchar* str = extension_state.mega_evolution->ui.activated[b_active_side] ? deactivate : activate;
 
     /* Draw to the same rbox that the "Switch which?" text is drawn to */
     battle_draw_rbox(str, 11);
@@ -107,7 +107,7 @@ void mega_ui_menu_second_page(void)
     } else if (KEY_PRESSED(KEY_B)) {
         /* Go back to the main battle menu and cancel trigger if B is pressed */
         ui->page = 0;
-        extension_state.mega_evolution->trigger[b_active_side] = 0;
+        ui->activated[b_active_side] = 0;
         tasks[ui->arrow_task].function = textbox_task_delete_scroll_arrows;
         ui->loaded = false;
         mega_ui_menu_reset();
@@ -118,7 +118,7 @@ void mega_ui_menu_second_page(void)
         /* Toggle mega evolution, then allow the player to select a move */
         /* TODO: Get better sound effect(s) */
         audio_play(SOUND_DAMAGE_ICE_FLOOR);
-        extension_state.mega_evolution->trigger[b_active_side] ^= 1;
+        ui->activated[b_active_side] ^= 1;
         mega_ui_menu_go_back();
     }
 }
