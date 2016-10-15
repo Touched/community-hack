@@ -24,13 +24,22 @@ void mega_evolution_handler(void)
 
     u8 side = b_attackers_in_order[bs_mode_pbs_index];
     if (mega->trigger[side]) {
+        mega->trigger[side] = false;
+
+        mega->entry = mega_find_for_pokemon(&battle_data[side]);
+
+        /* TODO: Ignore primals */
+        if (!mega->entry) {
+            return;
+        }
+
         /*
          * Setup transformation for Mega Evolution and wait for it to
          * complete.
          */
-        mega->bc_backup = b_c;
+        mega->bc_continue = b_c;
+        mega->bank = side;
         b_c = mega_transformation_cb;
-        mega->trigger[side] = 0;
 
         /* Display the first message */
         b_active_side = side;
@@ -49,22 +58,30 @@ void mega_evolution_handler(void)
 
 void mega_transformation_wait_animation_cb(void)
 {
+    struct MegaEvolutionState* mega = extension_state.mega_evolution;
+
     /* Wait for animation */
     if (!b_buffers_awaiting_execution_bitfield) {
         /* Final message */
-        b_active_side = b_attackers_in_order[bs_mode_pbs_index];
+        b_active_side = mega->bank;
         dp01_build_cmdbuf_x10(BUFFER_A, LAST_MESSAGE + 3);
         dp01_battle_side_mark_buffer_for_execution(b_active_side);
-        b_c = extension_state.mega_evolution->bc_backup;
+        b_c = extension_state.mega_evolution->bc_continue;
     }
 }
 
 void mega_transformation_cb(void)
 {
+    struct MegaEvolutionState* mega = extension_state.mega_evolution;
+
     /* Wait for the message */
     if (!b_buffers_awaiting_execution_bitfield) {
+        b_active_side = mega->bank;
+
+        /* Change the data */
+        mega_evolve_bank(mega->bank, mega->entry);
+
         /* Run an animation script */
-        b_active_side = b_attackers_in_order[bs_mode_pbs_index];
         dp01_build_cmdbuf_x34(BUFFER_A, 2, 55);
         dp01_battle_side_mark_buffer_for_execution(b_active_side);
         b_c = mega_transformation_wait_animation_cb;

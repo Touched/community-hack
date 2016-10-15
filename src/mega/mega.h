@@ -68,7 +68,9 @@ struct MegaEvolutionState {
      */
     bool trigger[BATTLE_SIDES];
 
-    void (*bc_backup)(void);
+    void (*bc_continue)(void);
+    enum BattleBank bank;
+    union MegaEvolutionEntry* entry;
 
     /**
      * Mega evolution state for the entire party (both sides).
