@@ -29,8 +29,6 @@ void mega_evolve_bank(enum BattleBank bank, union MegaEvolutionEntry* entry)
 {
     mega_register_for_bank(bank, entry);
 
-    /* TODO: Setup and start the cutscene/animation */
-
     u8 party_index = b_pokemon_team_id_by_side[bank];
     struct Pokemon* party = battle_side_get_owner(bank) == SIDE_OPPONENT
         ? party_opponent : party_player;

@@ -23,3 +23,9 @@
         bx r7
         .org 0x080D75EC
         .word battle_string_switchin_hook|1
+
+        // Additional battle strings
+        .org 0x080D77F0
+        .word repointed_battle_messages
+        .org 0x080D77C8
+        .word 0x181 + 3
