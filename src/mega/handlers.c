@@ -26,7 +26,8 @@ void mega_evolution_handler(void)
     if (mega->trigger[side]) {
         mega->trigger[side] = false;
 
-        mega->entry = mega_find_for_pokemon(&battle_data[side]);
+        struct BattlePokemon* battler = &battle_data[side];
+        mega->entry = mega_find_for_pokemon(battler);
 
         /* TODO: Ignore primals */
         if (!mega->entry) {
@@ -45,6 +46,8 @@ void mega_evolution_handler(void)
         b_active_side = side;
         pstrcpy(fcode_buffer2, mega_get_trainer_name());
         pstrcpy(fcode_buffer3, mega_get_keystone_name());
+        b_message_held_item = battler->held_item;
+
         dp01_build_cmdbuf_x10(BUFFER_A, LAST_MESSAGE + 1);
         dp01_battle_side_mark_buffer_for_execution(b_active_side);
     } else {
@@ -53,6 +56,23 @@ void mega_evolution_handler(void)
          * transformation
          */
         bs0_start_attack();
+    }
+}
+
+void mega_transformation_finish(void)
+{
+    /* FIXME: Wait for intimidate */
+    if (!b_buffers_awaiting_execution_bitfield) {
+        b_c = extension_state.mega_evolution->bc_continue;
+    }
+}
+
+void mega_transformation_run_abilities(void)
+{
+    struct MegaEvolutionState* mega = extension_state.mega_evolution;
+
+    if (!ability_something(0, mega->bank, 0, 0, 0)) {
+        b_c = mega_transformation_finish;
     }
 }
 
@@ -67,10 +87,8 @@ void mega_transformation_wait_animation_cb(void)
         dp01_build_cmdbuf_x10(BUFFER_A, LAST_MESSAGE + 3);
         dp01_battle_side_mark_buffer_for_execution(b_active_side);
 
-        /* Continue after the transformation */
-        b_c = extension_state.mega_evolution->bc_continue;
-
-        /* TODO: Switch-in abilities */
+        /* Switch-in abilities */
+        b_c = mega_transformation_run_abilities;
     }
 }
 
