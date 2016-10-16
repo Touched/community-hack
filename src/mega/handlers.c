@@ -14,8 +14,8 @@ const pchar* mega_get_trainer_name(void)
 
 const pchar* mega_get_keystone_name(void)
 {
-    /* TODO: Fetch keystone for bank */
-    return &items[ITEM_GOLDTEETH].name;
+    enum Item item = mega_bank_find_keystone(b_active_side);
+    return &items[item].name;
 }
 
 void mega_evolution_handler(void)
