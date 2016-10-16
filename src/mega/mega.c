@@ -34,10 +34,27 @@ void mega_evolve_bank(enum BattleBank bank, union MegaEvolutionEntry* entry)
         ? party_opponent : party_player;
     struct Pokemon* pokemon = &party[party_index];
 
-    pokemon_setattr((struct PokemonBase*) pokemon, REQUEST_SPECIES2, &entry->mega.target);
+    enum PokemonSpecies species = entry->mega.target;
+
+    pokemon_setattr((struct PokemonBase*) pokemon, REQUEST_SPECIES, &species);
     recalculate_stats(pokemon);
 
-    /* TODO: Update the rest of the battle data */
+    /* Update the battle data */
+    struct BattlePokemon *battler = &battle_data[bank];
+    battler->species = species;
+    battler->atk = pokemon_getattr((struct PokemonBase*) pokemon, REQUEST_ATK, NULL);
+    battler->def = pokemon_getattr((struct PokemonBase*) pokemon, REQUEST_DEF, NULL);
+    battler->spd = pokemon_getattr((struct PokemonBase*) pokemon, REQUEST_SPD, NULL);
+    battler->spatk = pokemon_getattr((struct PokemonBase*) pokemon, REQUEST_SPATK, NULL);
+    battler->spdef = pokemon_getattr((struct PokemonBase*) pokemon, REQUEST_SPDEF, NULL);
+
+    /* Mega Evolutions only have one ability */
+    struct PokemonBaseStat* base = &pokemon_base_stats[species];
+    battler->ability_id = base->ability[0];
+    battler->type1 = base->type[0];
+    battler->type2 = base->type[1];
+
+    /* TODO: Redraw the healthbar */
 }
 
 union MegaEvolutionEntry* mega_find_for_pokemon(struct BattlePokemon* pokemon)

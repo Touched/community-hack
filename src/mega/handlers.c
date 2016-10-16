@@ -66,7 +66,11 @@ void mega_transformation_wait_animation_cb(void)
         b_active_side = mega->bank;
         dp01_build_cmdbuf_x10(BUFFER_A, LAST_MESSAGE + 3);
         dp01_battle_side_mark_buffer_for_execution(b_active_side);
+
+        /* Continue after the transformation */
         b_c = extension_state.mega_evolution->bc_continue;
+
+        /* TODO: Switch-in abilities */
     }
 }
 
