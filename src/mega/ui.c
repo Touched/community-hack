@@ -126,7 +126,15 @@ void mega_ui_menu_second_page(void)
 bool mega_ui_should_display(void)
 {
     union MegaEvolutionEntry* entry = mega_find_for_pokemon(&battle_data[b_active_side]);
-    return entry && entry->mega.variant != MEGA_TYPE_PRIMAL;
+    enum Item item = mega_bank_find_keystone(b_active_side);
+
+    /*
+     * The UI should only display if the bank meets the following criteria:
+     * - The Pokemon is capable of Mega Evolution (see mega_find_for_pokemon)
+     * - The Pokemon is holding the required Mega Stone (see mega_find_for_pokemon)
+     * - The Trainer has a keystone
+     */
+    return entry && entry->mega.variant != MEGA_TYPE_PRIMAL && item != ITEM_NONE;
 }
 
 void mega_ui_menu(void)

@@ -135,6 +135,12 @@ union MegaEvolutionEntry* mega_find_for_pokemon(struct BattlePokemon* pokemon);
  */
 u8 mega_count_megas_for_side(enum BattleBank bank);
 
+/**
+ * Search the trainer's inventory for a keystone and return its index
+ * if found.
+ */
+enum Item mega_bank_find_keystone(enum BattleBank bank);
+
 /* Custom evolution types */
 #define EVOLUTION_MEGA 0xFF
 
