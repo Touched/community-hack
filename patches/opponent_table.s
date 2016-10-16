@@ -11,9 +11,14 @@
         bx r1
         .pool
 
-        // TODO: Figure out this code
-        // .org 0x08038DFC
-        // nop
+        // Make sure each trainer only sends out one Pokemon
+        // so that the animation isn't duplicated (in normal doubles,
+	// the trainer throws both balls, in multi each trainer only
+	// throws one)
+        .org 0x08038DF4
+        ldr r1, =opponent_cmd2F_send_out_hook|1
+        bx r1
+        .pool
 
         .org 0x08037F00
         ldr r1, =opponent_cmd08_sprite_hook|1

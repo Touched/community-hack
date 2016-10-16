@@ -60,3 +60,15 @@ opponent_cmd08_sprite_hook:
         bx r1
 
 @@@ --------------------------------------------------------------------------
+
+        .thumb
+        .align 2
+
+        .global opponent_cmd2F_send_out_hook
+opponent_cmd2F_send_out_hook:
+        bl is_link_or_multi_battle
+        cmp r0, #0
+        ldr r1, =0x08038DFC|1
+        bx r1
+
+@@@ --------------------------------------------------------------------------
