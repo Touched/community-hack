@@ -18,7 +18,12 @@ void mega_cmd_attack(u8 buffer, u8 move_slot, u8 target, bool mega_evolve)
 
 void mega_cmd_player_select_move(void)
 {
-    mega_cmd_attack(1, selected_battle_side, move_index_chosen_per_side[b_active_side], true);
+    struct MegaEvolutionState* mega = extension_state.mega_evolution;
+
+    mega_cmd_attack(1,
+                    selected_battle_side,
+                    move_index_chosen_per_side[b_active_side],
+                    mega->ui.activated[b_active_side]);
 }
 
 void mega_cmd_sync_trigger_from_buffer(void)
