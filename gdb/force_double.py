@@ -13,4 +13,4 @@ def hook():
     pass
 
 
-bp = StubFunction('*0x0800D366', hook)
+# bp = StubFunction('*0x0800D366', hook)
