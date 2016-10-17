@@ -1,4 +1,6 @@
-	.include "pokeagb/macros/battle_script.s"
+	@@ We need to use a precise include path to appease the pokeruby preprocessor
+        @@ FIXME: Exclude this file from preprocessing to fix this
+	.include "deps/pokeagb/build/include/pokeagb/macros/battle_script.s"
 
 	.global battle_script_victory
 battle_script_victory:

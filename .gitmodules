@@ -1,0 +1,6 @@
+[submodule "deps/pokeagb"]
+	path = deps/pokeagb
+	url = https://github.com/Touched/PokeAGB
+[submodule "deps/pokeruby"]
+	path = deps/pokeruby
+	url = https://github.com/pret/pokeruby

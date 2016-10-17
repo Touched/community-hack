@@ -12,13 +12,13 @@ export BINARY := $(BUILD)/linked.o
 export ARMIPS := armips
 export ROM_CODE := BPRE
 export LD := $(PREFIX)ld
-export PREPROC := ../../pokeruby/tools/preproc/preproc
+export PREPROC := deps/pokeruby/tools/preproc/preproc
 export CHARMAP := charmap.txt
-export INCLUDE := -I ../headers/build/include -I $(SRC)
+export INCLUDE := -I deps/pokeagb/build/include -I $(SRC)
 export ASFLAGS := -mthumb
 export CFLAGS := -g -O2 -Wall -mthumb -std=c11 $(INCLUDE) -mcpu=arm7tdmi \
 	-march=armv4t -mno-thumb-interwork -fno-inline -fno-builtin -mlong-calls -DROM_$(ROM_CODE)
-export LDFLAGS := -T layout.ld -T ../headers/build/linker/$(ROM_CODE).ld -r
+export LDFLAGS := -T layout.ld -T deps/pokeagb/build/linker/$(ROM_CODE).ld -r
 
 #-------------------------------------------------------------------------------
 
