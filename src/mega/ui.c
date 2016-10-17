@@ -32,6 +32,25 @@
 /* Use PP rbox */
 #define HIJACKED_RBOX_ID 7
 
+bool mega_ui_is_disabled(void)
+{
+    if (battle_side_get_owner(b_active_side) == SIDE_OPPONENT) {
+        return false;
+    }
+
+    bool should_disable = false;
+    struct MegaEvolutionUI* ui = &extension_state.mega_evolution->ui;
+
+    if ((battle_type_flags & BATTLE_FLAG_DOUBLE) && !is_partner_battle()) {
+        /* In a double battle, if the other player-owned bank has
+         * requested Mega Evolution, disable the UI, */
+        should_disable = ui->activated[b_active_side ^ 2];
+    }
+
+    /* If the side already has a Mega Evolution */
+    return should_disable || mega_count_megas_for_side(b_active_side) > 0;
+}
+
 void mega_ui_menu_draw_activation_text(void)
 {
     const pchar deactivate[] = _"Press A to\ndeactivate";
@@ -115,17 +134,21 @@ void mega_ui_menu_second_page(void)
         /* This handles the B button */
         battle_fight_menu();
     } else if (KEY_PRESSED(KEY_A)) {
-        /* Toggle mega evolution, then allow the player to select a move */
-        audio_play(SOUND_GENERIC_CLINK);
+        if (mega_ui_is_disabled()) {
+            audio_play(22);
+        } else {
+            /* Toggle mega evolution, then allow the player to select a move */
+            audio_play(SOUND_GENERIC_CLINK);
 
-        /* Play an additional sound effect for enabling Mega Evolution */
-        if (!ui->activated[b_active_side]) {
-            /* TODO: Get better sound effect(s) */
-            audio_play(SOUND_DAMAGE_ICE_FLOOR);
+            /* Play an additional sound effect for enabling Mega Evolution */
+            if (!ui->activated[b_active_side]) {
+                /* TODO: Get better sound effect(s) */
+                audio_play(122);
+            }
+
+            ui->activated[b_active_side] ^= 1;
+            mega_ui_menu_go_back();
         }
-
-        ui->activated[b_active_side] ^= 1;
-        mega_ui_menu_go_back();
     }
 }
 

@@ -115,6 +115,7 @@ u8 mega_count_megas_for_side(enum BattleBank bank)
     }
 
     /* Count the megas */
+    /* TODO: Exclude primals */
     u8 count = 0;;
     for (u8 i = lower; i < upper; i++) {
         if (extension_state.mega_evolution->party[side][i].variant) {
