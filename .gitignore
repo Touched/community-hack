@@ -1,3 +1,4 @@
 build
 *.i
 src/generated
+roms
