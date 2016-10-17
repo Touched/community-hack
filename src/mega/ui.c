@@ -116,8 +116,14 @@ void mega_ui_menu_second_page(void)
         battle_fight_menu();
     } else if (KEY_PRESSED(KEY_A)) {
         /* Toggle mega evolution, then allow the player to select a move */
-        /* TODO: Get better sound effect(s) */
-        audio_play(SOUND_DAMAGE_ICE_FLOOR);
+        audio_play(SOUND_GENERIC_CLINK);
+
+        /* Play an additional sound effect for enabling Mega Evolution */
+        if (!ui->activated[b_active_side]) {
+            /* TODO: Get better sound effect(s) */
+            audio_play(SOUND_DAMAGE_ICE_FLOOR);
+        }
+
         ui->activated[b_active_side] ^= 1;
         mega_ui_menu_go_back();
     }
