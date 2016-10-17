@@ -22,11 +22,29 @@ void mega_evolution_handler(void)
 {
     struct MegaEvolutionState* mega = extension_state.mega_evolution;
 
-    u8 side = b_attackers_in_order[bs_mode_pbs_index];
-    if (mega->trigger[side]) {
-        mega->trigger[side] = false;
+    /* If any of the Pokemon need to Mega Evolve */
+    if (mega->trigger) {
+        mega->bc_continue = b_c;
 
-        struct BattlePokemon* battler = &battle_data[side];
+        /* Find the next bank that should Mega Evolve - it's run in
+         * turn order */
+        enum BattleBank bank;
+        do {
+            bank = b_attackers_in_order[mega->bank_index++];
+
+            /* This side requested Mega Evolution */
+            if (mega->trigger & (1 << bank)) {
+                break;
+            }
+        } while (mega->bank_index < b_num_active_sides);
+
+        /* All Mega Evolutions have been run  */
+        if (mega->bank_index >= b_num_active_sides) {
+            mega->trigger = 0;
+            return;
+        }
+
+        struct BattlePokemon* battler = &battle_data[bank];
         mega->entry = mega_find_for_pokemon(battler);
 
         /* TODO: Ignore primals */
@@ -34,16 +52,18 @@ void mega_evolution_handler(void)
             return;
         }
 
+        /* Clear the Mega trigger bit */
+        mega->trigger &= ~(1 << bank);
+
         /*
          * Setup transformation for Mega Evolution and wait for it to
          * complete.
          */
-        mega->bc_continue = b_c;
-        mega->bank = side;
+        mega->bank = bank;
         b_c = mega_transformation_cb;
 
         /* Display the first message */
-        b_active_side = side;
+        b_active_side = bank;
         pstrcpy(fcode_buffer2, mega_get_trainer_name());
         pstrcpy(fcode_buffer3, mega_get_keystone_name());
         b_message_held_item = battler->held_item;
@@ -56,11 +76,14 @@ void mega_evolution_handler(void)
          * transformation
          */
         bs0_start_attack();
+        mega->bank_index = 0;
     }
 }
 
 void mega_transformation_finish(void)
 {
+    struct MegaEvolutionState* mega = extension_state.mega_evolution;
+
     /* FIXME: Wait for intimidate */
     if (!b_buffers_awaiting_execution_bitfield) {
         b_c = extension_state.mega_evolution->bc_continue;

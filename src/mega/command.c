@@ -29,5 +29,6 @@ void mega_cmd_sync_trigger_from_buffer(void)
      * consoles in link battles so we use this to synchronise the mega
      * triggers.
      */
-    extension_state.mega_evolution->trigger[b_active_side] = b_buffer_B[b_active_side][4];
+    struct MegaEvolutionState* mega = extension_state.mega_evolution;
+    mega->trigger |= (b_buffer_B[b_active_side][4] ? 1 : 0) << b_active_side;
 }

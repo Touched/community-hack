@@ -64,12 +64,29 @@ struct MegaEvolutionUI {
 
 struct MegaEvolutionState {
     /**
-     * Set if the bank has requested a mega evolution.
+     * Set if the bank has requested a mega evolution. This is a
+     * bitfield with the first 4 bits corresponding to a bank.
      */
-    bool trigger[BATTLE_SIDES];
+    u8 trigger;
 
+    /**
+     * b_c is set to this after the Mega transformation is completed.
+     */
     void (*bc_continue)(void);
+
+    /**
+     * Keeps track of the current bank being transformed.
+     */
     enum BattleBank bank;
+
+    /**
+     * The index in b_attackers_in_order.
+     */
+    u8 bank_index;
+
+    /**
+     * The entry for the current transformation.
+     */
     union MegaEvolutionEntry* entry;
 
     /**

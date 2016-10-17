@@ -17,10 +17,10 @@ struct TagTeamPartner tag_team_partners[] = {
         {
             {
                 .nickname = _"",
-                .species = SPECIES_DIGLETT,
-                .item = ITEM_ORANBERRY,
-                .moves = { MOVE_MUD_SHOT, MOVE_SURF },
-                .level = 1
+                .species = SPECIES_CHARMELEON,
+                .item = ITEM_FIRESTONE,
+                .moves = { MOVE_FLAMETHROWER, MOVE_SURF },
+                .level = 40
             },
             {
                 .nickname = _"",
