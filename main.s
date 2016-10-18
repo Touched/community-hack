@@ -12,6 +12,7 @@
         .include "patches/tag_team.s"
         .include "patches/battle.s"
         .include "patches/mega.s"
+		.include "patches/hpbox.s"
 
         // Only do this if you haven't repointed your battle script
 	// command table
