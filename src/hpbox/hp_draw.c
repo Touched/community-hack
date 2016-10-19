@@ -1,24 +1,5 @@
-
 #include <pokeagb/pokeagb.h>
 #include "hpbar_gfx.h"
-
-#define BITS_TOXIC 0x80
-#define BITS_POISON 0x8
-#define BITS_PARALYZE 0x40
-#define BITS_SLEEP 0x7
-#define BITS_FREEZE 0x20
-#define BITS_BURN 0x10
-
-#define TILE_SIZE 32
-#define NAME_TILE_PLAYER 10
-#define NAME_TILE_OPPONENT 9
-#define LEVEL_TILE_SINGLE_PLAYER 74
-#define LEVEL_TILE_OPPONENT 40
-#define LEVEL_TILE_DOUBLES_PLAYER 42
-#define HEALTH_NUMS_TILE_PLAYER 30
-#define AILMENT_TILE_SINLE_PLAYER 26
-#define AILMENT_TILE_DOUBLE_PLAYER 17
-#define AILMENT_TILE_OPPONENT 16
 
 
 void hp_string_to_oam (u8 obj_id, u8 tile_num) {
@@ -278,17 +259,17 @@ void outlined_font_draw(u8 obj_id, u8 tile_num, u16 size) {
 void draw_hp_nums(struct Pokemon* pokemon, u8 obj_id, u8 t_id) {
 	//u8 tile_id = t_id;
 	u8 tile_id = 30;
-	pchar empty_string[9] = _"000/000";//{0xAB, 0xAB, 0xAB, 0xBA, 0xAB, 0xAB, 0xAB, 0xFF};
+	pchar empty_string[9] = _"!!!/!!!";//{0xAB, 0xAB, 0xAB, 0xBA, 0xAB, 0xAB, 0xAB, 0xFF};
 	pstrcpy(string_buffer, empty_string);
 	hp_string_to_oam(obj_id, tile_id - 1);
 	
 	u16 max_hp = get_attr(pokemon, REQUEST_TOTL_HP);
 	u16 c_hp = get_attr(pokemon, REQUEST_CURRENT_HP);
 	fmt_int_10(string_buffer, c_hp, 0, 3);
-	u8 str_len = string_length(string_buffer);
-	*(string_buffer + str_len - 1) = 0xBA;
-	fmt_int_10(string_buffer + str_len, max_hp, 0, 3);
-	hp_string_to_oam(obj_id, tile_id + (3 - str_len));
+	u16 str_len = pstrlen(string_buffer);
+	*(string_buffer + str_len) = 0xBA;
+	fmt_int_10(string_buffer + str_len + 1, max_hp, 0, 3);
+	hp_string_to_oam(obj_id, tile_id + (2 - str_len));
 }
 
 
@@ -306,8 +287,8 @@ void hp_nums_update(u8 obj_id, u16 new_hp, u8 t_id) {
 		pchar empty_value[4] = _"000";//{0xAB, 0xAB, 0xAB, 0xFF};
 		pstrcpy(string_buffer, empty_value);
 		fmt_int_10(value, new_hp, 0, 3);
-		u8 str_len = string_length(value);
-		pstrcpy(((string_buffer + 3) - str_len), value);
+		u16 str_len = pstrlen(value);
+		pstrcpy(((string_buffer + 2) - str_len), value);
 		hp_string_to_oam(obj_id, 30);
 	}
 }
@@ -322,17 +303,17 @@ void draw_name_gender(struct Pokemon* pokemon, u8 obj_id, u8 tile_id) {
 	string_buffer[1] = 0xFF;
 	outlined_font_draw(obj_id, tile_id -1, TILE_SIZE);
 	
-	memcpy(string_buffer, pokemon->name, 10);
+	memcpy(string_buffer, pokemon->base.nick, 10);
 	memset(string_buffer + 10, 0xFF, 1);
-	u8 str_len = string_length(string_buffer);
+	u16 str_len = pstrlen(string_buffer);
 	
 	if (!gender) {
-		pstrcpy(string_buffer + str_len - 1, (pchar*)male + !(str_len % 2));
+		pstrcpy(string_buffer + str_len, (pchar*)male + (str_len % 2));
 	}
 	if (gender == 0xFE) {
-		pstrcpy(string_buffer + str_len - 1, (pchar*)female + !(str_len % 2));	
+		pstrcpy(string_buffer + str_len, (pchar*)female + (str_len % 2));	
 	}
-	if (str_len > 10) {
+	if (str_len > 9) {
 		// long names need to be force shifted 1 tile left and takes an extra tile of space 
 		outlined_font_draw(obj_id, tile_id - 1, 7 * TILE_SIZE);
 	} else {
