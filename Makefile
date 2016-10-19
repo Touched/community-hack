@@ -31,7 +31,7 @@ S_SRC=$(call rwildcard,$(SRC),*.s)
 # Binaries
 C_OBJ=$(C_SRC:%=%.o)
 S_OBJ=$(S_SRC:%=%.o)
-OBJECTS=$(C_OBJ) $(S_OBJ)
+OBJECTS=$(addprefix $(BUILD)/,$(C_OBJ) $(S_OBJ))
 
 # Generated
 IMAGES=$(call rwildcard,images,*.png)
@@ -54,16 +54,16 @@ generated: images
 images: $(IMAGES:images/%.png=$(SRC)/generated/images/%.c)
 
 $(BINARY): $(OBJECTS)
-	$(LD) $(LDFLAGS) -o $@ $(addprefix $(BUILD)/,$^)
+	$(LD) $(LDFLAGS) -o $@ $^
 
-%.c.o: %.c $(call rwildcard,$(SRC),*.h)
-	@mkdir -p $(BUILD)/$(@D)
+$(BUILD)/%.c.o: %.c $(call rwildcard,$(SRC),*.h)
+	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) -E -c $< -o $*.i
-	$(PREPROC) $*.i $(CHARMAP) | $(CC) $(CFLAGS) -x c -o $(BUILD)/$@ -c -
+	$(PREPROC) $*.i $(CHARMAP) | $(CC) $(CFLAGS) -x c -o $@ -c -
 
-%.s.o: %.s
-	@mkdir -p $(BUILD)/$(@D)
-	$(PREPROC) $< $(CHARMAP) | $(AS) $(ASFLAGS) -o $(BUILD)/$@
+$(BUILD)/%.s.o: %.s
+	@mkdir -p $(@D)
+	$(PREPROC) $< $(CHARMAP) | $(AS) $(ASFLAGS) -o $@
 
 $(SRC)/generated/images/%.c: images/%.png images/%.grit
 	@mkdir -p $(@D)
