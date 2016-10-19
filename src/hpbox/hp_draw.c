@@ -88,7 +88,7 @@ void hp_string_to_oam (u8 obj_id, u8 tile_num) {
 void outlined_font_draw(u8 obj_id, u8 tile_num, u16 size) {
     u8 tile = objects[obj_id].final_oam.tile_num + tile_num;
     u8* towrite = (u8*)((tile * TILE_SIZE) + (SPRITE_RAM));
-    u8 dst = (u8*)0x203D000;
+    u8 *dst = (u8*)0x203D000;
     pchar *string_buff_ptr = string_buffer;
     pchar element = *string_buff_ptr;
     u8 counter = 1;
