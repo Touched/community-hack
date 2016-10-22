@@ -310,19 +310,28 @@ void draw_name(struct Pokemon* pokemon, u8 obj_id, u8 tile_id) {
     outlined_font_draw(obj_id, tile_id, 6 * TILE_SIZE);
 }
 
-void draw_gender(struct Pokemon* pokemon, u8 obj_id, u8 tile_id) {
+void draw_gender(struct Pokemon* p, u8 obj_id, u8 tile_id) {
     // write gender
     char male [] = {0xB5, 0xFF};
     char female [] = {0xB6, 0xFF};
     char genderless[] = {0x0, 0xFF};
+
+	// special case of switch out
+	pstrcpy(string_buffer, (pchar*)genderless);	
+	outlined_font_draw(obj_id, tile_id, TILE_SIZE);
+
+	// game freak's way of doing forms require this special check...
+	u16 species = pokemon_getattr((struct PokemonBase *)p, REQUEST_SPECIES, NULL);
+	if ((species == SPECIES_NIDORANF) || (species == SPECIES_NIDORANM)) {
+		return;
+	}
+	
     
-    u8 gender = pokemon_get_gender(pokemon);
+    u8 gender = pokemon_get_gender(p);
     if (!gender) {
         pstrcpy(string_buffer, (pchar*)male);
     } else if (gender == 0xFE) {
         pstrcpy(string_buffer, (pchar*)female);    
-    } else {
-        pstrcpy(string_buffer, (pchar*)genderless);
     }
     
     outlined_font_draw(obj_id, tile_id, TILE_SIZE);
