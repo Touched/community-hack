@@ -13,6 +13,7 @@ SECTIONS {
                 __text_start = . ;
                 *(.init)
                 *(.text)
+                *(.text.*)
                 *(.ctors)
                 *(.dtors)
                 *(.data)
