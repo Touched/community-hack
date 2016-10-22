@@ -1,6 +1,6 @@
 [submodule "deps/pokeagb"]
 	path = deps/pokeagb
-	url = https://github.com/Touched/PokeAGB
+	url = https://github.com/Touched/g3headers
 [submodule "deps/pokeruby"]
 	path = deps/pokeruby
 	url = https://github.com/pret/pokeruby
