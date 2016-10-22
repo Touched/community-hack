@@ -19,8 +19,11 @@ void battle_message_box_load_palette(void)
         break;
     }
 
-
+    /* Border */
     base_pal[13] = secondary;
     base_pal[14] = primary;
+
+    /* Arrow */
+    base_pal[2] = primary;
     gpu_pal_apply((u8*) base_pal, 0, 64);
 }
