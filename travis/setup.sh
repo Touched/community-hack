@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-OUTPUT_FILE="roms/BPRE0.gba.gz"
+OUTPUT_FILE="$TRAVIS_BUILD_DIR/roms/BPRE0.gba.gz"
 DOWNLOAD_PATH="/community hack/roms/BPRE0.gba.gz"
 API_DOWNLOAD_URL="https://content.dropboxapi.com/2/files/download"
 

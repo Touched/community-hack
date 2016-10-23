@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-UPLOAD_FILE="build/patch.ups"
+UPLOAD_FILE="$TRAVIS_BUILD_DIR/build/patch.ups"
 UPLOAD_PATH="/community hack/patches/latest.ups"
 API_UPLOAD_URL="https://content.dropboxapi.com/2/files/upload"
 
