@@ -1,0 +1,7 @@
+language: generic
+before_install:
+  - ./travis/dependencies.sh
+  - ./travis/setup.sh
+script: make patch
+after_success:
+  - ./travis/deploy.sh

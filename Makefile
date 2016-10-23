@@ -38,10 +38,13 @@ IMAGES=$(call rwildcard,images,*.png)
 
 #-------------------------------------------------------------------------------
 
-.PHONY: all clean test generated images
+.PHONY: all clean test generated images patch
 
 all: generated main.s $(BINARY) $(call rwildcard,patches,*.s)
 	$(ARMIPS) main.s
+
+patch: all
+	deps/patch/patch roms/BPRE0.gba build/multi.gba build/patch.ups
 
 clean:
 	rm -rf build
