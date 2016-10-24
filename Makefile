@@ -9,7 +9,7 @@ include $(DEVKITARM)/base_tools
 export BUILD := build
 export SRC := src
 export BINARY := $(BUILD)/linked.o
-export ARMIPS := armips
+export ARMIPS ?= armips
 export ROM_CODE := BPRE
 export LD := $(PREFIX)ld
 export PREPROC := deps/pokeruby/tools/preproc/preproc

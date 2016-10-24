@@ -9,6 +9,7 @@ before_install:
   - export DEVKITPRO=/opt/devkitpro
   - export DEVKITARM=$DEVKITPRO/devkitARM
   - export PATH=$PATH:$DEVKITARM/bin
+  - export ARMIPS=$TRAVIS_BUILD_DIR/deps/armips/armips
   - ./travis/dependencies.sh
   - ./travis/setup.sh
 script: make patch
