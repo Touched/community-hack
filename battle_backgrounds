@@ -1,0 +1,31 @@
+# make the temporary directory inside build
+dest='build/src/bgpals'
+mkdir $dest >/dev/null
+
+# loop through all files inside folder depth 2 with terminating entry.png
+for file in `ls -d images/battle_terrains/*/*'entry.png'`
+do
+
+	# paths for orgin file and desitination for bg
+	orgin_path_bg=`echo $file | sed 's/_entry/_bg/'`
+	dest_path_bg=$dest/`echo $orgin_path_bg | sed 's/.*\///' | sed 's/.png//'`
+	
+	# paths for destination for entry image. $file is path for orgin file
+	dest_path_entry=$dest/`echo $file | sed 's/.*\///' | sed 's/.png//'`
+
+	# use grit to extract palette from each image
+	grit $orgin_path_bg -m! -g! -p -pe32 -ftb -fh! -o $dest_path_bg
+	grit `echo $file` -m! -g! -p -pe16 -ftb -fh! -o $dest_path_entry
+	
+	# concatinate grit outputted .bin files into a single file
+	cat $dest_path_bg.pal.bin $dest_path_entry.pal.bin > $dest_path_bg.combined.bin
+	
+	# use gbalzss to compress the palette, silently
+	gbalzss e $dest_path_bg.combined.bin `echo $dest_path_bg | sed 's/_bg/_pal.bin/'` >/dev/null
+	
+	#trash removal
+	rm $dest_path_bg.pal.bin
+	rm $dest_path_bg.combined.bin
+	rm $dest_path_entry.pal.bin
+	
+done
