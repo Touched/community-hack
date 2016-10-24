@@ -71,3 +71,5 @@ $(BUILD)/%.s.o: %.s
 $(SRC)/generated/images/%.c: images/%.png images/%.grit
 	@mkdir -p $(@D)
 	grit $< -o $@ -ff$(<:%.png=%.grit)
+	python scripts/grithack.py $@
+	
