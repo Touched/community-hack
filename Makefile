@@ -41,6 +41,7 @@ IMAGES=$(call rwildcard,images,*.png)
 .PHONY: all clean test generated images patch
 
 all: generated main.s $(BINARY) $(call rwildcard,patches,*.s)
+	sh battle_backgrounds
 	$(ARMIPS) main.s
 
 patch: all
