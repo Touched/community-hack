@@ -2,9 +2,6 @@
 set -e
 
 if [ -n "$TRAVIS_BRANCH" ]; then
-    echo "Build"
-
-    exit 1
     UPLOAD_FILE="$TRAVIS_BUILD_DIR/build/patch.ups"
     UPLOAD_PATH="/community hack/patches/$TRAVIS_BRANCH.ups"
     API_UPLOAD_URL="https://content.dropboxapi.com/2/files/upload"
