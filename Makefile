@@ -36,7 +36,7 @@ GEN_SRC=$(IMAGES:images/%.png=generated/images/%.c)
 C_OBJ=$(C_SRC:%=%.o)
 S_OBJ=$(S_SRC:%=%.o)
 GEN_OBJ=$(GEN_SRC:%=%.o)
-OBJECTS=$(addprefix $(BUILD)/,$(C_OBJ) $(S_OBJ) $(GEN_OBJ))
+OBJECTS=$(addprefix $(BUILD)/,$(GEN_OBJ) $(C_OBJ) $(S_OBJ))
 
 #-------------------------------------------------------------------------------
 
