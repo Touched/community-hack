@@ -1,5 +1,5 @@
 	.relativeinclude on
-		.include "./update_hpbox_txt.s"
+		.include "update_hpbox_txt.s"
 		
 		// HP box graphics for player and opponent
         .org 0x08260208
@@ -39,4 +39,7 @@
 		.org 0x08260268
 		.word hpbox_iconsPal
 		.pool
+		
 		.relativeinclude off
+        
+        
