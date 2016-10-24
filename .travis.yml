@@ -6,9 +6,7 @@ addons:
     sources:
     - ubuntu-toolchain-r-test
 before_install:
-  - sudo apt-get update -y
-  - sudo apt-get upgrade -y
-  - sudo apt-get dist-upgrade -y
+  - sudo apt-get update && sudo apt-get -y upgrade && sudo apt-get -y dist-upgrade
   - sudo apt-get install -y doxygen python3 python3-yaml libstdc++6
   - ./travis/devkit.sh
   - export DEVKITPRO=/opt/devkitpro
