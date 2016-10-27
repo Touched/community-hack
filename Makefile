@@ -47,7 +47,8 @@ all: main.s $(BINARY) $(call rwildcard,patches,*.s)
 	$(ARMIPS) main.s
 
 patch: all
-	deps/patch/patch roms/BPRE0.gba build/multi.gba build/patch.ups
+	deps/patch/patch ups roms/BPRE0.gba build/multi.gba build/patch.ups
+	deps/patch/patch ppf roms/BPRE0.gba build/multi.gba build/patch.ppf
 
 clean:
 	rm -rf build
