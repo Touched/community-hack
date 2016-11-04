@@ -1,8 +1,9 @@
 build
 *.i
 src/generated
-roms
 .d
-generated
-make.exe.stackdump
 test.sh
+generated
+roms
+*.stackdump
+
