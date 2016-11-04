@@ -1,4 +1,6 @@
 build
 *.i
 src/generated
+generated
 roms
+*.stackdump
