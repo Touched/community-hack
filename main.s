@@ -18,6 +18,7 @@
         .include "patches/hm_remove.s"
         .include "patches/pokenav.s"
 
+
         // Only do this if you haven't repointed your battle script
 	// command table
         .include "patches/move_commands.s"
