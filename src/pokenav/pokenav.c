@@ -1,6 +1,6 @@
 #include <pokeagb/pokeagb.h>
-#include "../../images/pokenav/pokenav_main.c"
-#include "../../images/pokenav/pokenav_main_back.c"
+#include "generated/images/pokenav/pokenav_main.h"
+#include "generated/images/pokenav/pokenav_main_back.h"
 
 // reset screen attributes
 extern void setup(void);
@@ -68,13 +68,13 @@ void launch_pokenav_gfx() {
 			void *map_base = (void *)0x6000000 + (0xF800 - (0x800 * 0));
 			lz77UnCompVram((void *)pokenav_mainTiles, char_base);
 			lz77UnCompVram((void *)pokenav_mainMap, map_base);
-			
+
 			char_base += 0x4000;
 			map_base -= 0x800;
 			lz77UnCompVram((void *)pokenav_main_backTiles, char_base);
 			lz77UnCompVram((void *)pokenav_main_backMap, map_base);
-			
-			gpu_pal_apply((void *)SharedPal, 0 * 16, 40);
+
+			gpu_pal_apply((void *)pokenav_mainPal, 0 * 16, 40);
 			super.multi_purpose_state_tracker++;
 			break;
 		}
