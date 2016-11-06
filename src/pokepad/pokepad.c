@@ -85,7 +85,7 @@ void launch_pokenav_gfx() {
         super.multi_purpose_state_tracker++;
         break;
     }
-    default:
+    case 2:
         bgid_mark_for_sync(0);
         bgid_mark_for_sync(1);
         bgid_mark_for_sync(2);
@@ -94,14 +94,18 @@ void launch_pokenav_gfx() {
         gpu_sync_bg_show(1);
         gpu_sync_bg_show(2);
         gpu_sync_bg_show(3);
-        //super.multi_purpose_state_tracker++;
+        fade_screen(~0, 0, 0x10, 0x0, 0);
+        super.multi_purpose_state_tracker++;
+        break;
+    default:
         break;
     };
-    return;
+
+    fade_and_return_progress_probably();
 }
 
 u8 prelaunch_pokenav_setup() {
-    if (pal_fade_control.blend_color & 0x80) {
+    if (pal_fade_control.active) {
         return 0;
     } else {
         close_startmenu();
