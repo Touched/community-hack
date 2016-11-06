@@ -107,9 +107,8 @@ u8 prelaunch_pokenav_setup() {
         return 0;
     } else {
         help_system_disable__sp198();
-        vblank_handler_set((SuperCallback) 0x8046FC1);
+        vblank_handler_set(vblank_cb_pal);
         setup();
-        super.vblank_handler = vblank_cb_pal;
         set_callback1(launch_pokenav_gfx);
         set_callback2(c2_pokenav);
         super.multi_purpose_state_tracker = 0;

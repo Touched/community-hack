@@ -9,6 +9,7 @@ void vblank_cb_spq() {
 
 
 void vblank_cb_pal() {
+    gpu_sprites_upload();
 	copy_queue_process();
 	gpu_pal_upload();
 }
@@ -69,7 +70,6 @@ void setup_ioregs_bg() {
 		BG_CNT[i].size = 0;
 
 	}
-
 
 	lcd_io_set(0x50, 0x2F00);
 	lcd_io_set(0x52, 0x0F);
