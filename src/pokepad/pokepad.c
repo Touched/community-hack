@@ -9,6 +9,9 @@ extern void vblank_cb_pal(void);
 extern void vblank_cb_spq(void);
 extern void c2_pokenav(void);
 
+const pchar pokepad_sm_name[] = _"Poképad";
+const pchar pokepad_sm_description[] = _"A high-tech multifunctional device.";
+
 void close_startmenu() {
     safari_stepscount_close();
     sm_close_description();
@@ -97,15 +100,19 @@ void launch_pokenav_gfx() {
     return;
 }
 
-
 u8 prelaunch_pokenav_setup() {
-    close_startmenu();
-    help_system_disable__sp198();
-    vblank_handler_set((SuperCallback) 0x8046FC1);
-    setup();
-    super.vblank_handler = vblank_cb_pal;
-    set_callback1(launch_pokenav_gfx);
-    set_callback2(c2_pokenav);
-    super.multi_purpose_state_tracker = 0;
-    return 1;
+    if (pal_fade_control.blend_color & 0x80) {
+        return 0;
+    } else {
+        close_startmenu();
+        help_system_disable__sp198();
+        vblank_handler_set((SuperCallback) 0x8046FC1);
+        setup();
+        super.vblank_handler = vblank_cb_pal;
+        set_callback1(launch_pokenav_gfx);
+        set_callback2(c2_pokenav);
+        super.multi_purpose_state_tracker = 0;
+        return 1;
+    }
+
 }
