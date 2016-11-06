@@ -10,9 +10,9 @@ extern void vblank_cb_spq(void);
 extern void c2_pokenav(void);
 
 void close_startmenu() {
-	safari_stepscount_close();
-	sm_close_description();
-	sm_close_menu();
+    safari_stepscount_close();
+    sm_close_description();
+    sm_close_menu();
 }
 
 static const struct BgConfig bg_config[4] = {
@@ -67,17 +67,17 @@ void launch_pokenav_gfx() {
     case 1:
     {
         // TODO : Make this not hard coded.
-        void *char_base = (void *)0x6000000 + (0x4000 * 0);
-        void *map_base = (void *)0x6000000 + (0xF800 - (0x800 * 0));
-        lz77UnCompVram((void *)pokenav_mainTiles, char_base);
-        lz77UnCompVram((void *)pokenav_mainMap, map_base);
+        void *char_base = (void*) 0x6000000 + (0x4000 * 0);
+        void *map_base = (void*) 0x6000000 + (0xF800 - (0x800 * 0));
+        lz77UnCompVram((void*) pokenav_mainTiles, char_base);
+        lz77UnCompVram((void*) pokenav_mainMap, map_base);
 
         char_base += 0x4000;
         map_base -= 0x800;
-        lz77UnCompVram((void *)pokenav_main_backTiles, char_base);
-        lz77UnCompVram((void *)pokenav_main_backMap, map_base);
+        lz77UnCompVram((void*) pokenav_main_backTiles, char_base);
+        lz77UnCompVram((void*) pokenav_main_backMap, map_base);
 
-        gpu_pal_apply((void *)pokenav_mainPal, 0 * 16, 40);
+        gpu_pal_apply((void*) pokenav_mainPal, 0 * 16, 40);
         super.multi_purpose_state_tracker++;
         break;
     }
@@ -98,13 +98,13 @@ void launch_pokenav_gfx() {
 
 
 u8 prelaunch_pokenav_setup() {
-	close_startmenu();
-	help_system_disable__sp198();
-	vblank_handler_set((SuperCallback)0x8046FC1);
-	setup();
-	super.vblank_handler = (SuperCallback)vblank_cb_pal;
-	set_callback1((SuperCallback)launch_pokenav_gfx);
-	set_callback2((SuperCallback)c2_pokenav);
-	super.multi_purpose_state_tracker = 0;
-	return 1;
+    close_startmenu();
+    help_system_disable__sp198();
+    vblank_handler_set((SuperCallback) 0x8046FC1);
+    setup();
+    super.vblank_handler = vblank_cb_pal;
+    set_callback1(launch_pokenav_gfx);
+    set_callback2(c2_pokenav);
+    super.multi_purpose_state_tracker = 0;
+    return 1;
 }
