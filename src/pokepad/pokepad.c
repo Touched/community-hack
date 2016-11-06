@@ -56,6 +56,7 @@ void launch_pokenav_gfx() {
     switch (super.multi_purpose_state_tracker) {
     case 0:
     {
+        m4aMPlayVolumeControl(&mplay_BGM, 0xFFFF, 128);
         gpu_tile_bg_drop_all_sets(0);
         bg_vram_setup(0, bg_config, 4);
         super.multi_purpose_state_tracker++;
@@ -93,10 +94,10 @@ void launch_pokenav_gfx() {
         break;
     default:
         if (super.buttons.new_remapped & KEY_B) {
-            set_callback1(NULL);
-            ((void (*)(void)) (0x080568A8|1))();
+            m4aMPlayVolumeControl(&mplay_BGM, 0xFFFF, 256);
+            set_callback1(c1_overworld);
+            set_callback2(c2_overworld_switch_start_menu);
         }
-
         break;
     };
 }
@@ -118,8 +119,7 @@ u8 prelaunch_pokenav_setup() {
 }
 
 void c2_pokenav() {
-    tilemaps_sync();
-    copy_queue_process();
-    gpu_pal_upload();
     fade_and_return_progress_probably();
 }
+
+/* 0806F380 */
