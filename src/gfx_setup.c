@@ -22,13 +22,6 @@ void vcb_pokenav() {
 	process_palfade();
 }
 
-void c2_pokenav() {
-	tilemaps_sync();
-	copy_queue_process();
-	gpu_pal_upload();
-}
-
-
 void handlers_clear() {
 	vblank_handler_set(0);
 	hblank_handler_set(0);
