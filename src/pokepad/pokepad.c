@@ -77,7 +77,8 @@ void launch_pokenav_gfx() {
         lz77UnCompVram((void*) pokenav_main_backTiles, char_base);
         lz77UnCompVram((void*) pokenav_main_backMap, map_base);
 
-        gpu_pal_apply((void*) pokenav_mainPal, 0 * 16, 40);
+        gpu_pal_apply((void*) pokenav_mainPal, 0, 32);
+        gpu_pal_apply((void*) pokenav_main_backPal, 32, 32);
         super.multi_purpose_state_tracker++;
         break;
     }
