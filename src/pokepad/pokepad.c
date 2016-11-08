@@ -80,7 +80,26 @@ void launch_pokenav_gfx() {
         super.multi_purpose_state_tracker++;
         break;
     }
-    case 2:
+    case 2: {
+        struct Textbox pokepad_app_description_textbox = {
+            0, 0, 0xF, 0x1E, 5, 0xF, 0x8F, 0x20A00,
+        };
+
+        struct TextColor color = {
+            0, 1, 2
+        };
+
+        u8 id = rboxid_init(&pokepad_app_description_textbox);
+        pchar s[] = _"I am an application";
+
+        rboxid_clear_pixels(id, 0x0);
+        rboxid_print(id, 1, 0, 0, &color, 0xFF, s);
+        rboxid_tilemap_update(id);
+        rboxid_update(id, 3);
+        super.multi_purpose_state_tracker++;
+        break;
+    }
+    case 3:
         bgid_mark_for_sync(0);
         bgid_mark_for_sync(1);
         bgid_mark_for_sync(2);
@@ -100,6 +119,8 @@ void launch_pokenav_gfx() {
         }
         break;
     };
+
+    /* TODO: Rbox free */
 }
 
 u8 prelaunch_pokenav_setup() {
