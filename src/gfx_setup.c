@@ -68,7 +68,6 @@ void setup_ioregs_bg() {
 		BG_CNT[i].map_index = (0x1F - i);
 		BG_CNT[i].screen_over = 0;
 		BG_CNT[i].size = 0;
-
 	}
 
 	lcd_io_set(0x50, 0x2F00);
