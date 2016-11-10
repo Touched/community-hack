@@ -93,7 +93,7 @@ static void build_gradient(void)
             u8 g = (color >> 5) & 0x1f;
             u8 b = (color >> 10) & 0x1f;
 
-#define SUB_OR_ZERO(a, b) (a) >= (b) ? (a) - (b) : 0;
+#define SUB_OR_ZERO(a, b) (a) >= (b) ? (a) - (b) : 0
             r = SUB_OR_ZERO(r, (j >> 2) + 2);
             g = SUB_OR_ZERO(g, (j >> 2) + 2);
             b = SUB_OR_ZERO(b, (j >> 2) + 2);
