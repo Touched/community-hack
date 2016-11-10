@@ -83,7 +83,7 @@ static void build_gradient(void)
         0x09DD, 0x09DD
     };
 
-    u16* buffer = (u16*) 0x02038700;
+    u16* buffer = pokepad_state->shared_state->gradient_palette;
     u8 line = 0;
     for (u8 i = 0; i < sizeof(gradient) / sizeof(u16); i++) {
         u16 color = gradient[i];
@@ -130,7 +130,6 @@ static void build_mosaic(void* charbase, void* mapbase)
     memcpy(mapbase, tilemap, sizeof(tilemap));
 }
 
-
 #define REG_BASE 0x04000000
 #define REG_VCOUNT	*(vu16*)(REG_BASE + 6)
 #define REG_BLDCNT	*(vu16*)(REG_BASE + 0x50)
@@ -142,7 +141,7 @@ static void hblank_gradient(void)
     /* HBlank saves memory compared to the DMA implementation as the
      * gradient only changes colour every 8 scanlines. */
 
-    u16* buffer = (void*) 0x02038700;
+    u16* buffer = pokepad_state->shared_state->gradient_palette;
 
     if (REG_VCOUNT < 160) {
         u16 index = (REG_VCOUNT + 1) / 8;
@@ -252,11 +251,11 @@ void launch_pokepad_app()
         /* Apply the gradient palette for the first line as hblank DMA
          * only takes over after that. */
         build_gradient();
-        gpu_pal_apply((void*) 0x02038700, 0, 32);
+        gpu_pal_apply(pokepad_state->shared_state->gradient_palette, 0, 32);
 
         /* Clean the palette buffer so HBlank doesn't start copying it */
         /* FIXME: Use macro for size */
-        memset((void*) 0x02038700, 0, 32 * 20);
+        memset(pokepad_state->shared_state->gradient_palette, 0, 32 * 20);
         fade_screen(~0, 0, 0x10, 0x0, 0);
         vblank_handler_set(vblank_cb_pal);
         hblank_handler_set(hblank_gradient);
