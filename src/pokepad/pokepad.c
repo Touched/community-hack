@@ -1,4 +1,5 @@
 #include <pokeagb/pokeagb.h>
+#include "pokepad.h"
 #include "generated/images/pokenav/pokenav_main.h"
 #include "generated/images/pokenav/pokenav_main_back.h"
 
@@ -6,7 +7,6 @@
 extern void setup(void);
 extern void vcb_pokenav(void);
 extern void vblank_cb_spq(void);
-extern void c2_pokenav(void);
 
 const pchar pokepad_sm_name[] = _"Poképad";
 const pchar pokepad_sm_description[] = _"A high-tech multifunctional device.";
@@ -165,7 +165,41 @@ static void vblank_cb_pal()
     REG_BLDY = 8;
 }
 
-void launch_pokenav_gfx() {
+static struct Textbox pokepad_bar_textboxes[2] = {
+    {
+        0, 24, 0, 0x9, 2, 0xF, 0x50, 0x20A00,
+    }, {
+        0, 1, 0, 0x9, 2, 0xF, 0x6F, 0x20A00,
+    }
+};
+
+static struct TextColor pokepad_bar_color = {
+    0, 1, 2,
+};
+
+void pokepad_update_time(void)
+{
+    /* TODO: Right align time */
+    /* TODO: Get actual time */
+    pchar s2[] = _"10:11";
+    u8 id = pokepad_state->shared_state->bar_textboxes[0];
+    rboxid_clear_pixels(id, 0x0);
+    rboxid_print(id, 0, 0, 0, &pokepad_bar_color, 0xFF, s2);
+    rboxid_tilemap_update(id);
+    rboxid_update(id, 3);
+}
+
+void pokepad_update_application(void)
+{
+    u8 id = pokepad_state->shared_state->bar_textboxes[1];
+    rboxid_clear_pixels(id, 0x0);
+    rboxid_print(id, 0, 0, 0, &pokepad_bar_color, 0xFF, pokepad_state->current_app->name);
+    rboxid_tilemap_update(id);
+    rboxid_update(id, 3);
+}
+
+void launch_pokepad_app()
+{
     switch (super.multi_purpose_state_tracker) {
     case 0:
     {
@@ -190,64 +224,59 @@ void launch_pokenav_gfx() {
         break;
     }
     case 2: {
-        /* TODO: Neaten up */
+        /* struct Textbox pokepad_app_description_textbox = { */
+        /*     0, 1, 0x10, 0x1C, 3, 0xF, 0x8F, 0x20A00, */
+        /* }; */
 
-        struct Textbox pokepad_app_description_textbox = {
-            0, 1, 0x10, 0x1C, 3, 0xF, 0x8F, 0x20A00,
-        };
 
-        struct TextColor color = {
-            0, 1, 2
-        };
+        /* u8 id = rboxid_init(&pokepad_app_description_textbox); */
+        /* pchar s[] = _"I am an application"; */
 
-        u8 id = rboxid_init(&pokepad_app_description_textbox);
-        pchar s[] = _"I am an application";
-
-        rboxid_clear_pixels(id, 0x0);
-        rboxid_print(id, 1, 0, 0, &color, 0xFF, s);
-        rboxid_tilemap_update(id);
-        rboxid_update(id, 3);
+        /* rboxid_clear_pixels(id, 0x0); */
+        /* rboxid_print(id, 1, 0, 0, &color, 0xFF, s); */
+        /* rboxid_tilemap_update(id); */
+        /* rboxid_update(id, 3); */
 
         /*  */
 
-        struct Textbox pokepad_app_notification_textbox = {
-            0, 25, 0, 0x9, 2, 0xF, 0x50, 0x20A00,
-        };
-
-        u8 id2 = rboxid_init(&pokepad_app_notification_textbox);
-
-        pchar s2[] = _"- 10:11";
-        rboxid_clear_pixels(id2, 0x0);
-        rboxid_print(id2, 0, 0, 0, &color, 0xFF, s2);
-        rboxid_tilemap_update(id2);
-        rboxid_update(id2, 3);
-
-        /*  */
-
-        struct Textbox pokepad_app_title_textbox = {
-            0, 1, 0, 0x9, 2, 0xF, 0x6F, 0x20A00,
-        };
-
-        u8 id3 = rboxid_init(&pokepad_app_title_textbox);
-
-        pchar s3[] = _"PokéPad";
-        rboxid_clear_pixels(id3, 0x0);
-        rboxid_print(id3, 0, 0, 0, &color, 0xFF, s3);
-        rboxid_tilemap_update(id3);
-        rboxid_update(id3, 3);
+        pokepad_state->shared_state->bar_textboxes[0] = rboxid_init(&pokepad_bar_textboxes[0]);
+        pokepad_state->shared_state->bar_textboxes[1] = rboxid_init(&pokepad_bar_textboxes[1]);
+        pokepad_update_time();
+        pokepad_update_application();
+        /* TODO: Update signal and draw logo */
 
         super.multi_purpose_state_tracker++;
         break;
     }
     case 3:
+        /* Apply the gradient palette for the first line as hblank DMA
+         * only takes over after that. */
+        build_gradient();
+        gpu_pal_apply((void*) 0x02038700, 0, 32);
+
+        /* Clean the palette buffer so HBlank doesn't start copying it */
+        /* FIXME: Use macro for size */
+        memset((void*) 0x02038700, 0, 32 * 20);
+        fade_screen(~0, 0, 0x10, 0x0, 0);
         vblank_handler_set(vblank_cb_pal);
         hblank_handler_set(hblank_gradient);
         ((void (*)(u16)) (0x08000B68|1))(3);
 
-        /* Apply the gradient palette for the first line as hblank
-         * DMA only takes over after that */
-        gpu_pal_apply((void*) 0x02038700, 0, 32);
+        /* Get ready to call setup */
+        pokepad_state->tracker = 0;
 
+        super.multi_purpose_state_tracker++;
+        break;
+    case 4:
+        /* Run the app setup function */
+        if (pokepad_state->current_app->setup(&pokepad_state->tracker)) {
+            return;
+        }
+
+        super.multi_purpose_state_tracker++;
+        break;
+
+    case 5:
         /* Backgrounds */
         bgid_mark_for_sync(0);
         bgid_mark_for_sync(1);
@@ -257,40 +286,47 @@ void launch_pokenav_gfx() {
         gpu_sync_bg_show(1);
         gpu_sync_bg_show(2);
         gpu_sync_bg_show(3);
-        fade_screen(~0, 10, 0x10, 0x0, 0);
         super.multi_purpose_state_tracker++;
         break;
+
+    case 6:
+        /* TODO: Possible boot animation */
+        fade_and_return_progress_probably();
+        build_gradient();
+
     default:
         if (super.buttons.new_remapped & KEY_B) {
             m4aMPlayVolumeControl(&mplay_BGM, 0xFFFF, 256);
             set_callback1(c1_overworld);
             set_callback2(c2_overworld_switch_start_menu);
         }
+
+        /* TODO: Wait for fade */
+        /* set_callback2(pokepad_state->current_app->callback); */
         break;
     };
 
     /* TODO: Rbox free */
 }
-
 u8 prelaunch_pokenav_setup() {
     if (pal_fade_control.active) {
         return 0;
     } else {
+        /* Malloc state */
+        pokepad_state = (struct Pokepad*) malloc(sizeof(struct Pokepad));
+        pokepad_state->shared_state = (struct PokepadShared*) malloc(sizeof(struct PokepadShared));
+        pokepad_state->current_app = pokepad_application_find_main();
+
         lcd_io_set(0, 0);
         help_system_disable__sp198();
         vblank_handler_set(vblank_cb_pal);
         setup();
-        set_callback1(launch_pokenav_gfx);
-        set_callback2(c2_pokenav);
+        set_callback1(launch_pokepad_app);
+        set_callback2(NULL);
         super.multi_purpose_state_tracker = 0;
         return 1;
     }
 
-}
-
-void c2_pokenav() {
-    build_gradient();
-    fade_and_return_progress_probably();
 }
 
 /* 0806F380 */
