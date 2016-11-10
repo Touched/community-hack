@@ -51,6 +51,26 @@ static const struct BgConfig bg_config[4] = {
     }
 };
 
+struct PlttData
+{
+    u16 r:5; // red
+    u16 g:5; // green
+    u16 b:5; // blue
+    u16 unused_15:1;
+};
+
+u16 blend_color(u16 color, u8 coeff, u16 blendColor)
+{
+    struct PlttData *data1 = (struct PlttData *) &color;
+    s8 r = data1->r;
+    s8 g = data1->g;
+    s8 b = data1->b;
+    struct PlttData *data2 = (struct PlttData *) &blendColor;
+    return ((r + (((data2->r - r) * coeff) >> 4)) << 0)
+        | ((g + (((data2->g - g) * coeff) >> 4)) << 5)
+        | ((b + (((data2->b - b) * coeff) >> 4)) << 10);
+}
+
 static void build_gradient(void)
 {
     /* TODO: Build a 3 stop gradient */
@@ -77,18 +97,10 @@ static void build_gradient(void)
             r = SUB_OR_ZERO(r, (j >> 2) + 2);
             g = SUB_OR_ZERO(g, (j >> 2) + 2);
             b = SUB_OR_ZERO(b, (j >> 2) + 2);
-
-            /* if (i > 14) { */
-            /*     r = SUB_OR_ZERO(r, 10); */
-            /*     g = SUB_OR_ZERO(g, 10); */
-            /*     b = SUB_OR_ZERO(b, 10); */
-            /*     r >>= 1; */
-            /*     g >>= 1; */
-            /*     b >>= 1; */
-            /* } */
 #undef SUB_OR_ZERO
 
-            *buffer++ = r | (g << 5) | (b << 10);
+            u16 final_color = r | (g << 5) | (b << 10);
+            *buffer++ = blend_color(final_color, pal_fade_control.y, pal_fade_control.blend_color);
         }
     }
 }
@@ -116,7 +128,6 @@ static void build_mosaic(void* charbase, void* mapbase)
     }
 
     memcpy(mapbase, tilemap, sizeof(tilemap));
-    build_gradient();
 }
 
 
@@ -174,17 +185,13 @@ void launch_pokenav_gfx() {
 
         char_base += 0x4000;
         map_base -= 0x800;
-        // lz77UnCompVram((void*) pokenav_main_backTiles, char_base);
-        // lz77UnCompVram((void*) pokenav_main_backMap, map_base);
-
         build_mosaic(char_base, map_base);
-
-        //gpu_pal_apply((void*) pokenav_mainPal, 0, 32);
-        // gpu_pal_apply((void*) pokenav_main_backPal, 32, 32);
         super.multi_purpose_state_tracker++;
         break;
     }
     case 2: {
+        /* TODO: Neaten up */
+
         struct Textbox pokepad_app_description_textbox = {
             0, 1, 0x10, 0x1C, 3, 0xF, 0x8F, 0x20A00,
         };
@@ -201,6 +208,8 @@ void launch_pokenav_gfx() {
         rboxid_tilemap_update(id);
         rboxid_update(id, 3);
 
+        /*  */
+
         struct Textbox pokepad_app_notification_textbox = {
             0, 25, 0, 0x9, 2, 0xF, 0x50, 0x20A00,
         };
@@ -212,6 +221,20 @@ void launch_pokenav_gfx() {
         rboxid_print(id2, 0, 0, 0, &color, 0xFF, s2);
         rboxid_tilemap_update(id2);
         rboxid_update(id2, 3);
+
+        /*  */
+
+        struct Textbox pokepad_app_title_textbox = {
+            0, 1, 0, 0x9, 2, 0xF, 0x6F, 0x20A00,
+        };
+
+        u8 id3 = rboxid_init(&pokepad_app_title_textbox);
+
+        pchar s3[] = _"PokéPad";
+        rboxid_clear_pixels(id3, 0x0);
+        rboxid_print(id3, 0, 0, 0, &color, 0xFF, s3);
+        rboxid_tilemap_update(id3);
+        rboxid_update(id3, 3);
 
         super.multi_purpose_state_tracker++;
         break;
@@ -234,13 +257,10 @@ void launch_pokenav_gfx() {
         gpu_sync_bg_show(1);
         gpu_sync_bg_show(2);
         gpu_sync_bg_show(3);
-        fade_screen(~0, 0, 0x10, 0x0, 0);
+        fade_screen(~0, 10, 0x10, 0x0, 0);
         super.multi_purpose_state_tracker++;
         break;
     default:
-        // trigger_gradient();
-        build_gradient();
-
         if (super.buttons.new_remapped & KEY_B) {
             m4aMPlayVolumeControl(&mplay_BGM, 0xFFFF, 256);
             set_callback1(c1_overworld);
@@ -269,6 +289,7 @@ u8 prelaunch_pokenav_setup() {
 }
 
 void c2_pokenav() {
+    build_gradient();
     fade_and_return_progress_probably();
 }
 
