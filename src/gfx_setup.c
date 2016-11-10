@@ -7,14 +7,6 @@ void vblank_cb_spq() {
 	gpu_pal_upload();
 }
 
-
-void vblank_cb_pal() {
-    gpu_sprites_upload();
-	copy_queue_process();
-	gpu_pal_upload();
-}
-
-
 void vcb_pokenav() {
 	task_exec();
 	remoboxes_upload_tilesets();
