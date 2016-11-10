@@ -3,8 +3,6 @@
 
 #include <pokeagb/pokeagb.h>
 
-#define POKEPAD_MAX_APPS 4
-
 struct PokepadApplication {
     /**
      * The name of the application.
@@ -40,23 +38,31 @@ struct PokepadApplication {
     bool (*unlocked)(void);
 
     /**
-     * Called when the application is loaded.
+     * Called when the application is loaded. Returns true while busy.
      */
-    void (*init)(void);
+    bool (*setup)(u8*);
 
     /**
-     * Called when the application is unloaded.
+     * Called when the application is unloaded. Returns true while busy.
      */
-    void (*deinit)(void);
+    bool (*destroy)(u8*);
+};
+
+struct PokepadShared {
+    u8 bar_textboxes[2];
 };
 
 struct Pokepad {
-    u8 current_app;
+    const struct PokepadApplication* current_app;
     void* app_state;
+    struct PokepadShared* shared_state;
+    u8 tracker;
 };
 
 extern struct Pokepad* pokepad_state;
 
-extern const struct PokepadApplication* pokepad_applications[POKEPAD_MAX_APPS];
+extern const struct PokepadApplication* pokepad_applications[];
+
+const struct PokepadApplication* pokepad_application_find_main(void);
 
 #endif /* POKEPAD_H */
