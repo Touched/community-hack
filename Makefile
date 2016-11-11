@@ -66,6 +66,7 @@ $(BINARY): $(OBJECTS)
 	@$(LD) $(LDFLAGS) -o $@ $^
 
 $(BUILD)/%.c.o: %.c $(DEPDIR)/%.d
+
 	@echo -e "\e[32mCompiling $<\e[0m"
 	@mkdir -p $(@D)
 	@mkdir -p $(DEPDIR)/$<
@@ -78,7 +79,7 @@ $(BUILD)/%.s.o: %.s
 	@mkdir -p $(@D)
 	@$(PREPROC) $< $(CHARMAP) | $(AS) $(ASFLAGS) -o $@
 
-generated/images/%.c: images/%.png images/%.grit
+generated/images/%.c: images/%.png $(<:%.png=%.grit)
 	@echo -e "\e[34mProcessing image $<\e[0m"
 	@mkdir -p $(@D)
 	@grit $< -o $@ -ff$(<:%.png=%.grit)
