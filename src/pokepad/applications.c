@@ -31,34 +31,30 @@ const struct PokepadApplication* pokepad_application_find_main(void)
     return NULL;
 }
 
-const struct PokepadApplication** pokepad_application_next(const struct PokepadApplication** start)
+void pokepad_applications_load(const struct PokepadApplication** buffer, u8 length)
 {
-    /* Start at beginning if no app was provided, otherwise start at
-     * the app after the one passed in */
-    const struct PokepadApplication** it = start ? start + 1 : pokepad_applications;
-    const struct PokepadApplication** end = pokepad_applications + sizeof(pokepad_applications);
+    u8 buffer_index = 0;
 
-    /* Invalid application pointer */
-    if (it < pokepad_applications || it >= end) {
-        return NULL;
-    }
+    /* Fill array with null pointers */
+    memset(buffer, 0, length * sizeof(const struct PokepadApplication*));
 
-    for (; it < end; it++) {
-        switch ((*it)->role) {
+    for (u8 i = 0; i < POKEPAD_NUM_APPS && buffer_index < length; i++) {
+        const struct PokepadApplication* app = pokepad_applications[i];
+
+        switch (app->role) {
         case POKEPAD_APP_MAIN:
             continue;
         case POKEPAD_APP_EXTENSION:
-            if (!(*it)->unlocked()) {
+            if (!app->unlocked()) {
                 continue;
             }
             /* Fall through if unlocked */
         case POKEPAD_APP_BUILTIN:
-            return it;
+            /* Build app */
+            buffer[buffer_index++] = pokepad_applications[i];
+            break;
         }
     }
-
-    /* No more applications */
-    return NULL;
 }
 
 u8 pokepad_application_id(const struct PokepadApplication** it)
