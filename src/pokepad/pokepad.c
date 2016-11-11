@@ -117,9 +117,9 @@ static void build_mosaic(void* charbase, void* mapbase)
     memcpy(charbase, tiles, sizeof(tiles));
 
     /* Build tilemap */
-    u16 tilemap[32][32];
+    u16 tilemap[20][32];
 
-    for (u8 y = 0; y < 32; y++) {
+    for (u8 y = 0; y < 20; y++) {
         for (u8 x = 0; x < 32; x++) {
             u8 tile = rand() & 0xF;
             tilemap[y][x] = tile;
