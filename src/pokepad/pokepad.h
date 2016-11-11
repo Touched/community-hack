@@ -75,6 +75,7 @@ extern const struct PokepadApplication* pokepad_applications[];
 
 const struct PokepadApplication* pokepad_application_find_main(void);
 const struct PokepadApplication** pokepad_application_next(const struct PokepadApplication** it);
+void pokepad_applications_load(const struct PokepadApplication** buffer, u8 length);
 u8 pokepad_application_id(const struct PokepadApplication** it);
 
 /* Handlers */

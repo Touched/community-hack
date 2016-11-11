@@ -11,12 +11,16 @@
 #define POKEPAD_MENU_PAGE_INDICATOR_WIDTH 8
 #define POKEPAD_APP_NAME_WIDTH 8
 #define POKEPAD_MENU_APPS_PER_PAGE 4
+#define POKEPAD_MENU_MAX_APPS 12
 
 struct PokepadMenuState {
     struct {
         u8 app_name;
         u8 app_description;
     } textboxes;
+
+    /* Loaded apps */
+    const struct PokepadApplication* apps[POKEPAD_MENU_MAX_APPS];
 
     u8 index;
     u8 arrow_id;
@@ -84,22 +88,26 @@ static void load_page_indicators(void)
 
 static void load_applications(void)
 {
-    const struct PokepadApplication** it = NULL;
+    struct PokepadMenuState* state = (struct PokepadMenuState*) pokepad_state->app_state;
     u16 x = POKEPAD_MENU_ICON_X;
 
-    while ((it = pokepad_application_next(it))) {
-        const struct PokepadApplication* app = *it;
+    for (u8 i = 0; i < POKEPAD_MENU_APPS_PER_PAGE; i++) {
+        const struct PokepadApplication* app = state->apps[i];
+
+        if (!app) {
+            continue;
+        }
 
         /* Dynamically generate the icon template */
         const struct SpritePalette palette = {
             app->icon.palette,
-            POKEPAD_MENU_ICON_TAG_BASE + pokepad_application_id(it),
+            POKEPAD_MENU_ICON_TAG_BASE + i,
         };
 
         const struct SpriteTiles tiles = {
             app->icon.tiles,
             app->icon.size,
-            POKEPAD_MENU_ICON_TAG_BASE + pokepad_application_id(it),
+            POKEPAD_MENU_ICON_TAG_BASE + i,
         };
 
         const struct Template template = {
@@ -185,6 +193,8 @@ static bool setup(u8* trigger)
         break;
 
     case 1:
+        pokepad_applications_load(state->apps, POKEPAD_MENU_MAX_APPS);
+
         /* Load arrow */
         gpu_pal_obj_alloc_tag_and_apply(&menu_arrow_palette);
         gpu_tile_obj_alloc_tag_and_upload(&menu_arrow_tiles);
