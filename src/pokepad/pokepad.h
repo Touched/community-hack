@@ -66,4 +66,8 @@ extern const struct PokepadApplication* pokepad_applications[];
 
 const struct PokepadApplication* pokepad_application_find_main(void);
 
+/* Handlers */
+void pokepad_hblank_handler(void);
+void pokepad_vblank_handler(void);
+
 #endif /* POKEPAD_H */

@@ -130,13 +130,13 @@ static void build_mosaic(void* charbase, void* mapbase)
     memcpy(mapbase, tilemap, sizeof(tilemap));
 }
 
-#define REG_BASE 0x04000000
-#define REG_VCOUNT	*(vu16*)(REG_BASE + 6)
-#define REG_BLDCNT	*(vu16*)(REG_BASE + 0x50)
-#define REG_BLDY	*(vu16*)(REG_BASE + 0x54)
-#define REG_WIN	*(vu16*)(REG_BASE + 0x40)
+/* #define REG_BASE 0x04000000 */
+/* #define REG_VCOUNT	*(vu16*)(REG_BASE + 6) */
+/* #define REG_BLDCNT	*(vu16*)(REG_BASE + 0x50) */
+/* #define REG_BLDY	*(vu16*)(REG_BASE + 0x54) */
+/* #define REG_WIN	*(vu16*)(REG_BASE + 0x40) */
 
-static void hblank_gradient(void)
+void pokepad_hblank_handler(void)
 {
     /* HBlank saves memory compared to the DMA implementation as the
      * gradient only changes colour every 8 scanlines. */
@@ -146,22 +146,14 @@ static void hblank_gradient(void)
     if (REG_VCOUNT < 160) {
         u16 index = (REG_VCOUNT + 1) / 8;
         memcpy((void*) 0x05000000, &buffer[index * 16], 32);
-
-        if (REG_VCOUNT >= 120) {
-            /* Enable darkening on BG1 and backdrop */
-            REG_BLDCNT = (3 << 6) | (1 << 1) | (1 << 5);
-            REG_BLDY = 8;
-        }
     }
 }
 
-static void vblank_cb_pal()
+void pokepad_vblank_handler(void)
 {
     gpu_sprites_upload();
     copy_queue_process();
     gpu_pal_upload();
-    REG_BLDCNT = 0;
-    REG_BLDY = 8;
 }
 
 static struct Textbox pokepad_bar_textboxes[2] = {
@@ -196,6 +188,8 @@ void pokepad_update_application(void)
     rboxid_tilemap_update(id);
     rboxid_update(id, 3);
 }
+
+static void pokepad_callback(void);
 
 void launch_pokepad_app()
 {
@@ -257,8 +251,8 @@ void launch_pokepad_app()
         /* FIXME: Use macro for size */
         memset(pokepad_state->shared_state->gradient_palette, 0, 32 * 20);
         fade_screen(~0, 0, 0x10, 0x0, 0);
-        vblank_handler_set(vblank_cb_pal);
-        hblank_handler_set(hblank_gradient);
+        vblank_handler_set(pokepad_vblank_handler);
+        hblank_handler_set(pokepad_hblank_handler);
         ((void (*)(u16)) (0x08000B68|1))(3);
 
         /* Get ready to call setup */
@@ -290,24 +284,28 @@ void launch_pokepad_app()
 
     case 6:
         /* TODO: Possible boot animation */
-        fade_and_return_progress_probably();
-        build_gradient();
-
-    default:
-        if (super.buttons.new_remapped & KEY_B) {
-            m4aMPlayVolumeControl(&mplay_BGM, 0xFFFF, 256);
-            set_callback1(c1_overworld);
-            set_callback2(c2_overworld_switch_start_menu);
+        if (pal_fade_control.active) {
+            fade_and_return_progress_probably();
+            build_gradient();
+        } else {
+            super.multi_purpose_state_tracker++;
         }
+        break;
+
+    case 7:
+
 
         /* TODO: Wait for fade */
-        /* set_callback2(pokepad_state->current_app->callback); */
+        set_callback2(pokepad_callback);
+        set_callback1(NULL);
         break;
     };
 
     /* TODO: Rbox free */
 }
-u8 prelaunch_pokenav_setup() {
+
+u8 prelaunch_pokenav_setup()
+{
     if (pal_fade_control.active) {
         return 0;
     } else {
@@ -318,14 +316,23 @@ u8 prelaunch_pokenav_setup() {
 
         lcd_io_set(0, 0);
         help_system_disable__sp198();
-        vblank_handler_set(vblank_cb_pal);
         setup();
         set_callback1(launch_pokepad_app);
         set_callback2(NULL);
         super.multi_purpose_state_tracker = 0;
         return 1;
     }
+}
 
+static void pokepad_callback(void)
+{
+    if (super.buttons.new_remapped & KEY_B) {
+        m4aMPlayVolumeControl(&mplay_BGM, 0xFFFF, 256);
+        set_callback1(c1_overworld);
+        set_callback2(c2_overworld_switch_start_menu);
+    }
+
+    /* pokepad_state->current_app->callback(); */
 }
 
 /* 0806F380 */
