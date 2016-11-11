@@ -8,6 +8,7 @@
 #define POKEPAD_MENU_ICON_Y 55
 #define POKEPAD_MENU_ICON_SIZE 42
 #define POKEPAD_MENU_PAGE_INDICATOR_WIDTH 8
+#define POKEPAD_APP_NAME_WIDTH 8
 
 struct PokepadMenuState {
     struct {
@@ -114,9 +115,16 @@ static void load_applications(void)
 
 static struct Textbox pokepad_menu_textboxes[2] = {
     {
-        0, 10, 12, 0x9, 2, 0xF, 0x8F, 0x20A00,
+        0,
+        ((SCREEN_WIDTH / 8) - POKEPAD_APP_NAME_WIDTH) / 2,
+        12,
+        POKEPAD_APP_NAME_WIDTH,
+        2,
+        0xF,
+        0x8F,
+        0x20A00,
     }, {
-        0, 1, 0x10, 0x1C, 3, 0xF, 0x100, 0x20A00,
+        0, 1, 16, 0x1C, 3, 0xF, 0x100, 0x20A00,
     }
 };
 
@@ -134,9 +142,11 @@ static void update_app_description(u8 id, const struct PokepadApplication* app)
 
 static void update_app_name(u8 id, const struct PokepadApplication* app)
 {
-    /* TODO: Centre name */
+    u32 width = font_get_width_of_string(1, app->name, 0);
+    u8 x = (rboxes[id].width * 8 - width) / 2;
+
     rboxid_clear_pixels(id, 0x0);
-    rboxid_print(id, 1, 0, 0, &pokepad_menu_color, 0xFF, app->name);
+    rboxid_print(id, 1, x, 0, &pokepad_menu_color, 0xFF, app->name);
     rboxid_tilemap_update(id);
     rboxid_update(id, 3);
 }

@@ -157,7 +157,7 @@ void pokepad_vblank_handler(void)
 
 static struct Textbox pokepad_bar_textboxes[2] = {
     {
-        0, 24, 0, 0x9, 2, 0xF, 0x50, 0x20A00,
+        0, 24, 0, 6, 2, 0xF, 0x50, 0x20A00,
     }, {
         0, 1, 0, 0x9, 2, 0xF, 0x6F, 0x20A00,
     }
@@ -169,12 +169,15 @@ static struct TextColor pokepad_bar_color = {
 
 void pokepad_update_time(void)
 {
-    /* TODO: Right align time */
     /* TODO: Get actual time */
-    pchar s2[] = _"10:11";
+    pchar time_string[] = _"10:11";
     u8 id = pokepad_state->shared_state->bar_textboxes[0];
+
+    u32 width = font_get_width_of_string(0, time_string, 0);
+    u8 x = rboxes[id].width * 8 - width - 8; /* 8 pixels from the right */
+
     rboxid_clear_pixels(id, 0x0);
-    rboxid_print(id, 0, 0, 0, &pokepad_bar_color, 0xFF, s2);
+    rboxid_print(id, 0, x, 0, &pokepad_bar_color, 0xFF, time_string);
     rboxid_tilemap_update(id);
     rboxid_update(id, 3);
 }
