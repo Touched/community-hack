@@ -3,18 +3,28 @@
 extern const struct PokepadApplication pokepad_application_main;
 
 #include "generated/images/pokepad/icons/pokedex.h"
+#include "generated/images/pokepad/icons/dexnav.h"
 const struct PokepadApplication pokepad_application_test = {
     .name = _"Pokédex",
-    .description = "Test application",
+    .description = "Pokémon Encyclopedia.",
     .role = POKEPAD_APP_BUILTIN,
     .icon = POKEPAD_BUILD_APP_ICON(pokedex),
+};
+
+const struct PokepadApplication pokepad_application_test2 = {
+    .name = _"Dexnav",
+    .description = "Search for Pokémon.",
+    .role = POKEPAD_APP_BUILTIN,
+    .icon = POKEPAD_BUILD_APP_ICON(dexnav),
 };
 
 const struct PokepadApplication* pokepad_applications[] = {
     &pokepad_application_main,
     &pokepad_application_test,
+    &pokepad_application_test2,
     &pokepad_application_test,
-    &pokepad_application_test,
+    &pokepad_application_test2,
+    &pokepad_application_test2,
     &pokepad_application_test,
 };
 
