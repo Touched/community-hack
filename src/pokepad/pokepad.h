@@ -3,6 +3,9 @@
 
 #include <pokeagb/pokeagb.h>
 
+#define POKEPAD_BUILD_APP_ICON(name) \
+    { .palette = name ## Pal, .tiles = name ## Tiles, .size = name ## TilesLen }
+
 struct PokepadApplication {
     /**
      * The name of the application.
@@ -18,8 +21,9 @@ struct PokepadApplication {
      * The application's icon sprite.
      */
     struct Icon {
-        u8* palette;
-        u8* tiles;
+        const u8* palette;
+        const u8* tiles;
+        u16 size;
     } icon;
 
     /**
@@ -65,6 +69,8 @@ extern struct Pokepad* pokepad_state;
 extern const struct PokepadApplication* pokepad_applications[];
 
 const struct PokepadApplication* pokepad_application_find_main(void);
+const struct PokepadApplication** pokepad_application_next(const struct PokepadApplication** it);
+u8 pokepad_application_id(const struct PokepadApplication** it);
 
 /* Handlers */
 void pokepad_hblank_handler(void);
