@@ -1,7 +1,6 @@
 #include <pokeagb/pokeagb.h>
 #include "pokepad.h"
-#include "generated/images/pokenav/pokenav_main.h"
-#include "generated/images/pokenav/pokenav_main_back.h"
+#include "generated/images/pokepad/pokenav_main.h"
 
 // reset screen attributes
 extern void setup(void);

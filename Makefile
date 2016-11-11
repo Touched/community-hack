@@ -78,7 +78,7 @@ $(BUILD)/%.s.o: %.s
 	@mkdir -p $(@D)
 	@$(PREPROC) $< $(CHARMAP) | $(AS) $(ASFLAGS) -o $@
 
-generated/images/%.c: images/%.png images/%.grit
+generated/images/%.c: images/%.png $(<:%.png=%.grit)
 	@echo -e "\e[34mProcessing image $<\e[0m"
 	@mkdir -p $(@D)
 	@grit $< -o $@ -ff$(<:%.png=%.grit)
