@@ -334,9 +334,21 @@ static void pokepad_exit(void)
     case 1:
         if (!pal_fade_control.active) {
             super.multi_purpose_state_tracker++;
+            pokepad_state->tracker = 0;
         }
         break;
     case 2:
+        if (pokepad_state->current_app->destroy(&pokepad_state->tracker)) {
+            return;
+        }
+
+        super.multi_purpose_state_tracker++;
+        break;
+    case 3:
+        /* Unmalloc */
+        free(pokepad_state->shared_state);
+        free(pokepad_state);
+
         m4aMPlayVolumeControl(&mplay_BGM, 0xFFFF, 256);
         set_callback1(c1_overworld);
         set_callback2(c2_overworld_switch_start_menu);
