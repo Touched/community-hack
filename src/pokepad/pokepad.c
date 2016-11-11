@@ -8,7 +8,7 @@ extern void setup(void);
 extern void vcb_pokenav(void);
 extern void vblank_cb_spq(void);
 
-const pchar pokepad_sm_name[] = _"Poképad";
+const pchar pokepad_sm_name[] = _"PokéPad";
 const pchar pokepad_sm_description[] = _"A high-tech multifunctional device.";
 
 static const struct BgConfig bg_config[4] = {
@@ -253,7 +253,7 @@ void launch_pokepad_app()
         fade_screen(~0, 0, 0x10, 0x0, 0);
         vblank_handler_set(pokepad_vblank_handler);
         hblank_handler_set(pokepad_hblank_handler);
-        ((void (*)(u16)) (0x08000B68|1))(3);
+        interrupts_enable(INTERRUPT_VBLANK | INTERRUPT_HBLANK);
 
         /* Get ready to call setup */
         pokepad_state->tracker = 0;
@@ -314,7 +314,7 @@ u8 prelaunch_pokenav_setup()
         pokepad_state->shared_state = (struct PokepadShared*) malloc(sizeof(struct PokepadShared));
         pokepad_state->current_app = pokepad_application_find_main();
 
-        lcd_io_set(0, 0);
+        lcd_io_set(REG_ID_DISPCNT, 0);
         help_system_disable__sp198();
         setup();
         set_callback1(launch_pokepad_app);
