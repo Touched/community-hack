@@ -71,7 +71,8 @@ static void load_page_indicators(void)
     u16 x = (SCREEN_WIDTH - width + POKEPAD_MENU_PAGE_INDICATOR_WIDTH) / 2;
 
     for (u8 i = 0; i < pages; i++) {
-        u8 id = template_instanciate_forward_search(&menu_page_indicator_template, x + i * 8, 80, 0);
+        u8 id = template_instanciate_forward_search(&menu_page_indicator_template,
+                                                    x + i * 8, 104, 0);
         objects[id].private[0] = i;
     }
 }
@@ -117,7 +118,7 @@ static struct Textbox pokepad_menu_textboxes[2] = {
     {
         0,
         ((SCREEN_WIDTH / 8) - POKEPAD_APP_NAME_WIDTH) / 2,
-        12,
+        10,
         POKEPAD_APP_NAME_WIDTH,
         2,
         0xF,
