@@ -50,6 +50,11 @@ struct PokepadApplication {
      * Called when the application is unloaded. Returns true while busy.
      */
     bool (*destroy)(u8*);
+
+    /**
+     * Called every frame during the menu.
+     */
+    void (*callback)(void);
 };
 
 struct PokepadShared {

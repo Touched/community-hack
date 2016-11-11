@@ -218,6 +218,11 @@ static bool destroy(u8* trigger)
     return false;
 }
 
+static void callback(void)
+{
+
+}
+
 static void oac_page_indicator(struct Object* obj)
 {
     /* TODO: Check if the page ID matches the current page  */
@@ -243,4 +248,5 @@ const struct PokepadApplication pokepad_application_main = {
     .role = POKEPAD_APP_MAIN,
     .setup = setup,
     .destroy = destroy,
+    .callback = callback,
 };
