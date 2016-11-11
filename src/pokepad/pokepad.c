@@ -261,15 +261,14 @@ void launch_pokepad_app()
         break;
     case 4:
         /* Run the app setup function */
-        if (pokepad_state->current_app->setup(&pokepad_state->tracker)) {
-            return;
+        if (!pokepad_state->current_app->setup(&pokepad_state->tracker)) {
+            super.multi_purpose_state_tracker++;
         }
 
-        super.multi_purpose_state_tracker++;
         break;
 
     case 5:
-        /* Backgrounds */
+        lcd_io_set(REG_ID_DISPCNT, DISPCNT_OBJ | DISPCNT_OAM_1D);
         bgid_mark_for_sync(0);
         bgid_mark_for_sync(1);
         bgid_mark_for_sync(2);
@@ -284,7 +283,6 @@ void launch_pokepad_app()
     case 6:
         /* TODO: Possible boot animation */
         if (pal_fade_control.active) {
-            fade_and_return_progress_probably();
             build_gradient();
         } else {
             super.multi_purpose_state_tracker++;
@@ -292,15 +290,17 @@ void launch_pokepad_app()
         break;
 
     case 7:
-
-
         /* TODO: Wait for fade */
         set_callback2(pokepad_callback);
         set_callback1(NULL);
         break;
     };
 
-    /* TODO: Rbox free */
+    task_exec();
+    remoboxes_upload_tilesets();
+    objc_exec();
+    obj_sync_superstate();
+    process_palfade();
 }
 
 u8 prelaunch_pokenav_setup()
@@ -337,11 +337,10 @@ static void pokepad_exit(void)
         }
         break;
     case 2:
-        if (pokepad_state->current_app->destroy(&pokepad_state->tracker)) {
-            return;
+        if (!pokepad_state->current_app->destroy(&pokepad_state->tracker)) {
+            super.multi_purpose_state_tracker++;
         }
 
-        super.multi_purpose_state_tracker++;
         break;
     case 3:
         /* Unmalloc */
@@ -365,6 +364,11 @@ static void pokepad_callback(void)
     }
 
     /* pokepad_state->current_app->callback(); */
+    task_exec();
+    remoboxes_upload_tilesets();
+    objc_exec();
+    obj_sync_superstate();
+    process_palfade();
 }
 
 /* 0806F380 */
