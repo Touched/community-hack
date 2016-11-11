@@ -216,21 +216,6 @@ void launch_pokepad_app()
         break;
     }
     case 2: {
-        /* struct Textbox pokepad_app_description_textbox = { */
-        /*     0, 1, 0x10, 0x1C, 3, 0xF, 0x8F, 0x20A00, */
-        /* }; */
-
-
-        /* u8 id = rboxid_init(&pokepad_app_description_textbox); */
-        /* pchar s[] = _"I am an application"; */
-
-        /* rboxid_clear_pixels(id, 0x0); */
-        /* rboxid_print(id, 1, 0, 0, &color, 0xFF, s); */
-        /* rboxid_tilemap_update(id); */
-        /* rboxid_update(id, 3); */
-
-        /*  */
-
         pokepad_state->shared_state->bar_textboxes[0] = rboxid_init(&pokepad_bar_textboxes[0]);
         pokepad_state->shared_state->bar_textboxes[1] = rboxid_init(&pokepad_bar_textboxes[1]);
         pokepad_update_time();
