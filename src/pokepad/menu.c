@@ -24,6 +24,7 @@ struct PokepadMenuState {
 
     u8 index;
     u8 page;
+    u8 page_index;
     u8 app_count;
     u8 page_count;
     u8 arrow_id;
@@ -193,7 +194,7 @@ static void update_app_textboxes(void)
     struct PokepadMenuState* state = (struct PokepadMenuState*) pokepad_state->app_state;
 
     /* TODO: Load currently selected app */
-    const struct PokepadApplication* app = pokepad_state->current_app;
+    const struct PokepadApplication* app = state->apps[state->index];
 
     update_app_description(state->textboxes.app_description, app);
     update_app_name(state->textboxes.app_name, app);
@@ -263,25 +264,15 @@ static void callback(void)
     if (super.buttons.new_remapped & KEY_LEFT) {
         if (state->index > 0) {
             state->index -= 1;
-        } else {
-            /* Page Left */
-            if (state->page > 0) {
-                state->index = POKEPAD_MENU_APPS_PER_PAGE - 1;
-                state->page--;
-            }
         }
     } else if (super.buttons.new_remapped & KEY_RIGHT) {
-
-        if (state->index < POKEPAD_MENU_APPS_PER_PAGE - 1) {
+        if (state->index < state->app_count - 1) {
             state->index += 1;
-        } else {
-            /* Page right */
-            if (state->page < state->page_count - 1) {
-                state->index = 0;
-                state->page++;
-            }
         }
     }
+
+    state->page = state->index / POKEPAD_MENU_APPS_PER_PAGE;
+    state->page_index = state->index % POKEPAD_MENU_APPS_PER_PAGE;
 
     menu_arrow_update_position();
     update_app_textboxes();
@@ -304,7 +295,7 @@ static void menu_arrow_update_position()
     struct PokepadMenuState* state = (struct PokepadMenuState*) pokepad_state->app_state;
 
     struct Object* obj = &objects[state->arrow_id];
-    obj->pos1.x = POKEPAD_MENU_ICON_X + state->index * POKEPAD_MENU_ICON_SIZE_PADDED;
+    obj->pos1.x = POKEPAD_MENU_ICON_X + state->page_index * POKEPAD_MENU_ICON_SIZE_PADDED;
     obj->pos1.y = POKEPAD_MENU_ICON_Y - POKEPAD_MENU_ICON_SIZE / 2 - 8;
 }
 
