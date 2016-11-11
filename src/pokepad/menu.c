@@ -23,6 +23,9 @@ struct PokepadMenuState {
     const struct PokepadApplication* apps[POKEPAD_MENU_MAX_APPS];
 
     u8 index;
+    u8 page;
+    u8 app_count;
+    u8 page_count;
     u8 arrow_id;
 };
 
@@ -58,7 +61,7 @@ const struct Template menu_page_indicator_template = {
     oac_page_indicator,
 };
 
-static hblank_handler(void)
+static void hblank_handler(void)
 {
     pokepad_hblank_handler();
 
@@ -72,17 +75,20 @@ static hblank_handler(void)
 
 static void load_page_indicators(void)
 {
-    u8 pages = 3;
-    gpu_pal_obj_alloc_tag_and_apply(&menu_page_indicator_palette);
-    gpu_tile_obj_alloc_tag_and_upload(&menu_page_indicator_tiles);
+    struct PokepadMenuState* state = (struct PokepadMenuState*) pokepad_state->app_state;
 
-    u16 width = pages * POKEPAD_MENU_PAGE_INDICATOR_WIDTH;
-    u16 x = (SCREEN_WIDTH - width + POKEPAD_MENU_PAGE_INDICATOR_WIDTH) / 2;
+    if (state->page_count > 1) {
+        gpu_pal_obj_alloc_tag_and_apply(&menu_page_indicator_palette);
+        gpu_tile_obj_alloc_tag_and_upload(&menu_page_indicator_tiles);
 
-    for (u8 i = 0; i < pages; i++) {
-        u8 id = template_instanciate_forward_search(&menu_page_indicator_template,
-                                                    x + i * 8, 104, 0);
-        objects[id].private[0] = i;
+        u16 width = state->page_count * POKEPAD_MENU_PAGE_INDICATOR_WIDTH;
+        u16 x = (SCREEN_WIDTH - width + POKEPAD_MENU_PAGE_INDICATOR_WIDTH) / 2;
+
+        for (u8 i = 0; i < state->page_count; i++) {
+            u8 id = template_instanciate_forward_search(&menu_page_indicator_template,
+                                                        x + i * 8, 104, 0);
+            objects[id].private[0] = i;
+        }
     }
 }
 
@@ -125,6 +131,23 @@ static void load_applications(void)
         template_instanciate_forward_search(&template, x, POKEPAD_MENU_ICON_Y, 0);
         x += POKEPAD_MENU_ICON_SIZE_PADDED;
     }
+}
+
+static void count_applications(void)
+{
+    struct PokepadMenuState* state = (struct PokepadMenuState*) pokepad_state->app_state;
+
+    for (u8 i = 0; i < POKEPAD_MENU_MAX_APPS; i++) {
+        const struct PokepadApplication* app = state->apps[i];
+
+        if (app) {
+            state->app_count++;
+        }
+    }
+
+    /* Ceiling division */
+    state->page_count = (state->app_count + POKEPAD_MENU_APPS_PER_PAGE - 1) /
+        POKEPAD_MENU_APPS_PER_PAGE;
 }
 
 static struct Textbox pokepad_menu_textboxes[2] = {
@@ -176,7 +199,6 @@ static void update_app_textboxes(void)
     update_app_name(state->textboxes.app_name, app);
 }
 
-
 static bool setup(u8* trigger)
 {
     struct PokepadMenuState* state = (struct PokepadMenuState*) pokepad_state->app_state;
@@ -194,6 +216,7 @@ static bool setup(u8* trigger)
 
     case 1:
         pokepad_applications_load(state->apps, POKEPAD_MENU_MAX_APPS);
+        count_applications();
 
         /* Load arrow */
         gpu_pal_obj_alloc_tag_and_apply(&menu_arrow_palette);
@@ -242,7 +265,10 @@ static void callback(void)
             state->index -= 1;
         } else {
             /* Page Left */
-            state->index = POKEPAD_MENU_APPS_PER_PAGE - 1;
+            if (state->page > 0) {
+                state->index = POKEPAD_MENU_APPS_PER_PAGE - 1;
+                state->page--;
+            }
         }
     } else if (super.buttons.new_remapped & KEY_RIGHT) {
 
@@ -250,7 +276,10 @@ static void callback(void)
             state->index += 1;
         } else {
             /* Page right */
-            state->index = 0;
+            if (state->page < state->page_count - 1) {
+                state->index = 0;
+                state->page++;
+            }
         }
     }
 
@@ -260,9 +289,10 @@ static void callback(void)
 
 static void oac_page_indicator(struct Object* obj)
 {
-    /* TODO: Check if the page ID matches the current page  */
+    struct PokepadMenuState* state = (struct PokepadMenuState*) pokepad_state->app_state;
+
     u8 tile = 1;
-    if (obj->private[0] == 0) {
+    if (obj->private[0] == state->page) {
         tile = 0;
     }
 
