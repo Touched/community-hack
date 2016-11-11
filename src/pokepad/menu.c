@@ -7,21 +7,26 @@
 #define POKEPAD_MENU_ICON_X 36
 #define POKEPAD_MENU_ICON_Y 55
 #define POKEPAD_MENU_ICON_SIZE 42
+#define POKEPAD_MENU_ICON_SIZE_PADDED 56
 #define POKEPAD_MENU_PAGE_INDICATOR_WIDTH 8
 #define POKEPAD_APP_NAME_WIDTH 8
+#define POKEPAD_MENU_APPS_PER_PAGE 4
 
 struct PokepadMenuState {
     struct {
         u8 app_name;
         u8 app_description;
     } textboxes;
+
+    u8 index;
+    u8 arrow_id;
 };
 
 static struct OamData app_icon_oam = {
     .size = 3
 };
 
-static void menu_arrow_update_position(u8 id);
+static void menu_arrow_update_position();
 
 static struct OamData menu_arrow_oam = {};
 const struct SpritePalette menu_arrow_palette = { arrowPal, 0xF000 };
@@ -110,7 +115,7 @@ static void load_applications(void)
         gpu_pal_obj_alloc_tag_and_apply(&palette);
         gpu_tile_obj_alloc_tag_and_upload(&tiles);
         template_instanciate_forward_search(&template, x, POKEPAD_MENU_ICON_Y, 0);
-        x += 56;
+        x += POKEPAD_MENU_ICON_SIZE_PADDED;
     }
 }
 
@@ -170,7 +175,7 @@ static bool setup(u8* trigger)
 
     switch (*trigger) {
     case 0:
-        pokepad_state->app_state = malloc(sizeof(struct PokepadMenuState));
+        pokepad_state->app_state = malloc_and_clear(sizeof(struct PokepadMenuState));
 
         /* Create the application description box using HBlank */
         hblank_handler_set(hblank_handler);
@@ -183,13 +188,13 @@ static bool setup(u8* trigger)
         /* Load arrow */
         gpu_pal_obj_alloc_tag_and_apply(&menu_arrow_palette);
         gpu_tile_obj_alloc_tag_and_upload(&menu_arrow_tiles);
-        u8 id = template_instanciate_forward_search(&menu_arrow_template, 0, 0, 0);
-        menu_arrow_update_position(id);
-        objects[id].private[0] = 1; /* Enable */
-        objects[id].private[2] = 1; /* Vertical */
-        objects[id].private[3] = 2; /* Distance */
-        objects[id].private[4] = 6; /* Speed */
-        objects[id].private[5] = 1; /* Phase */
+        state->arrow_id = template_instanciate_forward_search(&menu_arrow_template, 0, 0, 0);
+        menu_arrow_update_position();
+        objects[state->arrow_id].private[0] = 1; /* Enable */
+        objects[state->arrow_id].private[2] = 1; /* Vertical */
+        objects[state->arrow_id].private[3] = 2; /* Distance */
+        objects[state->arrow_id].private[4] = 6; /* Speed */
+        objects[state->arrow_id].private[5] = 1; /* Phase */
 
         load_page_indicators();
 
@@ -220,7 +225,27 @@ static bool destroy(u8* trigger)
 
 static void callback(void)
 {
+    struct PokepadMenuState* state = (struct PokepadMenuState*) pokepad_state->app_state;
 
+    if (super.buttons.new_remapped & KEY_LEFT) {
+        if (state->index > 0) {
+            state->index -= 1;
+        } else {
+            /* Page Left */
+            state->index = POKEPAD_MENU_APPS_PER_PAGE - 1;
+        }
+    } else if (super.buttons.new_remapped & KEY_RIGHT) {
+
+        if (state->index < POKEPAD_MENU_APPS_PER_PAGE - 1) {
+            state->index += 1;
+        } else {
+            /* Page right */
+            state->index = 0;
+        }
+    }
+
+    menu_arrow_update_position();
+    update_app_textboxes();
 }
 
 static void oac_page_indicator(struct Object* obj)
@@ -234,10 +259,12 @@ static void oac_page_indicator(struct Object* obj)
     obj->final_oam.tile_num = obj->anim_data_offset + tile;
 }
 
-static void menu_arrow_update_position(u8 id)
+static void menu_arrow_update_position()
 {
-    struct Object* obj = &objects[id];
-    obj->pos1.x = POKEPAD_MENU_ICON_X;
+    struct PokepadMenuState* state = (struct PokepadMenuState*) pokepad_state->app_state;
+
+    struct Object* obj = &objects[state->arrow_id];
+    obj->pos1.x = POKEPAD_MENU_ICON_X + state->index * POKEPAD_MENU_ICON_SIZE_PADDED;
     obj->pos1.y = POKEPAD_MENU_ICON_Y - POKEPAD_MENU_ICON_SIZE / 2 - 8;
 }
 
