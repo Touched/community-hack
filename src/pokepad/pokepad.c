@@ -76,7 +76,7 @@ static void build_gradient(void)
     /* Gradient 4E68 -> DD09 */
     /* There is a colour in the gradient for every 8 pixels in the screen height */
     u16 gradient[20] = {
-        0x684E, 0x684E,
+        0, 0,
         0x684E, 0x644F, 0x5C70, 0x5491, 0x50B2, 0x48D3, 0x44F4, 0x3D15,
         0x3536, 0x3137, 0x2958, 0x2179, 0x1D9A, 0x15BB, 0x11DC, 0x09DD,
         0x09DD, 0x09DD
