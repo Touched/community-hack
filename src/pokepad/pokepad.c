@@ -324,12 +324,33 @@ u8 prelaunch_pokenav_setup()
     }
 }
 
-static void pokepad_callback(void)
+static void pokepad_exit(void)
 {
-    if (super.buttons.new_remapped & KEY_B) {
+    switch (super.multi_purpose_state_tracker) {
+    case 0:
+        fade_screen(~0, 0, 0x0, 0x10, 0);
+        super.multi_purpose_state_tracker++;
+        break;
+    case 1:
+        if (!pal_fade_control.active) {
+            super.multi_purpose_state_tracker++;
+        }
+        break;
+    case 2:
         m4aMPlayVolumeControl(&mplay_BGM, 0xFFFF, 256);
         set_callback1(c1_overworld);
         set_callback2(c2_overworld_switch_start_menu);
+        break;
+    }
+
+    build_gradient();
+    fade_and_return_progress_probably();
+}
+
+static void pokepad_callback(void)
+{
+    if (super.buttons.new_remapped & KEY_B) {
+        set_callback2(pokepad_exit);
     }
 
     /* pokepad_state->current_app->callback(); */
