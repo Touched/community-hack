@@ -9,6 +9,13 @@
 #define POKEPAD_MENU_ICON_SIZE 42
 #define POKEPAD_MENU_PAGE_INDICATOR_WIDTH 8
 
+struct PokepadMenuState {
+    struct {
+        u8 app_name;
+        u8 app_description;
+    } textboxes;
+};
+
 static struct OamData app_icon_oam = {
     .size = 3
 };
@@ -105,10 +112,55 @@ static void load_applications(void)
     }
 }
 
+static struct Textbox pokepad_menu_textboxes[2] = {
+    {
+        0, 10, 12, 0x9, 2, 0xF, 0x8F, 0x20A00,
+    }, {
+        0, 1, 0x10, 0x1C, 3, 0xF, 0x100, 0x20A00,
+    }
+};
+
+static struct TextColor pokepad_menu_color = {
+    0, 1, 2,
+};
+
+static void update_app_description(u8 id, const struct PokepadApplication* app)
+{
+    rboxid_clear_pixels(id, 0x0);
+    rboxid_print(id, 1, 0, 0, &pokepad_menu_color, 0xFF, app->description);
+    rboxid_tilemap_update(id);
+    rboxid_update(id, 3);
+}
+
+static void update_app_name(u8 id, const struct PokepadApplication* app)
+{
+    /* TODO: Centre name */
+    rboxid_clear_pixels(id, 0x0);
+    rboxid_print(id, 1, 0, 0, &pokepad_menu_color, 0xFF, app->name);
+    rboxid_tilemap_update(id);
+    rboxid_update(id, 3);
+}
+
+static void update_app_textboxes(void)
+{
+    struct PokepadMenuState* state = (struct PokepadMenuState*) pokepad_state->app_state;
+
+    /* TODO: Load currently selected app */
+    const struct PokepadApplication* app = pokepad_state->current_app;
+
+    update_app_description(state->textboxes.app_description, app);
+    update_app_name(state->textboxes.app_name, app);
+}
+
+
 static bool setup(u8* trigger)
 {
+    struct PokepadMenuState* state = (struct PokepadMenuState*) pokepad_state->app_state;
+
     switch (*trigger) {
     case 0:
+        pokepad_state->app_state = malloc(sizeof(struct PokepadMenuState));
+
         /* Create the application description box using HBlank */
         hblank_handler_set(hblank_handler);
         lcd_io_set(REG_ID_BLDY, 8);
@@ -134,6 +186,14 @@ static bool setup(u8* trigger)
         *trigger = 2;
         break;
 
+    case 2:
+        /* Load descriptions */
+        state->textboxes.app_name = rboxid_init(&pokepad_menu_textboxes[0]);
+        state->textboxes.app_description = rboxid_init(&pokepad_menu_textboxes[1]);
+        update_app_textboxes();
+        *trigger = 3;
+        break;
+
     default:
         return false;
     }
@@ -143,6 +203,7 @@ static bool setup(u8* trigger)
 
 static bool destroy(u8* trigger)
 {
+    free(pokepad_state->app_state);
     return false;
 }
 
@@ -164,9 +225,10 @@ static void menu_arrow_update_position(u8 id)
     obj->pos1.y = POKEPAD_MENU_ICON_Y - POKEPAD_MENU_ICON_SIZE / 2 - 8;
 }
 
+static const pchar description[] = _"Main application";
 const struct PokepadApplication pokepad_application_main = {
     .name = _"PokéPad",
-    .description = "Main application",
+    .description = &description,
     .role = POKEPAD_APP_MAIN,
     .setup = setup,
     .destroy = destroy,
