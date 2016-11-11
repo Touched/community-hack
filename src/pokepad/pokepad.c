@@ -351,7 +351,8 @@ static void pokepad_callback(void)
         set_callback2(pokepad_exit);
     }
 
-    /* pokepad_state->current_app->callback(); */
+    pokepad_state->current_app->callback();
+
     task_exec();
     remoboxes_upload_tilesets();
     objc_exec();
