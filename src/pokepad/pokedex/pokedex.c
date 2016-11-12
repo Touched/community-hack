@@ -174,7 +174,7 @@ static void task_scroll_icons(u8 id)
     }
 }
 
-static void change_page(u8 rows, s8 direction)
+static void change_page(u8 rows, s8 direction, u8 speed)
 {
     if (task_is_running(task_scroll_icons)) {
         return;
@@ -192,7 +192,7 @@ static void change_page(u8 rows, s8 direction)
     scroll->icon_count = POKEDEX_ICONS + rows * POKEDEX_GRID_WIDTH;
     scroll->icons = malloc(scroll->icon_count * sizeof(u8));
     scroll->direction = direction;
-    scroll->shift = 4;
+    scroll->shift = speed;
     scroll->rows = rows;
     scroll->row = 0;
     scroll->counter = 0;
@@ -246,12 +246,12 @@ static bool destroy(u8* trigger)
 
 static void callback(void)
 {
-    if (super.buttons.new & KEY_L) {
+    if (super.buttons.held & KEY_L) {
         /* Page Left */
-        change_page(2, -1);
-    } else if (super.buttons.new & KEY_R) {
+        change_page(POKEDEX_GRID_HEIGHT, -1, 8);
+    } else if (super.buttons.held & KEY_R) {
         /* Page Right */
-        change_page(2, 1);
+        change_page(POKEDEX_GRID_HEIGHT, 1, 8);
     }
 }
 
