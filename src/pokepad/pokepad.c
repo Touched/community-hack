@@ -70,21 +70,39 @@ u16 blend_color(u16 color, u8 coeff, u16 blendColor)
         | ((b + (((data2->b - b) * coeff) >> 4)) << 10);
 }
 
-static void build_gradient(void)
+static void build_gradient(u16 start_color, u16 stop_color)
 {
-    /* TODO: Build a 3 stop gradient */
-    /* Gradient 4E68 -> DD09 */
-    /* There is a colour in the gradient for every 8 pixels in the screen height */
-    u16 gradient[20] = {
-        0, 0,
-        0x684E, 0x644F, 0x5C70, 0x5491, 0x50B2, 0x48D3, 0x44F4, 0x3D15,
-        0x3536, 0x3137, 0x2958, 0x2179, 0x1D9A, 0x15BB, 0x11DC, 0x09DD,
-        0x09DD, 0x09DD
-    };
+    struct ColorComponents* start = (struct ColorComponents*) &start_color;
+    struct ColorComponents* stop = (struct ColorComponents*) &stop_color;
+    u16 lines = sizeof(pokepad_state->shared_state->gradient) / sizeof(u16);
 
+    /* RGB 8 bit components */
+    u16 mr = ((stop->r << 3) - (start->r << 3)) / lines;
+    u16 mg = ((stop->g << 3) - (start->g << 3)) / lines;
+    u16 mb = ((stop->b << 3) - (start->b << 3)) / lines;
+    u16 r = start->r << 3;
+    u16 g = start->g << 3;
+    u16 b = start->b << 3;
+
+    union Color color = {};
+    for (u8 i = 0; i < lines; i++) {
+        color.components.r = r >> 3;
+        color.components.g = g >> 3;
+        color.components.b = b >> 3;
+
+        pokepad_state->shared_state->gradient[i] = color.packed;
+
+        r += mr;
+        g += mg;
+        b += mb;
+    }
+}
+
+static void build_gradient_palette(void)
+{
     u16* buffer = (u16*) pokepad_state->shared_state->gradient_palette;
-    for (u8 i = 0; i < sizeof(gradient) / sizeof(u16); i++) {
-        u16 color = gradient[i];
+    for (u8 i = 0; i < sizeof(pokepad_state->shared_state->gradient) / sizeof(u16); i++) {
+        u16 color = pokepad_state->shared_state->gradient[i];
 
         for (u8 j = 0; j < 16; j++) {
             u8 r = color & 0x1f;
@@ -230,7 +248,9 @@ void launch_pokepad_app()
     case 3:
         /* Apply the gradient palette for the first line as hblank DMA
          * only takes over after that. */
-        build_gradient();
+        /*  */
+        build_gradient(0x684E, 0x09DD);
+        build_gradient_palette();
         gpu_pal_apply(pokepad_state->shared_state->gradient_palette, 0, 32);
 
         /* Clean the palette buffer so HBlank doesn't start copying it */
@@ -270,7 +290,7 @@ void launch_pokepad_app()
     case 6:
         /* TODO: Possible boot animation */
         if (pal_fade_control.active) {
-            build_gradient();
+            build_gradient_palette();
         } else {
             super.multi_purpose_state_tracker++;
         }
@@ -340,7 +360,7 @@ static void pokepad_exit(void)
         break;
     }
 
-    build_gradient();
+    build_gradient_palette();
     process_palfade();
 }
 

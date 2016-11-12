@@ -59,6 +59,7 @@ struct PokepadApplication {
 
 struct PokepadShared {
     u8 bar_textboxes[2];
+    u16 gradient[20];
     u16 gradient_palette[20][16] __attribute__((aligned(4))); /* 20 lines of 16 colours */
 };
 
