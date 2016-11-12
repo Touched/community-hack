@@ -209,7 +209,7 @@ static void change_page(u8 rows, s8 direction, u8 speed)
 
             /* Determine which icons to load and where */
             if (direction < 0) {
-                index = i + state->index + POKEDEX_ICONS - POKEDEX_GRID_WIDTH;
+                index = i + state->index + POKEDEX_ICONS - POKEDEX_GRID_WIDTH * rows;
                 id = load_icon(index, x, y + POKEDEX_GRID_HEIGHT);
             } else if (direction > 0) {
                 index = i + state->index;

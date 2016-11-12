@@ -17,7 +17,7 @@ struct PokepadPokedexState {
 
 struct PokedexIconState {
     u8 id;
-    u16 index;
+    s16 index;
     s16 x;
     s16 y;
 };
