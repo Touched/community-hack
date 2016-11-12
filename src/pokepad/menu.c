@@ -167,7 +167,7 @@ static struct Textbox pokepad_menu_textboxes[2] = {
         0x8F,
         0x20A00,
     }, {
-        0, 1, 16, 0x1C, 3, 0xF, 0x100, 0x20A00,
+        0, 1, 15, 0x1C, 5, 0xF, 0x100, 0x20A00,
     }
 };
 
@@ -178,7 +178,7 @@ static struct TextColor pokepad_menu_color = {
 static void update_app_description(u8 id, const struct PokepadApplication* app)
 {
     rboxid_clear_pixels(id, 0x0);
-    rboxid_print(id, 1, 0, 0, &pokepad_menu_color, 0xFF, app->description);
+    rboxid_print(id, 1, 0, 6, &pokepad_menu_color, 0xFF, app->description);
     rboxid_tilemap_update(id);
     rboxid_update(id, 3);
 }
@@ -232,8 +232,8 @@ static bool setup(u8* trigger)
         objects[state->arrow_id].private[0] = 1; /* Enable */
         objects[state->arrow_id].private[2] = 1; /* Vertical */
         objects[state->arrow_id].private[3] = 2; /* Distance */
-        objects[state->arrow_id].private[4] = 6; /* Speed */
-        objects[state->arrow_id].private[5] = 1; /* Phase */
+        objects[state->arrow_id].private[4] = 20; /* Speed */
+        objects[state->arrow_id].private[5] = 0; /* Phase */
 
         load_page_indicators();
 

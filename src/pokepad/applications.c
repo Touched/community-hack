@@ -4,7 +4,7 @@ extern const struct PokepadApplication pokepad_application_main;
 
 #include "generated/images/pokepad/icons/pokedex.h"
 #include "generated/images/pokepad/icons/dexnav.h"
-const pchar pokepad_application_test_desc[] = _"Pokémon Encyclopedia.";
+const pchar pokepad_application_test_desc[] = _"Pokémon\nEncyclopedia.";
 const struct PokepadApplication pokepad_application_test = {
     .name = _"Pokédex",
     .description = pokepad_application_test_desc,
