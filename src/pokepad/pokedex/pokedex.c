@@ -118,59 +118,97 @@ static void load_icon_grid(void)
     }
 }
 
-static void oac_scroll(struct Object* obj)
+static void task_scroll_icons(u8 id)
 {
-    struct PokedexIconState* icon = (struct PokedexIconState*) obj->private;
-    struct PokepadPokedexState* state = (struct PokepadPokedexState*) pokepad_state->app_state;
+    struct Task* task = &tasks[id];
+    struct PokedexScrollState* scroll = (struct PokedexScrollState*) task->priv;
 
-    if (obj->pos1.y != POKEDEX_ICON_Y(icon->target_y)) {
-        obj->pos1.y += icon->scroll_speed;
-    } else {
-        icon->y = icon->target_y;
+    /* Scroll exisiting icons up */
+    if (scroll->row < scroll->rows) {
 
-        if (icon->y < 0 || icon->y >= POKEDEX_GRID_HEIGHT) {
-            /* Cull objects that go off-screen */
-            struct Template* template = obj->template;
+        for (u8 i = 0; i < scroll->icon_count; i++) {
+            struct Object* obj = &objects[scroll->icons[i]];
+            struct PokedexIconState* icon = (struct PokedexIconState*) obj->private;
+            obj->pos1.y += scroll->shift * scroll->direction;
 
-            gpu_tile_obj_free_by_tag(obj->template->tiles_tag);
-            obj_delete(obj);
-
-            free(template);
-        } else {
-            /* Set object ID */
-            state->icons[POKEDEX_GRID_WIDTH * icon->y + icon->x] = icon->id;
-            obj->callback = oac_nullsub;
+            if (scroll->counter >= POKEDEX_ICON_HEIGHT) {
+                icon->y += scroll->direction;
+            }
         }
+
+        scroll->counter += scroll->shift;
+
+        if (scroll->counter >= POKEDEX_ICON_HEIGHT) {
+            scroll->row++;
+            scroll->counter = 0;
+
+            for (u8 i = 0; i < scroll->icon_count; i++) {
+                if (scroll->icons[i] == 0xFF) {
+                    continue;
+                }
+
+                struct Object* obj = &objects[scroll->icons[i]];
+                struct PokedexIconState* icon = (struct PokedexIconState*) obj->private;
+
+                icon->y += scroll->direction;
+
+                bool cull = (scroll->direction < 0 && icon->y < 0) ||
+                    (scroll->direction > 0 && icon->y >= POKEDEX_GRID_HEIGHT);
+
+                if (cull) {
+                    /* Cull objects that go offscreen in the direction of scrolling */
+                    scroll->icons[i] = 0xFF;
+                    gpu_tile_obj_free_by_tag(obj->template->tiles_tag);
+                    obj_delete(obj);
+                }
+            }
+        }
+    } else {
+        struct PokepadPokedexState* state = (struct PokepadPokedexState*) pokepad_state->app_state;
+        for (u8 a = 0, b = 0; b < scroll->icon_count; b++) {
+            if (scroll->icons[b] != 0xFF) {
+                state->icons[a++] = scroll->icons[b];
+            }
+        }
+
+        /* Clean up */
+        free(scroll->icons);
+        task_del(id);
     }
 }
 
-static void change_page(s8 amount)
+static void change_page(u8 rows, s8 direction)
 {
     struct PokepadPokedexState* state = (struct PokepadPokedexState*) pokepad_state->app_state;
-    u8 pages = amount < 0 ? -amount : amount;
 
     /* TODO: direction */
-    state->index += POKEDEX_GRID_WIDTH;
+    state->index += POKEDEX_GRID_WIDTH * rows;
 
-    for (u8 i = 0; i < POKEDEX_GRID_WIDTH; i++) {
-        u16 index = i + state->index + POKEDEX_ICONS - POKEDEX_GRID_WIDTH;
-        u8 id = load_icon(index, i, POKEDEX_GRID_HEIGHT);
-        struct Object* obj = &objects[id];
-        struct PokedexIconState* icon = (struct PokedexIconState*) obj->private;
+    u8 task_id = task_add(task_scroll_icons, 0xA);
+    struct Task* task = &tasks[task_id];
+    struct PokedexScrollState* scroll = (struct PokedexScrollState*) task->priv;
 
-        obj->callback = oac_scroll;
-        icon->target_y = POKEDEX_GRID_HEIGHT - 1;
-        icon->scroll_speed = -4;
-    }
+    /* Initialize scroll state */
+    scroll->icon_count = POKEDEX_ICONS + rows * POKEDEX_GRID_WIDTH;
+    scroll->icons = malloc(scroll->icon_count * sizeof(u8));
+    scroll->direction = direction;
+    scroll->shift = 4;
+    scroll->rows = rows;
+    scroll->row = 0;
+    scroll->counter = 0;
 
-    /* Swap page */
-    for (u8 i = 0; i < POKEDEX_ICONS; i++) {
-        struct Object* obj = &objects[state->icons[i]];
-        struct PokedexIconState* icon = (struct PokedexIconState*) obj->private;
+    /* Copy existing icons into the buffer */
+    memcpy(scroll->icons, state->icons, sizeof(state->icons));
+    u8* buffer = scroll->icons + sizeof(state->icons);
 
-        obj->callback = oac_scroll;
-        icon->target_y = icon->y - 1;
-        icon->scroll_speed = -4;
+    /* Load additional icons into the buffer */
+    for (u8 i = 0, y = 0; y < rows; y++) {
+        for (u8 x = 0; x < POKEDEX_GRID_WIDTH; x++, i++) {
+            u16 index = i + state->index + POKEDEX_ICONS - POKEDEX_GRID_WIDTH;
+            u8 id = load_icon(index, x, y + POKEDEX_GRID_HEIGHT);
+            struct Object* obj = &objects[id];
+            *buffer++ = id;
+        }
     }
 }
 
@@ -201,10 +239,10 @@ static void callback(void)
 {
     if (super.buttons.new & KEY_L) {
         /* Page Left */
-        change_page(-1);
+        change_page(2, -1);
     } else if (super.buttons.new & KEY_R) {
         /* Page Right */
-        change_page(1);
+        change_page(2, 1);
     }
 }
 
