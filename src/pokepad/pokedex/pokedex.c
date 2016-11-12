@@ -30,7 +30,7 @@ static void pokepad_pokedex_load_icon(enum PokemonSpecies species, bool grayscal
 
     struct SpriteTiles tiles = {
         .data = load_party_icon_tiles_with_form(species, pid, true),
-        .size = 576,
+        .size = 512,
         .tag = POKEPAD_POKEDEX_ICON_BASE_TILE_TAG + species,
     };
 
@@ -76,6 +76,35 @@ static void pokepad_pokedex_load_icon(enum PokemonSpecies species, bool grayscal
     gpu_pal_obj_alloc_tag_and_apply(&palette);
 }
 
+static u8 load_icon(u16 index, u8 x, u8 y)
+{
+    struct Template* template = malloc(sizeof(struct Template));
+    u16 xpos = POKEDEX_ICON_X(x),
+        ypos = POKEDEX_ICON_Y(y);
+
+    u16 dex_index = pokedex_order[index];
+    enum PokemonSpecies species = pokedex_index_to_species(dex_index);
+    pokepad_pokedex_load_icon(species, false, template);
+
+    /* if (dex_flag(index, DEX_FLAG_CHECK_CAUGHT, false)) { */
+    /*     id = pokepad_pokedex_load_icon(species, false, xpos, ypos, 0); */
+    /* } else if (dex_flag(index, DEX_FLAG_CHECK_SEEN, false)) { */
+    /*     id = pokepad_pokedex_load_icon(species, true, xpos, ypos, 0); */
+    /* } else { */
+    /*     id = pokepad_pokedex_load_icon(SPECIES_MISSINGNO, false, xpos, ypos, 0); */
+    /* } */
+
+    u8 id = template_instanciate_forward_search(template, xpos, ypos, 0);
+
+    struct PokedexIconState* icon = (struct PokedexIconState*) objects[id].private;
+    icon->id = id;
+    icon->index = dex_index;
+    icon->x = x;
+    icon->y = y;
+
+    return id;
+}
+
 static void load_icon_grid(void)
 {
     struct PokepadPokedexState* state = (struct PokepadPokedexState*) pokepad_state->app_state;
@@ -83,26 +112,34 @@ static void load_icon_grid(void)
     u8 i = 0;
     for (u8 y = 0; y < POKEDEX_GRID_HEIGHT; y++) {
         for (u8 x = 0; x < POKEDEX_GRID_WIDTH; x++) {
-            u16 xpos = x * 32 + 38,
-                ypos = y * 32 + 36;
+            state->icons[i] = load_icon(i + state->index, x, y);
+            i++;
+        }
+    }
+}
 
-            u16 index = pokedex_order[i + state->index];
-            enum PokemonSpecies species = pokedex_index_to_species(index);
-            u8 id;
+static void oac_scroll(struct Object* obj)
+{
+    struct PokedexIconState* icon = (struct PokedexIconState*) obj->private;
+    struct PokepadPokedexState* state = (struct PokepadPokedexState*) pokepad_state->app_state;
 
-            struct Template* template = &state->icons[0].templates[id];
-            pokepad_pokedex_load_icon(species, false, template);
+    if (obj->pos1.y != POKEDEX_ICON_Y(icon->target_y)) {
+        obj->pos1.y += icon->scroll_speed;
+    } else {
+        icon->y = icon->target_y;
 
-            /* if (dex_flag(index, DEX_FLAG_CHECK_CAUGHT, false)) { */
-            /*     id = pokepad_pokedex_load_icon(species, false, xpos, ypos, 0); */
-            /* } else if (dex_flag(index, DEX_FLAG_CHECK_SEEN, false)) { */
-            /*     id = pokepad_pokedex_load_icon(species, true, xpos, ypos, 0); */
-            /* } else { */
-            /*     id = pokepad_pokedex_load_icon(SPECIES_MISSINGNO, false, xpos, ypos, 0); */
-            /* } */
+        if (icon->y < 0 || icon->y >= POKEDEX_GRID_HEIGHT) {
+            /* Cull objects that go off-screen */
+            struct Template* template = obj->template;
 
-            id = template_instanciate_forward_search(template, xpos, ypos, 0);
-            state->icons[0].ids[i++] = id;
+            gpu_tile_obj_free_by_tag(obj->template->tiles_tag);
+            obj_delete(obj);
+
+            free(template);
+        } else {
+            /* Set object ID */
+            state->icons[POKEDEX_GRID_WIDTH * icon->y + icon->x] = icon->id;
+            obj->callback = oac_nullsub;
         }
     }
 }
@@ -112,26 +149,29 @@ static void change_page(s8 amount)
     struct PokepadPokedexState* state = (struct PokepadPokedexState*) pokepad_state->app_state;
     u8 pages = amount < 0 ? -amount : amount;
 
-    /* if (amount < 0) { */
-    /*     if (amount >= pages) { */
-    /*         state->page -= pages; */
-    /*     } else { */
-    /*         state->page = 0; */
-    /*     } */
-    /* } else { */
-    /*     /\* TODO: Clamp page max *\/ */
-    /*     state->page += pages; */
-    /* } */
+    /* TODO: direction */
+    state->index += POKEDEX_GRID_WIDTH;
 
-    state->index++;
+    for (u8 i = 0; i < POKEDEX_GRID_WIDTH; i++) {
+        u16 index = i + state->index + POKEDEX_ICONS - POKEDEX_GRID_WIDTH;
+        u8 id = load_icon(index, i, POKEDEX_GRID_HEIGHT);
+        struct Object* obj = &objects[id];
+        struct PokedexIconState* icon = (struct PokedexIconState*) obj->private;
+
+        obj->callback = oac_scroll;
+        icon->target_y = POKEDEX_GRID_HEIGHT - 1;
+        icon->scroll_speed = -4;
+    }
 
     /* Swap page */
     for (u8 i = 0; i < POKEDEX_ICONS; i++) {
-        obj_delete_and_free(&objects[state->icons[0].ids[i]]);
-    }
+        struct Object* obj = &objects[state->icons[i]];
+        struct PokedexIconState* icon = (struct PokedexIconState*) obj->private;
 
-    /* memcpy(state->icons_page, state->icons, sizeof(state->icons)); */
-    load_icon_grid();
+        obj->callback = oac_scroll;
+        icon->target_y = icon->y - 1;
+        icon->scroll_speed = -4;
+    }
 }
 
 static bool setup(u8* trigger)
@@ -159,10 +199,10 @@ static bool destroy(u8* trigger)
 
 static void callback(void)
 {
-    if (super.buttons.held & KEY_L) {
+    if (super.buttons.new & KEY_L) {
         /* Page Left */
         change_page(-1);
-    } else if (super.buttons.held & KEY_R) {
+    } else if (super.buttons.new & KEY_R) {
         /* Page Right */
         change_page(1);
     }
