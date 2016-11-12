@@ -76,7 +76,7 @@ static void pokepad_pokedex_load_icon(enum PokemonSpecies species, bool grayscal
     gpu_pal_obj_alloc_tag_and_apply(&palette);
 }
 
-static u8 load_icon(u16 index, u8 x, u8 y)
+static u8 load_icon(u16 index, s16 x, s16 y)
 {
     struct Template* template = malloc(sizeof(struct Template));
     u16 xpos = POKEDEX_ICON_X(x),
@@ -130,10 +130,6 @@ static void task_scroll_icons(u8 id)
             struct Object* obj = &objects[scroll->icons[i]];
             struct PokedexIconState* icon = (struct PokedexIconState*) obj->private;
             obj->pos1.y += scroll->shift * scroll->direction;
-
-            if (scroll->counter >= POKEDEX_ICON_HEIGHT) {
-                icon->y += scroll->direction;
-            }
         }
 
         scroll->counter += scroll->shift;
@@ -152,11 +148,11 @@ static void task_scroll_icons(u8 id)
 
                 icon->y += scroll->direction;
 
+                /* Cull objects that go offscreen in the direction of scrolling */
                 bool cull = (scroll->direction < 0 && icon->y < 0) ||
                     (scroll->direction > 0 && icon->y >= POKEDEX_GRID_HEIGHT);
 
                 if (cull) {
-                    /* Cull objects that go offscreen in the direction of scrolling */
                     scroll->icons[i] = 0xFF;
                     gpu_tile_obj_free_by_tag(obj->template->tiles_tag);
                     obj_delete(obj);
@@ -164,6 +160,7 @@ static void task_scroll_icons(u8 id)
             }
         }
     } else {
+        /* Update the object ID array */
         struct PokepadPokedexState* state = (struct PokepadPokedexState*) pokepad_state->app_state;
         for (u8 a = 0, b = 0; b < scroll->icon_count; b++) {
             if (scroll->icons[b] != 0xFF) {
@@ -179,10 +176,13 @@ static void task_scroll_icons(u8 id)
 
 static void change_page(u8 rows, s8 direction)
 {
+    if (task_is_running(task_scroll_icons)) {
+        return;
+    }
+
     struct PokepadPokedexState* state = (struct PokepadPokedexState*) pokepad_state->app_state;
 
-    /* TODO: direction */
-    state->index += POKEDEX_GRID_WIDTH * rows;
+    state->index += POKEDEX_GRID_WIDTH * rows * -direction;
 
     u8 task_id = task_add(task_scroll_icons, 0xA);
     struct Task* task = &tasks[task_id];
@@ -204,9 +204,18 @@ static void change_page(u8 rows, s8 direction)
     /* Load additional icons into the buffer */
     for (u8 i = 0, y = 0; y < rows; y++) {
         for (u8 x = 0; x < POKEDEX_GRID_WIDTH; x++, i++) {
-            u16 index = i + state->index + POKEDEX_ICONS - POKEDEX_GRID_WIDTH;
-            u8 id = load_icon(index, x, y + POKEDEX_GRID_HEIGHT);
-            struct Object* obj = &objects[id];
+            u16 index;
+            u8 id;
+
+            /* Determine which icons to load and where */
+            if (direction < 0) {
+                index = i + state->index + POKEDEX_ICONS - POKEDEX_GRID_WIDTH;
+                id = load_icon(index, x, y + POKEDEX_GRID_HEIGHT);
+            } else if (direction > 0) {
+                index = i + state->index;
+                id = load_icon(index, x, -rows + y);
+            }
+
             *buffer++ = id;
         }
     }
