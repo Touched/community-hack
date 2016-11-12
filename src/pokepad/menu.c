@@ -19,6 +19,8 @@ struct PokepadMenuState {
         u8 app_description;
     } textboxes;
 
+    u8 icons[POKEPAD_MENU_APPS_PER_PAGE];
+
     /* Loaded apps */
     const struct PokepadApplication* apps[POKEPAD_MENU_MAX_APPS];
 
@@ -93,13 +95,16 @@ static void load_page_indicators(void)
     }
 }
 
-static void load_applications(void)
+static void load_applications_for_page(u8 page)
 {
     struct PokepadMenuState* state = (struct PokepadMenuState*) pokepad_state->app_state;
     u16 x = POKEPAD_MENU_ICON_X;
 
+    u8* objects = state->icons;
+    u8 offset = POKEPAD_MENU_APPS_PER_PAGE * page;
+
     for (u8 i = 0; i < POKEPAD_MENU_APPS_PER_PAGE; i++) {
-        const struct PokepadApplication* app = state->apps[i];
+        const struct PokepadApplication* app = state->apps[i + offset];
 
         if (!app) {
             continue;
@@ -108,13 +113,13 @@ static void load_applications(void)
         /* Dynamically generate the icon template */
         const struct SpritePalette palette = {
             app->icon.palette,
-            POKEPAD_MENU_ICON_TAG_BASE + i,
+            POKEPAD_MENU_ICON_TAG_BASE + i + offset,
         };
 
         const struct SpriteTiles tiles = {
             app->icon.tiles,
             app->icon.size,
-            POKEPAD_MENU_ICON_TAG_BASE + i,
+            POKEPAD_MENU_ICON_TAG_BASE + i + offset,
         };
 
         const struct Template template = {
@@ -129,7 +134,7 @@ static void load_applications(void)
 
         gpu_pal_obj_alloc_tag_and_apply(&palette);
         gpu_tile_obj_alloc_tag_and_upload(&tiles);
-        template_instanciate_forward_search(&template, x, POKEPAD_MENU_ICON_Y, 0);
+        *objects++ = template_instanciate_forward_search(&template, x, POKEPAD_MENU_ICON_Y, 0);
         x += POKEPAD_MENU_ICON_SIZE_PADDED;
     }
 }
@@ -232,7 +237,7 @@ static bool setup(u8* trigger)
 
         load_page_indicators();
 
-        load_applications();
+        load_applications_for_page(0);
         *trigger = 2;
         break;
 
@@ -271,8 +276,19 @@ static void callback(void)
         }
     }
 
+    u8 old_page = state->page;
+
     state->page = state->index / POKEPAD_MENU_APPS_PER_PAGE;
     state->page_index = state->index % POKEPAD_MENU_APPS_PER_PAGE;
+
+    if (old_page != state->page) {
+        /* Update page */
+        for (u8 i = 0; i < POKEPAD_MENU_APPS_PER_PAGE; i++) {
+            obj_delete_and_free(&objects[state->icons[i]]);
+        }
+
+        load_applications_for_page(state->page);
+    }
 
     menu_arrow_update_position();
     update_app_textboxes();
