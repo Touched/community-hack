@@ -1,15 +1,16 @@
 #include "pokepad.h"
 
 extern const struct PokepadApplication pokepad_application_main;
+extern const struct PokepadApplication pokepad_application_pokedex;
 
-#include "generated/images/pokepad/icons/pokedex.h"
+#include "generated/images/pokepad/icons/phone.h"
 #include "generated/images/pokepad/icons/dexnav.h"
-const pchar pokepad_application_test_desc[] = _"Pokémon\nEncyclopedia.";
+const pchar pokepad_application_test_desc[] = _"Phone stuff.";
 const struct PokepadApplication pokepad_application_test = {
-    .name = _"Pokédex",
+    .name = _"Phone",
     .description = pokepad_application_test_desc,
     .role = POKEPAD_APP_BUILTIN,
-    .icon = POKEPAD_BUILD_APP_ICON(pokedex),
+    .icon = POKEPAD_BUILD_APP_ICON(phone),
 };
 
 const pchar pokepad_application_test2_desc[] = _"Search for Pokémon.";
@@ -22,12 +23,9 @@ const struct PokepadApplication pokepad_application_test2 = {
 
 const struct PokepadApplication* pokepad_applications[] = {
     &pokepad_application_main,
+    &pokepad_application_pokedex,
     &pokepad_application_test,
     &pokepad_application_test2,
-    &pokepad_application_test,
-    &pokepad_application_test2,
-    &pokepad_application_test2,
-    &pokepad_application_test,
 };
 
 #define POKEPAD_NUM_APPS (sizeof(pokepad_applications) / sizeof(const struct PokepadApplication*))

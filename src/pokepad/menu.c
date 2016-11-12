@@ -95,6 +95,15 @@ static void load_page_indicators(void)
     }
 }
 
+static void unload_applications(void)
+{
+    struct PokepadMenuState* state = (struct PokepadMenuState*) pokepad_state->app_state;
+
+    for (u8 i = 0; i < POKEPAD_MENU_APPS_PER_PAGE; i++) {
+        obj_delete_and_free(&objects[state->icons[i]]);
+    }
+}
+
 static void load_applications_for_page(u8 page)
 {
     struct PokepadMenuState* state = (struct PokepadMenuState*) pokepad_state->app_state;
@@ -258,7 +267,21 @@ static bool setup(u8* trigger)
 
 static bool destroy(u8* trigger)
 {
+    struct PokepadMenuState* state = (struct PokepadMenuState*) pokepad_state->app_state;
+
+    lcd_io_set(REG_ID_BLDY, 0);
+    hblank_handler_set(pokepad_hblank_handler);
+    unload_applications();
+
+    /* TODO: Free rboxes */
+    rboxid_clean(state->textboxes.app_name, true);
+    rboxid_free(state->textboxes.app_name);
+    rboxid_clean(state->textboxes.app_description, true);
+    rboxid_free(state->textboxes.app_description);
+
     free(pokepad_state->app_state);
+    pokepad_state->app_state = NULL;
+
     return false;
 }
 
@@ -274,6 +297,11 @@ static void callback(void)
         if (state->index < state->app_count - 1) {
             state->index += 1;
         }
+    } else if (super.buttons.new_remapped & KEY_A) {
+        /* Load application */
+        pokepad_state->tracker = 0;
+        pokepad_state->current_app->destroy(&pokepad_state->tracker);
+        return;
     }
 
     u8 old_page = state->page;
@@ -283,10 +311,7 @@ static void callback(void)
 
     if (old_page != state->page) {
         /* Update page */
-        for (u8 i = 0; i < POKEPAD_MENU_APPS_PER_PAGE; i++) {
-            obj_delete_and_free(&objects[state->icons[i]]);
-        }
-
+        unload_applications();
         load_applications_for_page(state->page);
     }
 
