@@ -82,8 +82,7 @@ static void build_gradient(void)
         0x09DD, 0x09DD
     };
 
-    u16* buffer = pokepad_state->shared_state->gradient_palette;
-    u8 line = 0;
+    u16* buffer = (u16*) pokepad_state->shared_state->gradient_palette;
     for (u8 i = 0; i < sizeof(gradient) / sizeof(u16); i++) {
         u16 color = gradient[i];
 
@@ -140,7 +139,7 @@ void pokepad_hblank_handler(void)
     /* HBlank saves memory compared to the DMA implementation as the
      * gradient only changes colour every 8 scanlines. */
 
-    u16* buffer = pokepad_state->shared_state->gradient_palette;
+    u16* buffer = (u16*) pokepad_state->shared_state->gradient_palette;
 
     if (REG_VCOUNT < 160) {
         u16 index = (REG_VCOUNT + 1) / 8;
@@ -157,9 +156,9 @@ void pokepad_vblank_handler(void)
 
 static struct Textbox pokepad_bar_textboxes[2] = {
     {
-        0, 24, 0, 6, 2, 0xF, 0x50, 0x20A00,
+        0, 24, 0, 6, 2, 0xF, 0x50, NULL,
     }, {
-        0, 1, 0, 0x9, 2, 0xF, 0x6F, 0x20A00,
+        0, 1, 0, 0x9, 2, 0xF, 0x6F, NULL,
     }
 };
 
@@ -342,7 +341,7 @@ static void pokepad_exit(void)
     }
 
     build_gradient();
-    fade_and_return_progress_probably();
+    process_palfade();
 }
 
 static void pokepad_callback(void)
