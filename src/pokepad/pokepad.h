@@ -21,8 +21,8 @@ struct PokepadApplication {
      * The application's icon sprite.
      */
     struct Icon {
-        const u8* palette;
-        const u8* tiles;
+        const void* palette;
+        const void* tiles;
         u16 size;
     } icon;
 

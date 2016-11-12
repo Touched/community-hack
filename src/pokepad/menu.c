@@ -165,9 +165,9 @@ static struct Textbox pokepad_menu_textboxes[2] = {
         2,
         0xF,
         0x8F,
-        0x20A00,
+        NULL,
     }, {
-        0, 1, 15, 0x1C, 5, 0xF, 0x100, 0x20A00,
+        0, 1, 15, 0x1C, 5, 0xF, 0x100, NULL,
     }
 };
 
@@ -315,10 +315,9 @@ static void menu_arrow_update_position()
     obj->pos1.y = POKEPAD_MENU_ICON_Y - POKEPAD_MENU_ICON_SIZE / 2 - 8;
 }
 
-static const pchar description[] = _"Main application";
 const struct PokepadApplication pokepad_application_main = {
     .name = _"PokéPad",
-    .description = &description,
+    .description = NULL,
     .role = POKEPAD_APP_MAIN,
     .setup = setup,
     .destroy = destroy,
