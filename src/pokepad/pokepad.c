@@ -378,4 +378,55 @@ static void pokepad_callback(void)
     process_palfade();
 }
 
-/* 0806F380 */
+static void pokepad_app_switcher(void)
+{
+    switch (super.multi_purpose_state_tracker) {
+    case 0:
+        if (pal_fade_control.active) {
+            break;
+        }
+
+        pokepad_state->tracker = 0;
+        super.multi_purpose_state_tracker++;
+    case 1:
+        if (!pokepad_state->current_app->destroy(&pokepad_state->tracker)) {
+            pokepad_state->tracker = 0;
+            pokepad_state->current_app = pokepad_state->next_app;
+            super.multi_purpose_state_tracker++;
+        }
+        break;
+    case 2:
+        if (!pokepad_state->current_app->setup(&pokepad_state->tracker)) {
+            pokepad_state->tracker = 0;
+            super.multi_purpose_state_tracker++;
+            pokepad_update_application();
+            fade_screen(~0, 0, 0x10, 0x0, 0);
+        }
+        break;
+    case 3:
+        if (pal_fade_control.active) {
+            break;
+        }
+
+        super.multi_purpose_state_tracker++;
+    case 4:
+        set_callback2(pokepad_callback);
+        break;
+    }
+
+    build_gradient_palette();
+    process_palfade();
+    task_exec();
+    remoboxes_upload_tilesets();
+    objc_exec();
+    obj_sync_superstate();
+}
+
+void pokepad_switch_app(const struct PokepadApplication* app)
+{
+    fade_screen(~0, 0, 0x0, 0x10, 0);
+    pokepad_state->next_app = app;
+    pokepad_state->shared_state->coefficient = 0x10 << 1;
+    super.multi_purpose_state_tracker = 0;
+    set_callback2(pokepad_app_switcher);
+}

@@ -61,14 +61,18 @@ struct PokepadShared {
     u8 bar_textboxes[2];
     u16 gradient[20];
     u16 gradient_palette[20][16] __attribute__((aligned(4))); /* 20 lines of 16 colours */
+    u16 coefficient;
 };
 
 struct Pokepad {
     const struct PokepadApplication* current_app;
+    const struct PokepadApplication* next_app;
     void* app_state;
     struct PokepadShared* shared_state;
     u8 tracker;
 };
+
+void pokepad_switch_app(const struct PokepadApplication* app);
 
 extern struct Pokepad* pokepad_state;
 

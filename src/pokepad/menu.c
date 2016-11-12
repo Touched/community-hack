@@ -298,9 +298,7 @@ static void callback(void)
             state->index += 1;
         }
     } else if (super.buttons.new_remapped & KEY_A) {
-        /* Load application */
-        pokepad_state->tracker = 0;
-        pokepad_state->current_app->destroy(&pokepad_state->tracker);
+        pokepad_switch_app(state->apps[state->index]);
         return;
     }
 
