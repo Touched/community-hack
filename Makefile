@@ -63,7 +63,7 @@ $(BINARY): $(OBJECTS)
 	@echo -e "\e[1;32mLinking ELF binary $@\e[0m"
 	@$(LD) $(LDFLAGS) -o $@ $^
 
-$(BUILD)/%.c.o: %.c $(call rwildcard,$(SRC),*.h)
+$(BUILD)/%.c.o: %.c
 	@echo -e "\e[32mCompiling $<\e[0m"
 	@mkdir -p $(@D)
 	@$(CC) $(CFLAGS) -E -c $< -o $*.i
@@ -74,7 +74,7 @@ $(BUILD)/%.s.o: %.s
 	@mkdir -p $(@D)
 	@$(PREPROC) $< $(CHARMAP) | $(AS) $(ASFLAGS) -o $@
 
-generated/images/%.c: images/%.png images/%.grit
+generated/images/%.c: images/%.png $(<:%.png=%.grit)
 	@echo -e "\e[34mProcessing image $<\e[0m"
 	@mkdir -p $(@D)
 	@grit $< -o $@ -ff$(<:%.png=%.grit)
