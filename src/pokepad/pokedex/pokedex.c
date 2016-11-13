@@ -236,8 +236,30 @@ static void change_page(u8 rows, s8 direction, u8 speed)
     }
 
     struct PokepadPokedexState* state = (struct PokepadPokedexState*) pokepad_state->app_state;
+    s16 shift_amount = POKEDEX_GRID_WIDTH * rows * -direction;
 
-    state->index += POKEDEX_GRID_WIDTH * rows * -direction;
+    /* Determine maximum possible rows that can be shifted while
+     * maintain a valid index */
+    if (direction > 0) {
+        while (state->index + shift_amount < 0 && rows > 0) {
+            rows--;
+            shift_amount = POKEDEX_GRID_WIDTH * rows * -direction;
+        }
+    } else if (direction < 0) {
+        while (state->index + POKEDEX_ICONS + shift_amount >= state->last_index && rows > 0) {
+            rows--;
+            shift_amount = POKEDEX_GRID_WIDTH * rows * -direction;
+        }
+    } else {
+        /* Invalid direction */
+        return;
+    }
+
+    if (rows == 0) {
+        return;
+    }
+
+    state->index += shift_amount;
 
     u8 task_id = task_add(task_scroll_icons, 0xA);
     struct Task* task = &tasks[task_id];
@@ -309,10 +331,10 @@ static bool setup(u8* trigger)
 
     switch (*trigger) {
     case 0:
-        pokepad_state->app_state = malloc_and_clear(sizeof(struct PokepadPokedexState));
+        state = pokepad_state->app_state = malloc_and_clear(sizeof(struct PokepadPokedexState));
+        state->last_index = 100; /* FIXME: Determine actual final index */
         *trigger = 1;
         break;
-
 
     case 1:
         load_cursor();

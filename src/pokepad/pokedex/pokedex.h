@@ -13,11 +13,18 @@
 
 struct PokepadPokedexState {
     u8 icons[POKEDEX_ICONS];
+
+    /* Index of the top left Pokemon */
     s16 index;
+
+    /* Index of the last Pokemon visible in the Pokedex */
+    u16 last_index;
+
+    /* Cursor state */
     struct {
         s16 x;
         s16 y;
-        u16 selected;
+        s16 selected;
     } cursor;
 };
 
