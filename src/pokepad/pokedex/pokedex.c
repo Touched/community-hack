@@ -223,11 +223,16 @@ static void task_scroll_icons(u8 id)
     }
 }
 
+static s16 get_index(s16 x, s16 y)
+{
+    return y * POKEDEX_GRID_WIDTH + x;
+}
+
 static void update_info(void)
 {
     struct PokepadPokedexState* state = (struct PokepadPokedexState*) pokepad_state->app_state;
 
-    u16 selected = state->cursor.y * POKEDEX_GRID_WIDTH + state->cursor.x;
+    u16 selected = get_index(state->cursor.x, state->cursor.y);
 
     if (selected != state->cursor.selected) {
         /* TODO: Update */
@@ -328,6 +333,12 @@ static void cursor_move(s8 x, s8 y) {
         change_page(1, -1, POKEDEX_SCROLL_SPEED);
     }
 
+    if (state->index + get_index(state->cursor.x, state->cursor.y) >= state->last_index) {
+        s16 index_on_page = (state->last_index - 1) % POKEDEX_ICONS;
+        state->cursor.x = index_on_page % POKEDEX_GRID_WIDTH;
+        state->cursor.y = index_on_page / POKEDEX_GRID_WIDTH;
+    }
+
     update_info();
 }
 
@@ -338,7 +349,7 @@ static bool setup(u8* trigger)
     switch (*trigger) {
     case 0:
         state = pokepad_state->app_state = malloc_and_clear(sizeof(struct PokepadPokedexState));
-        state->last_index = 26; /* FIXME: Determine actual final index */
+        state->last_index = 48 + 22; /* FIXME: Determine actual final index */
         *trigger = 1;
         break;
 
