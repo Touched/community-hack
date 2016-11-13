@@ -75,26 +75,31 @@ static void build_gradient(u16 start_color, u16 stop_color)
     struct ColorComponents* start = (struct ColorComponents*) &start_color;
     struct ColorComponents* stop = (struct ColorComponents*) &stop_color;
     u16 lines = sizeof(pokepad_state->shared_state->gradient) / sizeof(u16);
+    u16 start_line = 2;
 
     /* RGB 8 bit components */
-    u16 mr = ((stop->r << 3) - (start->r << 3)) / lines;
-    u16 mg = ((stop->g << 3) - (start->g << 3)) / lines;
-    u16 mb = ((stop->b << 3) - (start->b << 3)) / lines;
+    u16 mr = ((stop->r << 3) - (start->r << 3)) / (lines - start_line);
+    u16 mg = ((stop->g << 3) - (start->g << 3)) / (lines - start_line);
+    u16 mb = ((stop->b << 3) - (start->b << 3)) / (lines - start_line);
     u16 r = start->r << 3;
     u16 g = start->g << 3;
     u16 b = start->b << 3;
 
     union Color color = {};
     for (u8 i = 0; i < lines; i++) {
-        color.components.r = r >> 3;
-        color.components.g = g >> 3;
-        color.components.b = b >> 3;
+        if (i < start_line) {
+            pokepad_state->shared_state->gradient[i] = 0;
+        } else {
+            color.components.r = r >> 3;
+            color.components.g = g >> 3;
+            color.components.b = b >> 3;
 
-        pokepad_state->shared_state->gradient[i] = color.packed;
+            pokepad_state->shared_state->gradient[i] = color.packed;
 
-        r += mr;
-        g += mg;
-        b += mb;
+            r += mr;
+            g += mg;
+            b += mb;
+        }
     }
 }
 
