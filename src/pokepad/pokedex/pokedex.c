@@ -61,8 +61,8 @@ static const struct Template pokedex_icon_template_base = {
     oac_nullsub,
 };
 
-static void pokepad_pokedex_load_icon(enum PokemonSpecies species, bool grayscale,
-                                      struct Template* template)
+static void load_icon_template(enum PokemonSpecies species, bool grayscale,
+                               struct Template* template)
 {
     /* Unown have a separate icon for each form */
     u32 pid = 0;
@@ -127,7 +127,7 @@ static u8 load_icon(u16 index, s16 x, s16 y)
 
     u16 dex_index = pokedex_order[index];
     enum PokemonSpecies species = pokedex_index_to_species(dex_index);
-    pokepad_pokedex_load_icon(species, false, template);
+    load_icon_template(species, false, template);
 
     /* if (dex_flag(index, DEX_FLAG_CHECK_CAUGHT, false)) { */
     /*     id = pokepad_pokedex_load_icon(species, false, xpos, ypos, 0); */
@@ -137,6 +137,8 @@ static u8 load_icon(u16 index, s16 x, s16 y)
     /*     id = pokepad_pokedex_load_icon(SPECIES_MISSINGNO, false, xpos, ypos, 0); */
     /* } */
 
+    struct PokepadPokedexState* state = (struct PokepadPokedexState*) pokepad_state->app_state;
+
     u8 id = template_instanciate_forward_search(template, xpos, ypos, 0);
 
     struct PokedexIconState* icon = (struct PokedexIconState*) objects[id].private;
@@ -144,6 +146,10 @@ static u8 load_icon(u16 index, s16 x, s16 y)
     icon->index = dex_index;
     icon->x = x;
     icon->y = y;
+
+    if (index >= state->last_index) {
+        objects[id].bitfield2 |= 4;
+    }
 
     return id;
 }
@@ -246,7 +252,7 @@ static void change_page(u8 rows, s8 direction, u8 speed)
             shift_amount = POKEDEX_GRID_WIDTH * rows * -direction;
         }
     } else if (direction < 0) {
-        while (state->index + POKEDEX_ICONS + shift_amount >= state->last_index && rows > 0) {
+        while (state->index + POKEDEX_ICONS - POKEDEX_GRID_WIDTH + shift_amount >= state->last_index && rows > 0) {
             rows--;
             shift_amount = POKEDEX_GRID_WIDTH * rows * -direction;
         }
@@ -332,7 +338,7 @@ static bool setup(u8* trigger)
     switch (*trigger) {
     case 0:
         state = pokepad_state->app_state = malloc_and_clear(sizeof(struct PokepadPokedexState));
-        state->last_index = 100; /* FIXME: Determine actual final index */
+        state->last_index = 26; /* FIXME: Determine actual final index */
         *trigger = 1;
         break;
 
