@@ -140,15 +140,14 @@ static u8 load_icon(u16 index, s16 x, s16 y)
 
     u16 dex_index = pokedex_order[index];
     enum PokemonSpecies species = pokedex_index_to_species(dex_index);
-    load_icon_template(species, false, template);
 
-    /* if (dex_flag(index, DEX_FLAG_CHECK_CAUGHT, false)) { */
-    /*     id = pokepad_pokedex_load_icon(species, false, xpos, ypos, 0); */
-    /* } else if (dex_flag(index, DEX_FLAG_CHECK_SEEN, false)) { */
-    /*     id = pokepad_pokedex_load_icon(species, true, xpos, ypos, 0); */
-    /* } else { */
-    /*     id = pokepad_pokedex_load_icon(SPECIES_MISSINGNO, false, xpos, ypos, 0); */
-    /* } */
+    if (dex_flag(index, DEX_FLAG_CHECK_CAUGHT, false)) {
+        load_icon_template(species, false, template);
+    } else if (dex_flag(index, DEX_FLAG_CHECK_SEEN, false)) {
+        load_icon_template(species, true, template);
+    } else {
+        load_icon_template(SPECIES_MISSINGNO, false, template);
+    }
 
     struct PokepadPokedexState* state = (struct PokepadPokedexState*) pokepad_state->app_state;
 
