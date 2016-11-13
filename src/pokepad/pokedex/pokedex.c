@@ -4,9 +4,51 @@
 #define POKEPAD_POKEDEX_ICON_BASE_PAL_TAG 0xD000
 #define POKEPAD_POKEDEX_ICON_BASE_GRAY_PAL_TAG 0xE000
 #define POKEPAD_POKEDEX_ICON_BASE_TILE_TAG 0xD000
+#define POKEPAD_POKEDEX_CURSOR_TAG 0x3000
 
-const struct OamData icon_oam = {
+static const struct OamData cursor_oam = {
     .size = 2,
+    .priority = 0,
+};
+
+/* Only load the first two frames of the cursor */
+static const struct SpriteTiles cursor_tiles = {
+    storage_hand_tiles,
+    sizeof(storage_hand_tiles) / 4 * 2,
+    POKEPAD_POKEDEX_CURSOR_TAG,
+};
+
+static const struct SpritePalette cursor_palette = {
+    storage_hand_palette,
+    POKEPAD_POKEDEX_CURSOR_TAG,
+};
+
+static void oac_cursor(struct Object* obj)
+{
+    struct PokepadPokedexState* state = (struct PokepadPokedexState*) pokepad_state->app_state;
+    obj->pos1.x = POKEDEX_ICON_X(state->cursor.x);
+    obj->pos1.y = POKEDEX_ICON_Y(state->cursor.y) - 8;
+}
+
+static u8 load_cursor(void) {
+    const struct Template cursor_template = {
+        POKEPAD_POKEDEX_CURSOR_TAG,
+        POKEPAD_POKEDEX_CURSOR_TAG,
+        &cursor_oam,
+        storage_hand_template.animation,
+        NULL,
+        SPRITE_NO_ROTSCALE,
+        oac_cursor,
+    };
+
+    gpu_tile_obj_alloc_tag_and_upload(&cursor_tiles);
+    gpu_pal_obj_alloc_tag_and_apply(&cursor_palette);
+    return template_instanciate_forward_search(&cursor_template, 0, 0, 0);
+}
+
+static const struct OamData icon_oam = {
+    .size = 2,
+    .priority = 1,
 };
 
 static const struct Template pokedex_icon_template_base = {
@@ -28,9 +70,10 @@ static void pokepad_pokedex_load_icon(enum PokemonSpecies species, bool grayscal
         pid = saveblock2->unown_pid;
     }
 
+    /* Load first frame of the Pokemon icon */
     struct SpriteTiles tiles = {
         .data = load_party_icon_tiles_with_form(species, pid, true),
-        .size = 512,
+        .size = POKEAGB_POKEMON_ICON_SIZE / 2,
         .tag = POKEPAD_POKEDEX_ICON_BASE_TILE_TAG + species,
     };
 
@@ -174,6 +217,18 @@ static void task_scroll_icons(u8 id)
     }
 }
 
+static void update_info(void)
+{
+    struct PokepadPokedexState* state = (struct PokepadPokedexState*) pokepad_state->app_state;
+
+    u16 selected = state->cursor.y * POKEDEX_GRID_WIDTH + state->cursor.x;
+
+    if (selected != state->cursor.selected) {
+        /* TODO: Update */
+        state->cursor.selected = selected;
+    }
+}
+
 static void change_page(u8 rows, s8 direction, u8 speed)
 {
     if (task_is_running(task_scroll_icons)) {
@@ -219,6 +274,33 @@ static void change_page(u8 rows, s8 direction, u8 speed)
             *buffer++ = id;
         }
     }
+
+    update_info();
+}
+
+static void cursor_move(s8 x, s8 y) {
+    struct PokepadPokedexState* state = (struct PokepadPokedexState*) pokepad_state->app_state;
+
+    state->cursor.x += x;
+    state->cursor.y += y;
+
+    /* Horizontally wrap cursor */
+    if (state->cursor.x < 0) {
+        state->cursor.x = POKEDEX_GRID_WIDTH - 1;
+    } else if (state->cursor.x >= POKEDEX_GRID_WIDTH) {
+        state->cursor.x = 0;
+    }
+
+    /* Cursor should scroll by one row if it goes out of bounds vertically */
+    if (state->cursor.y < 0) {
+        state->cursor.y = 0;
+        change_page(1, 1, POKEDEX_SCROLL_SPEED);
+    } else if (state->cursor.y >= POKEDEX_GRID_HEIGHT) {
+        state->cursor.y = POKEDEX_GRID_HEIGHT - 1;
+        change_page(1, -1, POKEDEX_SCROLL_SPEED);
+    }
+
+    update_info();
 }
 
 static bool setup(u8* trigger)
@@ -231,8 +313,16 @@ static bool setup(u8* trigger)
         *trigger = 1;
         break;
 
+
     case 1:
+        load_cursor();
+        *trigger = 2;
+        break;
+
+    case 2:
         load_icon_grid();
+        *trigger = 2;
+
         return false;
     }
 
@@ -248,10 +338,18 @@ static void callback(void)
 {
     if (super.buttons.held & KEY_L) {
         /* Page Left */
-        change_page(POKEDEX_GRID_HEIGHT, -1, 8);
+        change_page(POKEDEX_GRID_HEIGHT, -1, POKEDEX_SCROLL_SPEED);
     } else if (super.buttons.held & KEY_R) {
         /* Page Right */
-        change_page(POKEDEX_GRID_HEIGHT, 1, 8);
+        change_page(POKEDEX_GRID_HEIGHT, 1, POKEDEX_SCROLL_SPEED);
+    } else if (super.buttons.new & KEY_LEFT) {
+        cursor_move(-1, 0);
+    } else if (super.buttons.new & KEY_RIGHT) {
+        cursor_move(1, 0);
+    } else if (super.buttons.new & KEY_UP) {
+        cursor_move(0, -1);
+    } else if (super.buttons.new & KEY_DOWN) {
+        cursor_move(0, 1);
     }
 }
 

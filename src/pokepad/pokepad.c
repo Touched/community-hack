@@ -296,7 +296,7 @@ void launch_pokepad_app()
         break;
 
     case 7:
-        /* TODO: Wait for fade */
+        /* TODO: Wait forfade */
         set_callback2(pokepad_callback);
         set_callback1(NULL);
         break;

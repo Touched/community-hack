@@ -9,10 +9,16 @@
 #define POKEDEX_ICON_HEIGHT 32
 #define POKEDEX_ICON_X(x) ((x) * 32 + 38)
 #define POKEDEX_ICON_Y(y) ((y) * POKEDEX_ICON_HEIGHT + 36)
+#define POKEDEX_SCROLL_SPEED 8
 
 struct PokepadPokedexState {
     u8 icons[POKEDEX_ICONS];
     s16 index;
+    struct {
+        s16 x;
+        s16 y;
+        u16 selected;
+    } cursor;
 };
 
 struct PokedexIconState {
