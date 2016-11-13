@@ -30,7 +30,8 @@ static void oac_cursor(struct Object* obj)
     obj->pos1.y = POKEDEX_ICON_Y(state->cursor.y) - 8;
 }
 
-static u8 load_cursor(void) {
+static u8 load_cursor(void)
+{
     const struct Template cursor_template = {
         POKEPAD_POKEDEX_CURSOR_TAG,
         POKEPAD_POKEDEX_CURSOR_TAG,
@@ -51,6 +52,18 @@ static const struct OamData icon_oam = {
     .priority = 1,
 };
 
+static void oac_icon(struct Object* obj)
+{
+    struct PokepadPokedexState* state = (struct PokepadPokedexState*) pokepad_state->app_state;
+    struct PokedexIconState* icon = (struct PokedexIconState*) obj->private;
+
+    if (icon->x == state->cursor.x && icon->y == state->cursor.y) {
+        obj->final_oam.obj_mode = 0;
+    } else {
+        obj->final_oam.obj_mode = 1;
+    }
+}
+
 static const struct Template pokedex_icon_template_base = {
     0,
     0,
@@ -58,7 +71,7 @@ static const struct Template pokedex_icon_template_base = {
     SPRITE_NO_ANIMATION,
     NULL,
     SPRITE_NO_ROTSCALE,
-    oac_nullsub,
+    oac_icon,
 };
 
 static void load_icon_template(enum PokemonSpecies species, bool grayscale,
@@ -348,6 +361,17 @@ static bool setup(u8* trigger)
 
     switch (*trigger) {
     case 0:
+        /* Windowing */
+        lcd_io_set(REG_ID_DISPCNT, lcd_io_get(REG_ID_DISPCNT) | DISPCNT_WIN0);
+        lcd_io_set(REG_ID_WININ, WININ_BUILD(WIN_OBJ | WIN_BG1 | WIN_BG0, 0));
+        lcd_io_set(REG_ID_WINOUT, WINOUT_BUILD(WIN_BG1 | WIN_BG0, 0));
+        lcd_io_set(REG_ID_WIN0H, SCREEN_WIDTH);
+        lcd_io_set(REG_ID_WIN0V, (16 << 8) | SCREEN_HEIGHT - 8);
+
+        /* Transparency */
+        lcd_io_set(REG_ID_BLDCNT, BLDCNT_BACKDROP_DST | BLDCNT_BG1_DST);
+        lcd_io_set(REG_ID_BLDALPHA, BLDALPHA_BUILD(8, 8));
+
         state = pokepad_state->app_state = malloc_and_clear(sizeof(struct PokepadPokedexState));
         state->last_index = 48 + 22; /* FIXME: Determine actual final index */
         *trigger = 1;
