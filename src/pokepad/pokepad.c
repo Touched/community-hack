@@ -151,12 +151,6 @@ static void build_mosaic(void* charbase, void* mapbase)
     memcpy(mapbase, tilemap, sizeof(tilemap));
 }
 
-/* #define REG_BASE 0x04000000 */
-/* #define REG_VCOUNT	*(vu16*)(REG_BASE + 6) */
-/* #define REG_BLDCNT	*(vu16*)(REG_BASE + 0x50) */
-/* #define REG_BLDY	*(vu16*)(REG_BASE + 0x54) */
-/* #define REG_WIN	*(vu16*)(REG_BASE + 0x40) */
-
 void pokepad_hblank_handler(void)
 {
     /* HBlank saves memory compared to the DMA implementation as the
