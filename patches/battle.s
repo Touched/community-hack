@@ -9,3 +9,4 @@
         bx r4
         .org 0x0802E118
         .word battle_extension_malloc_hook|1
+        
