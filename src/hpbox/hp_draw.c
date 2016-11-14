@@ -1,5 +1,6 @@
 #include <pokeagb/pokeagb.h>
 #include "hpbar_gfx.h"
+#include "../../generated/images/pokenav/dexnav_stars.h"
 
 
 void hp_string_to_oam (u8 obj_id, u8 tile_num) {
@@ -85,7 +86,13 @@ void hp_string_to_oam (u8 obj_id, u8 tile_num) {
 }
 
 
-void outlined_font_draw(u8 obj_id, u8 tile_num, u16 size) {
+void outlined_font_draw(u8 obj_id, u8 tile_num, u16 size, u8 font) {
+	u8 *touse;
+	if (font) {
+		touse = outlined_names_fontTiles;
+	} else {
+		touse = dexnav_starsTiles;
+	}
     u8 tile = objects[obj_id].final_oam.tile_num + tile_num;
     u8* towrite = (u8*)((tile * TILE_SIZE) + (SPRITE_RAM));
     u8 *dst = (u8*)0x203D000;
@@ -194,10 +201,10 @@ void outlined_font_draw(u8 obj_id, u8 tile_num, u16 size) {
 
         if ((counter == 0) || (*(string_buff_ptr + 1) == 0xFF))  {
             // first or last pcharacters don't need pixel merging
-            memcpy((void*)dst, (void*)(&outlined_names_fontTiles[index]), TILE_SIZE);
+            memcpy((void*)dst, (void*)(&touse[index]), TILE_SIZE);
         } else if ((element == 0x0)){
-            memcpy((void*)dst, (void*)(&outlined_names_fontTiles[index]), TILE_SIZE);
-            u8 *prev_letter = (u8*)(&outlined_names_fontTiles[prev_index]);
+            memcpy((void*)dst, (void*)(&touse[index]), TILE_SIZE);
+            u8 *prev_letter = (u8*)(&touse[prev_index]);
             *(dst + 0) = *(prev_letter + 2);
             *(dst + 4) = *(prev_letter + 6);
             *(dst + 8) = *(prev_letter + 10);
@@ -209,8 +216,8 @@ void outlined_font_draw(u8 obj_id, u8 tile_num, u16 size) {
         } else if ((*(string_buff_ptr + 1) != 0xFF)) {
 
             // pcharacter in middle, if blank space fill blank with previous pcharacter's last pixel row IFF previous pchar's last pixel row non-empty
-            memcpy((void*)dst, (void*)(&outlined_names_fontTiles[index]), TILE_SIZE);
-            u8 *prev_letter = (u8*)(&outlined_names_fontTiles[prev_index]);
+            memcpy((void*)dst, (void*)(&touse[index]), TILE_SIZE);
+            u8 *prev_letter = (u8*)(&touse[prev_index]);
             *(dst) |= (((*(prev_letter + 0) & 0xF) == 0) ? (*(dst + 0) & 0xF) : (*(prev_letter + 0) & 0xF));
             *(dst + 4) |= (((*(prev_letter + 4) & 0xF) == 0) ? (*(dst + 4) & 0xF) : (*(prev_letter + 4) & 0xF));
             *(dst + 8) |= (((*(prev_letter + 8) & 0xF) == 0) ? (*(dst + 8) & 0xF) : (*(prev_letter + 8) & 0xF));
@@ -284,7 +291,7 @@ void hp_nums_update(u8 obj_id, u16 new_hp, u8 t_id) {
     } else {
         // current HP
         pchar value[4];
-        pchar empty_value[4] = _"000";//{0xAB, 0xAB, 0xAB, 0xFF};
+        pchar empty_value[4] = _"!!!";//{0xAB, 0xAB, 0xAB, 0xFF};
         pstrcpy(string_buffer, empty_value);
         fmt_int_10(value, new_hp, 0, 3);
         u16 str_len = pstrlen(value);
@@ -298,8 +305,8 @@ void draw_name(struct Pokemon* pokemon, u8 obj_id, u8 tile_id) {
     // edge case to handle Pokemon switching
     string_buffer[0] = 0x0;
     string_buffer[1] = 0xFF;
-    outlined_font_draw(obj_id, tile_id -1, TILE_SIZE);
-
+    
+    outlined_font_draw(obj_id, tile_id -1, TILE_SIZE, 1);
     // write name
     memcpy(string_buffer, pokemon->base.nick, 10);
     memset(string_buffer + 10, 0xFF, 1);
@@ -307,7 +314,7 @@ void draw_name(struct Pokemon* pokemon, u8 obj_id, u8 tile_id) {
     string_buffer[strlen] = (strlen % 2) ? string_buffer[strlen] : 0x0;
     string_buffer[strlen +  1] = (strlen % 2) ? string_buffer[strlen + 1] : 0x0;
     string_buffer[strlen +  2] = (strlen % 2) ? string_buffer[strlen + 2] : 0xFF;
-    outlined_font_draw(obj_id, tile_id, 6 * TILE_SIZE);
+    outlined_font_draw(obj_id, tile_id, 6 * TILE_SIZE, 1);
 }
 
 void draw_gender(struct Pokemon* p, u8 obj_id, u8 tile_id) {
@@ -317,8 +324,8 @@ void draw_gender(struct Pokemon* p, u8 obj_id, u8 tile_id) {
     char genderless[] = {0x0, 0xFF};
 
 	// special case of switch out
-	pstrcpy(string_buffer, (pchar*)genderless);
-	outlined_font_draw(obj_id, tile_id, TILE_SIZE);
+	pstrcpy(string_buffer, (pchar*)genderless);	
+	outlined_font_draw(obj_id, tile_id, TILE_SIZE, 1);
 
 	// game freak's way of doing forms require this special check...
 	u16 species = pokemon_getattr((struct PokemonBase *)p, REQUEST_SPECIES, NULL);
@@ -333,8 +340,8 @@ void draw_gender(struct Pokemon* p, u8 obj_id, u8 tile_id) {
     } else if (gender == 0xFE) {
         pstrcpy(string_buffer, (pchar*)female);
     }
-
-    outlined_font_draw(obj_id, tile_id, TILE_SIZE);
+    
+    outlined_font_draw(obj_id, tile_id, TILE_SIZE, 1);
 }
 
 
@@ -343,7 +350,7 @@ void draw_level(struct Pokemon* pokemon, u8 obj_id, u8 tile_id) {
     fmt_int_10(string_buffer, level, 0, 3);
     pchar period [] = _"   ";
     pstrcat(string_buffer, (pchar *)period);
-    outlined_font_draw(obj_id, tile_id, 3 * TILE_SIZE);
+    outlined_font_draw(obj_id, tile_id, 3 * TILE_SIZE, 1);
     return;
 };
 
