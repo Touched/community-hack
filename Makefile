@@ -17,7 +17,8 @@ export CHARMAP := charmap.txt
 export INCLUDE := -I deps/pokeagb/build/include -I $(SRC) -I .
 export ASFLAGS := -mthumb
 export CFLAGS := -g -O2 -Wall -mthumb -std=c11 $(INCLUDE) -mcpu=arm7tdmi \
-	-march=armv4t -mno-thumb-interwork -fno-inline -fno-builtin -mlong-calls -DROM_$(ROM_CODE)
+	-march=armv4t -mno-thumb-interwork -fno-inline -fno-builtin -mlong-calls -DROM_$(ROM_CODE) \
+	-fdiagnostics-color
 export LDFLAGS := -T layout.ld -T deps/pokeagb/build/linker/$(ROM_CODE).ld -r
 
 #-------------------------------------------------------------------------------
@@ -44,6 +45,7 @@ OBJECTS=$(addprefix $(BUILD)/,$(GEN_OBJ) $(C_OBJ) $(S_OBJ))
 
 all: main.s $(BINARY) $(call rwildcard,patches,*.s)
 	sh battle_backgrounds
+	@echo -e "\e[1;32mCreating ROM\e[0m"
 	$(ARMIPS) main.s
 
 patch: all
@@ -58,18 +60,22 @@ test:
 	$(MAKE) -f test/Makefile
 
 $(BINARY): $(OBJECTS)
-	$(LD) $(LDFLAGS) -o $@ $^
+	@echo -e "\e[1;32mLinking ELF binary $@\e[0m"
+	@$(LD) $(LDFLAGS) -o $@ $^
 
-$(BUILD)/%.c.o: %.c $(call rwildcard,$(SRC),*.h)
+$(BUILD)/%.c.o: %.c
+	@echo -e "\e[32mCompiling $<\e[0m"
 	@mkdir -p $(@D)
-	$(CC) $(CFLAGS) -E -c $< -o $*.i
-	$(PREPROC) $*.i $(CHARMAP) | $(CC) $(CFLAGS) -x c -o $@ -c -
+	@$(CC) $(CFLAGS) -E -c $< -o $*.i
+	@$(PREPROC) $*.i $(CHARMAP) | $(CC) $(CFLAGS) -x c -o $@ -c -
 
 $(BUILD)/%.s.o: %.s
+	@echo -e "\e[32mAssembling $<\e[0m"
 	@mkdir -p $(@D)
-	$(PREPROC) $< $(CHARMAP) | $(AS) $(ASFLAGS) -o $@
+	@$(PREPROC) $< $(CHARMAP) | $(AS) $(ASFLAGS) -o $@
 
-generated/images/%.c: images/%.png images/%.grit
+generated/images/%.c: images/%.png $(<:%.png=%.grit)
+	@echo -e "\e[34mProcessing image $<\e[0m"
 	@mkdir -p $(@D)
-	grit $< -o $@ -ff$(<:%.png=%.grit)
-	python scripts/grithack.py $@
+	@grit $< -o $@ -ff$(<:%.png=%.grit)
+	@python scripts/grithack.py $@
