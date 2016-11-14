@@ -1,6 +1,7 @@
 #include <pokeagb/pokeagb.h>
 
 
+
 void vblank_cb_spq() {
 	gpu_sprites_upload();
 	copy_queue_process();
