@@ -99,8 +99,14 @@ u8 shaking_grass(u8 environment, u8 x_size, u8 y_size, bool small_scan) {
         oe_state.priority = 0xFF; // height. 
         switch (environment) {
             case 0:
-                oe_exec(0x13);
+                {
+                if (!is_light_level_1_2_3_or_6__opensky(currentmap_header.light)) {
+                    oe_exec(0x1A);
+                } else {
+                    oe_exec(0x13);
+                }
                 break;
+                }
             case 1:
                 oe_exec(0x16);
                 break;
