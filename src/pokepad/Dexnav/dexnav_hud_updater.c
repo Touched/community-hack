@@ -110,6 +110,7 @@ void dexnav_hud_free() {
             {
             if (!is_light_level_1_2_3_or_6__opensky(currentmap_header.light)) {
                 // cave
+                oe_stop(&objects[(*PokePadState)->obj_id_shaking_grass], 0x1A);
             } else {
                 oe_stop(&objects[(*PokePadState)->obj_id_shaking_grass], 0x13);
             }
@@ -195,7 +196,7 @@ void dexnav_hud_manage(u8 task_id) {
     && ((*PokePadState)->proximity < 2) && ((*PokePadState)->movement_times < 2)) {
         switch((*PokePadState)->environment) {
             case 0:
-                oe_stop(&objects[(*PokePadState)->obj_id_shaking_grass], 0x13);
+                oe_stop(&objects[(*PokePadState)->obj_id_shaking_grass], 0x1A);
                 break;
             case 1:
                 oe_stop(&objects[(*PokePadState)->obj_id_shaking_grass], 0x16);

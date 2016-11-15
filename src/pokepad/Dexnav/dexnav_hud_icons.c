@@ -273,6 +273,18 @@ void oei_1A_cave() {
     
 }
 
+
+struct oie_state_2 {
+    const struct SpritePalette* p;
+    SuperCallback s;
+};
+
+extern const struct oie_state_2  cave_state;
+const struct oie_state_2  cave_state = { .p = (const struct SpritePalette*)0x083A5348,
+                                              .s = (SuperCallback)oei_1A_cave,
+                                              };
+
+                                              
 void dexnav_draw_icons() {
     u8 search_level = (*PokePadState)->search_level;
     dexnav_draw_sight((*PokePadState)->proximity, &(*PokePadState)->obj_id_sight);

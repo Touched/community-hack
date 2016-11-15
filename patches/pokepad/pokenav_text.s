@@ -13,8 +13,9 @@
         
 
 // oei animation. Currently replaces grass. TODO: replace a null effect        
-    .org 0x081D9862
-    .word oei_1A_cave|1
+    .org 0x081D98A8
+    .word cave_state
+    .pool
     
     // extend animation frames for hidden water and cave
     .org 0x083A5B56
