@@ -6,8 +6,10 @@ ldrh r0, [r0, #0xE]
 .byte 0x7
 
 //Makes all moves deletable.
-.org 0x080441D6
-.byte 0x0
+.org 0x080441B8
+mov r0, #0x0
+bx lr
 
-.org 0x08125AA8
-.byte 0x0
+.org 0x08125A90
+mov r0, #0x0
+bx lr
