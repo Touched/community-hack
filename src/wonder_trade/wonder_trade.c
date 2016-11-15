@@ -100,67 +100,46 @@ struct hack_members {
     u8 pokeball_type;
 };
 
-#define CLAIMS_COUNT 36
+#define CLAIMS_COUNT 37
 
 static const struct hack_members claims[CLAIMS_COUNT] = {
     {_"Harry", SPECIES_SHINX, _"", ITEM_LUXURYBALL},
     {_"Harry", SPECIES_LUXIO, _"", ITEM_LUXURYBALL},
-    {_"Harry", SPECIES_LUXRAY, _"", ITEM_LUXURYBALL},
-    
+    {_"Harry", SPECIES_LUXRAY, _"", ITEM_LUXURYBALL},   
     {_"Kostas", SPECIES_RIOLU, _"", ITEM_LUXURYBALL},
-    {_"Kostas", SPECIES_LUCARIO, _"", ITEM_LUXURYBALL},
-    
+    {_"Kostas", SPECIES_LUCARIO, _"", ITEM_LUXURYBALL},  
     {_"Christos", SPECIES_SPHEAL, _"", ITEM_NETBALL},
-
     {_"FBI", SPECIES_SLOWPOKE, _"", ITEM_POKEBALL},
     {_"FBI", SPECIES_SLOWBRO, _"", ITEM_POKEBALL},
     {_"FBI", SPECIES_SLOWKING, _"", ITEM_POKEBALL},
-
-
     {_"Michael", SPECIES_GROWLITHE, _"", ITEM_GREATBALL},
     {_"Michael", SPECIES_ARCANINE, _"", ITEM_GREATBALL},
-
-
     {_"Daniel", SPECIES_LILEEP, _"Derp", ITEM_LUXURYBALL},
     {_"Daniel", SPECIES_CRADILY, _"Derp", ITEM_LUXURYBALL},
-
-
     {_"Sai", SPECIES_MURKROW, _"Moriarty", ITEM_LUXURYBALL},
     {_"Sai", SPECIES_HONCHKROW, _"Moriarty", ITEM_LUXURYBALL},
-
     {_"Haroun", SPECIES_TOGETIC, _"", ITEM_POKEBALL},
-
     {_"Uncommo", SPECIES_CYNDAQUIL, _"", ITEM_POKEBALL},
     {_"Uncommo", SPECIES_QUILAVA, _"", ITEM_POKEBALL},
-    {_"Uncommo", SPECIES_TYPHLOSION, _"", ITEM_POKEBALL},
-    
+    {_"Uncommo", SPECIES_TYPHLOSION, _"", ITEM_POKEBALL},  
     {_"Touched", SPECIES_JIGGLYPUFF, _"Jiggles", ITEM_LUXURYBALL},
-    
     {_"Ben", SPECIES_GLISCOR, _"Achrobat", ITEM_LUXURYBALL},
-
     {_"Ddrox", SPECIES_CHINCHOU, _"Spark", ITEM_DIVEBALL},   
     {_"Ddrox", SPECIES_LANTURN, _"Spark", ITEM_DIVEBALL},
-    {_"Mechakn", SPECIES_KANGASKHAN, _"Outrageous", ITEM_SAFARIBALL}, 
-    
+    {_"Mechakn", SPECIES_KANGASKHAN, _"Outrageous", ITEM_SAFARIBALL},     
     {_"Angel", SPECIES_GLACEON, _"Snow", ITEM_LUXURYBALL},
-
-    {_"Denver", SPECIES_GLOOM, _"Lord Goomy", ITEM_DIVEBALL},
-    
+    {_"Denver", SPECIES_GLOOM, _"Lord Goomy", ITEM_DIVEBALL},    
     {_"itari", SPECIES_STARYU, _"", ITEM_DIVEBALL}, 
     {_"itari", SPECIES_STARMIE, _"", ITEM_DIVEBALL},   
-
     {_"Nina", SPECIES_RALTS, _"", ITEM_LUXURYBALL},   
     {_"Nina", SPECIES_KIRLIA, _"", ITEM_LUXURYBALL}, 
-    {_"Nina", SPECIES_GARDEVIOR, _"", ITEM_LUXURYBALL},
-    
-    {_"LAO TZU", SPECIES_STARYU, _"CONFUCIUS", ITEM_GREATBALL},
-    
-    {_"Summer", SPECIES_PICHU, _"", ITEM_POKEBALL},
-    
+    {_"Nina", SPECIES_GARDEVOIR, _"", ITEM_LUXURYBALL},    
+    {_"LAO TZU", SPECIES_STARYU, _"CONFUCIUS", ITEM_GREATBALL},   
+    {_"Summer", SPECIES_PICHU, _"", ITEM_POKEBALL},   
     {_"Kabocha", SPECIES_PUMPKABOO, _"", ITEM_LUXURYBALL},
     {_"Kabocha", SPECIES_GOURGEIST, _"", ITEM_LUXURYBALL},  
-
-    {_"Banhamr", SPECIES_SQUIRTLE, _"Bowser", ITEM_POKEBALL}},    
+    {_"Banhamr", SPECIES_SQUIRTLE, _"Bowser", ITEM_POKEBALL},   
+    {_"ElHeroe", SPECIES_MAGIKARP, _"BASEDGOD", ITEM_POKEBALL}
  };
  
 u8 check_claimed(u16 species) {
