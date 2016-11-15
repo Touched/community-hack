@@ -2,3 +2,5 @@ build
 *.i
 src/generated
 roms
+generated
+make.exe.stackdump
