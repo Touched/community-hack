@@ -15,7 +15,6 @@
         .include "patches/hpbox_gfx/hpbox.s"
 		.include "patches/battle_bgs_pal/bgpals.s"
         .include "patches/battle_graphics.s"
-		.include "patches/pokenav.s"
         .include "patches/c1_ow.s"
         .include "patches/pokepad.s"
 

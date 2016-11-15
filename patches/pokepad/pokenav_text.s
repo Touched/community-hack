@@ -9,3 +9,29 @@
 
         .org 0x083A7344
         .word pokepad_sm_name
+        
+        
+
+// oei animation. Currently replaces grass. TODO: replace a null effect        
+    .org 0x081D9862
+    .word oei_1A_cave|1
+    
+    // extend animation frames for hidden water and cave
+    .org 0x083A5B56
+    .byte 0x8
+    
+    .org 0x083A5B5A
+    .byte 0x8
+    
+    .org 0x083A5B5E
+    .byte 0x8
+
+    .org 0x083A5B62
+    .byte 0x8
+    
+    .org 0x083A5B66
+    .byte 0x8
+    
+    .org 0x083A5B6A
+    .byte 0x8
+    
