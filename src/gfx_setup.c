@@ -73,7 +73,6 @@ void setup() {
 	handlers_clear();
 	// BGs
 	reset_bg_settings();
-	setup_ioregs_bg();
 	// pals
 	reset_pal_settings();
 	// objs
