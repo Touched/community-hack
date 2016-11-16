@@ -8,7 +8,7 @@ void hp_string_to_oam (u8 obj_id, u8 tile_num) {
     u8* dst = (u8*)((tile * TILE_SIZE) + (SPRITE_RAM));
     pchar* string_buff_ptr = string_buffer;
     pchar element = *string_buff_ptr;
-    
+
     u8 size;
         u8 obj_tiles_total;
         switch (objects[obj_id].final_oam.shape) {
@@ -98,13 +98,13 @@ void outlined_font_draw(u8 obj_id, u8 tile_num, u16 size) {
         prev_index = index;
         if ((element <= 0xEE) && (element >= 0xD5)) {
             // lower case letters
-            index = (((element - 0xD5) * TILE_SIZE) + 1600);    
-        } else if ((element <= 0xD4) && (element >= 0xBB)) {    
+            index = (((element - 0xD5) * TILE_SIZE) + 1600);
+        } else if ((element <= 0xD4) && (element >= 0xBB)) {
             // upper case letters
-            index = (((element - 0xBB) * TILE_SIZE) + 768);    
+            index = (((element - 0xBB) * TILE_SIZE) + 768);
         } else if ((element <= 0xAA) && (element >= 0xA1)) {
             // numbers
-            index = (element - 0xA1) * TILE_SIZE;    
+            index = (element - 0xA1) * TILE_SIZE;
         } else {
             // misc pchars
             u8 symbol_id = 0;
@@ -173,7 +173,7 @@ void outlined_font_draw(u8 obj_id, u8 tile_num, u16 size) {
                 case 0xB5: // male
                 {
                     symbol_id = 13;
-                    //dst = 
+                    //dst =
                     break;
                 }
                 case 0xB6: // f
@@ -189,9 +189,9 @@ void outlined_font_draw(u8 obj_id, u8 tile_num, u16 size) {
             };
             index = (symbol_id + 9) * TILE_SIZE;
         }
-        
+
         /* TODO: Use macros here */
-        
+
         if ((counter == 0) || (*(string_buff_ptr + 1) == 0xFF))  {
             // first or last pcharacters don't need pixel merging
             memcpy((void*)dst, (void*)(&outlined_names_fontTiles[index]), TILE_SIZE);
@@ -205,9 +205,9 @@ void outlined_font_draw(u8 obj_id, u8 tile_num, u16 size) {
             *(dst + 16) = *(prev_letter + 18);
             *(dst + 20) = *(prev_letter + 22);
             *(dst + 24) = *(prev_letter + 26);
-            *(dst + 28) = *(prev_letter + 30);            
+            *(dst + 28) = *(prev_letter + 30);
         } else if ((*(string_buff_ptr + 1) != 0xFF)) {
-        
+
             // pcharacter in middle, if blank space fill blank with previous pcharacter's last pixel row IFF previous pchar's last pixel row non-empty
             memcpy((void*)dst, (void*)(&outlined_names_fontTiles[index]), TILE_SIZE);
             u8 *prev_letter = (u8*)(&outlined_names_fontTiles[prev_index]);
@@ -220,7 +220,7 @@ void outlined_font_draw(u8 obj_id, u8 tile_num, u16 size) {
             *(dst + 24) |= (((*(prev_letter + 24) & 0xF) == 0) ? (*(dst + 24) & 0xF) : (*(prev_letter + 24) & 0xF));
             *(dst + 28) |= (((*(prev_letter + 28) & 0xF) == 0) ? (*(dst + 28) & 0xF) : (*(prev_letter + 28) & 0xF));
         }
-        
+
         if ((counter == 2) && (*(string_buff_ptr + 1) != 0xFF)) {
             // every two pchars, we need to merge
             // 8x8px made of 4x8px from previous pchar and 4x8px of this pchar
@@ -232,7 +232,7 @@ void outlined_font_draw(u8 obj_id, u8 tile_num, u16 size) {
             *(dst - 10) = (((*(dst - 10) & 0x0F) == 0) ? (*(dst + 20) & 0xF): (*(dst - 10) & 0x0F)) | (*(dst + 20) & 0xF0);
             *(dst - 6) = (((*(dst - 6) & 0x0F) == 0) ? (*(dst + 24) & 0xF): (*(dst - 6) & 0x0F)) | (*(dst + 24) & 0xF0);
             *(dst - 2) = (((*(dst - 2) & 0x0F) == 0) ? (*(dst + 28) & 0xF): (*(dst - 2) & 0x0F)) | (*(dst + 28) & 0xF0);
-            
+
             // last two pixels unconditional
             *(dst - 29) |= *(dst + 1);
             *(dst - 25) |= *(dst + 5);
@@ -249,7 +249,7 @@ void outlined_font_draw(u8 obj_id, u8 tile_num, u16 size) {
         counter++;
         dst += TILE_SIZE; // next tile
         string_buff_ptr++;
-        element = *string_buff_ptr;    
+        element = *string_buff_ptr;
     }
     memcpy((void*)towrite, (void*)(0x203D000), size);
     memset((void*)(0x203D000), 0x0, size + TILE_SIZE);
@@ -262,8 +262,8 @@ void draw_hp_nums(struct Pokemon* pokemon, u8 obj_id, u8 t_id) {
     pchar empty_string[9] = _"!!!/!!!";//{0xAB, 0xAB, 0xAB, 0xBA, 0xAB, 0xAB, 0xAB, 0xFF};
     pstrcpy(string_buffer, empty_string);
     hp_string_to_oam(obj_id, tile_id - 1);
-    
-    u16 max_hp = pokemon_getattr((struct PokemonBase *)pokemon, REQUEST_TOTL_HP, NULL);
+
+    u16 max_hp = pokemon_getattr((struct PokemonBase *)pokemon, REQUEST_TOTAL_HP, NULL);
     u16 c_hp = pokemon_getattr((struct PokemonBase *)pokemon, REQUEST_CURRENT_HP, NULL);
     fmt_int_10(string_buffer, c_hp, 0, 3);
     u16 str_len = pstrlen(string_buffer);
@@ -299,7 +299,7 @@ void draw_name(struct Pokemon* pokemon, u8 obj_id, u8 tile_id) {
     string_buffer[0] = 0x0;
     string_buffer[1] = 0xFF;
     outlined_font_draw(obj_id, tile_id -1, TILE_SIZE);
-    
+
     // write name
     memcpy(string_buffer, pokemon->base.nick, 10);
     memset(string_buffer + 10, 0xFF, 1);
@@ -317,7 +317,7 @@ void draw_gender(struct Pokemon* p, u8 obj_id, u8 tile_id) {
     char genderless[] = {0x0, 0xFF};
 
 	// special case of switch out
-	pstrcpy(string_buffer, (pchar*)genderless);	
+	pstrcpy(string_buffer, (pchar*)genderless);
 	outlined_font_draw(obj_id, tile_id, TILE_SIZE);
 
 	// game freak's way of doing forms require this special check...
@@ -325,15 +325,15 @@ void draw_gender(struct Pokemon* p, u8 obj_id, u8 tile_id) {
 	if ((species == SPECIES_NIDORANF) || (species == SPECIES_NIDORANM)) {
 		return;
 	}
-	
-    
+
+
     u8 gender = pokemon_get_gender(p);
     if (!gender) {
         pstrcpy(string_buffer, (pchar*)male);
     } else if (gender == 0xFE) {
-        pstrcpy(string_buffer, (pchar*)female);    
+        pstrcpy(string_buffer, (pchar*)female);
     }
-    
+
     outlined_font_draw(obj_id, tile_id, TILE_SIZE);
 }
 
@@ -350,14 +350,14 @@ void draw_level(struct Pokemon* pokemon, u8 obj_id, u8 tile_id) {
 
 void draw_hp_bar(u8 oam_side_maybe, u8 obj_id, struct Pokemon* p) {
     load_gfxc_health_bar();
-    u16 max_hp = pokemon_getattr((struct PokemonBase *)p, REQUEST_TOTL_HP, NULL);
+    u16 max_hp = pokemon_getattr((struct PokemonBase *)p, REQUEST_TOTAL_HP, NULL);
     u16 c_hp = pokemon_getattr((struct PokemonBase *)p, REQUEST_CURRENT_HP, NULL);
-    
+
     // syncs the data with dp11 structure index[0], which is the HP bar
     hpbox_data_set(oam_side_maybe, obj_id, max_hp, c_hp, 0);
     // deals with gfx commit
     sync_hpbox_vram(oam_side_maybe, obj_id, 0);
-    
+
     if ((oam_side_maybe < 1) && (!battle_type_is_double())) {
         u16 species = pokemon_getattr((struct PokemonBase *)p, REQUEST_SPECIES, NULL);
         u8 level = pokemon_getattr((struct PokemonBase *)p, REQUEST_LEVEL, NULL);
@@ -365,7 +365,7 @@ void draw_hp_bar(u8 oam_side_maybe, u8 obj_id, struct Pokemon* p) {
         u32 species_exp_index = (pokemon_base_stats[species].exp_growth * 0x194);
         u32 *exp_have = (u32*) (0x8253AE4 + (species_exp_index + (level * 4)));
         u32 *exp_needed = (u32*) (0x8253AE8 + (species_exp_index + (level * 4)));
-        
+
         // syncs the data with dp11 structure index[1], which is the exp bar
         hpbox_data_set(oam_side_maybe, obj_id, (*exp_needed - *exp_have), (total_exp - *exp_have),  0);
         sync_hpbox_vram(oam_side_maybe, obj_id, 1);
@@ -375,14 +375,14 @@ void draw_hp_bar(u8 oam_side_maybe, u8 obj_id, struct Pokemon* p) {
 
 void draw_ailment(struct Pokemon* p, u8 obj_id, u8 tile_num, u8 type) {
     u8 *src;
-    
+
     // single's status graphic is too big for doubles. Doubles uses a second graphic
     if (!type) {
         src = (u8*)singles_ailmentsTiles;
     } else {
         src = (u8*)doubles_ailmentsTiles;
     }
-    
+
     // draw status ailment into tile ID of obj
     u8 tile = objects[obj_id].final_oam.tile_num + tile_num;
     u8 *dst = (u8*)((tile * TILE_SIZE) + (SPRITE_RAM));
@@ -403,17 +403,17 @@ void draw_ailment(struct Pokemon* p, u8 obj_id, u8 tile_num, u8 type) {
         // Covers Edge case when ailment pokemon swaps out, and OAM is not refreshed.
         memcpy((void*)dst, (void*)(src + (TILE_SIZE * 18)), TILE_SIZE * 3);
     }
-    
+
 }
 
 
 void draw_hp_box_elements(u8 obj_id, struct Pokemon* p, u8 battle_style) {
     // 0-4 value indicating ID for DP11 structure
     u8 oam_side_maybe = objects[obj_id].private[6] & 0xFF;
-        
+
     // battle is single
     if (!battle_type_is_double()) {
-        
+
         // player's team member
         if ((u32)(p) >= (u32)(&party_player[0])) {
             draw_name(p, obj_id, NAME_TILE_PLAYER);
@@ -422,7 +422,7 @@ void draw_hp_box_elements(u8 obj_id, struct Pokemon* p, u8 battle_style) {
             draw_hp_nums(p, obj_id, HEALTH_NUMS_TILE_PLAYER);
             draw_hp_bar(oam_side_maybe, obj_id, p);
             draw_ailment(p, obj_id, AILMENT_TILE_SINLE_PLAYER, 0);
-            
+
         // opponent's team member
         } else {
             objects[obj_id].pos1.x = TILE_SIZE;
@@ -431,12 +431,12 @@ void draw_hp_box_elements(u8 obj_id, struct Pokemon* p, u8 battle_style) {
             draw_level(p, obj_id, LEVEL_TILE_OPPONENT);
             draw_hp_bar(oam_side_maybe, obj_id, p);
             draw_ailment(p, obj_id, AILMENT_TILE_OPPONENT, 1);
-            
+
         }
-    
-    // battle is double 
+
+    // battle is double
     } else {
-    
+
         //player's team member
         if ((u32)(p) >= (u32)(&party_player[0])) {
             draw_name(p, obj_id, NAME_TILE_PLAYER);
@@ -445,7 +445,7 @@ void draw_hp_box_elements(u8 obj_id, struct Pokemon* p, u8 battle_style) {
             draw_hp_bar(oam_side_maybe, obj_id, p);
             draw_ailment(p, obj_id, AILMENT_TILE_DOUBLE_PLAYER, 1);
         } else {
-        
+
         // opponent's team member
             objects[obj_id].pos1.x = TILE_SIZE;
             draw_name(p, obj_id, NAME_TILE_OPPONENT);
@@ -455,7 +455,7 @@ void draw_hp_box_elements(u8 obj_id, struct Pokemon* p, u8 battle_style) {
             draw_ailment(p, obj_id, AILMENT_TILE_OPPONENT, 1);
         }
         return;
-        
+
     }
 };
 
@@ -463,4 +463,3 @@ void draw_hp_box_elements(u8 obj_id, struct Pokemon* p, u8 battle_style) {
 int main() {
     return 1;
 }
-
