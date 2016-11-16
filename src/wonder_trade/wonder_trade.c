@@ -92,6 +92,8 @@ static const pchar trainer_names[50][10] = {
 #define SPECIES_GLISCOR 0
 #define SPECIES_PUMPKABOO 0
 #define SPECIES_GOURGEIST 0
+#define SPECIES_WEAVILE 0
+#define SPECIES_ELECRIVIRE 0
 
 struct hack_members {
     pchar name[10];
@@ -100,7 +102,7 @@ struct hack_members {
     u8 pokeball_type;
 };
 
-#define CLAIMS_COUNT 37
+#define CLAIMS_COUNT 45
 
 static const struct hack_members claims[CLAIMS_COUNT] = {
     {_"Harry", SPECIES_SHINX, _"", ITEM_LUXURYBALL},
@@ -139,7 +141,16 @@ static const struct hack_members claims[CLAIMS_COUNT] = {
     {_"Kabocha", SPECIES_PUMPKABOO, _"", ITEM_LUXURYBALL},
     {_"Kabocha", SPECIES_GOURGEIST, _"", ITEM_LUXURYBALL},  
     {_"Banhamr", SPECIES_SQUIRTLE, _"Bowser", ITEM_POKEBALL},   
-    {_"ElHeroe", SPECIES_MAGIKARP, _"BASEDGOD", ITEM_POKEBALL}
+    {_"ElHeroe", SPECIES_MAGIKARP, _"BASEDGOD", ITEM_POKEBALL},
+    {_"Josh", SPECIES_JUMPLUFF, _"Cotton", ITEM_PREMIERBALL},
+    {_"Adriana", SPECIES_SHELLDER, _"Tight", ITEM_DIVEBALL},
+    {_"Banhamr", SPECIES_CLOYSTER, _"Bowser", ITEM_POKEBALL},
+    {_"Joe", SPECIES_SNEASEL, _"", ITEM_LUXURYBALL},
+    {_"Joe", SPECIES_WEAVILE, _"", ITEM_LUXURYBALL},
+    {_"Delta", SPECIES_ELEKID, _"Paul", ITEM_POKEBALL},
+    {_"Delta", SPECIES_ELECTABUZZ, _"Paul", ITEM_POKEBALL},
+    {_"Delta", SPECIES_ELECRIVIRE, _"Paul", ITEM_POKEBALL},
+    {_"Lycan", SPECIES_ZANGOOSE, _"Rezzi", ITEM_POKEBALL},
  };
  
 u8 check_claimed(u16 species) {
@@ -164,12 +175,17 @@ void set_claim_data(u8 member) {
 }
  
 void generate_trademon(u16 species, u8 lvl) {
-    u32 PID = ((rand() << 16) | (rand() >> 16));
-    u32 TID = ((rand() << 16) |  (rand() >> 16));
+    u32 PID = ((rand() << 16) | (rand()));
+    u32 TID = ((rand() << 16) |  (rand()));
+    u8 iv = 0xFF;
+    // this is nothing, promise
+    if ((species == SPECIES_SLOWPOKE)) {
+        iv = 0x1F;
+    }
     pokemon_make_full(  &party_opponent[0],
                         species,
                         lvl,
-                        0xFF,
+                        iv,
                         1,
                         (u32)&PID,
                         1,
@@ -179,6 +195,10 @@ void generate_trademon(u16 species, u8 lvl) {
         set_claim_data(claiming_member);
     } else {
         pokemon_setattr((struct PokemonBase*)&party_opponent[0], REQUEST_OT_NAME, (void*)&trainer_names[rand() % 50]);
+    }
+    if ((iv == 0x1F)) {
+        u16 i = 0xBB;
+        pokemon_setattr((struct PokemonBase*)&party_opponent[0], REQUEST_HELD_ITEM, &i); 
     }
     recalculate_stats(&party_opponent[0]);
 }
@@ -247,7 +267,8 @@ void trade_name_buffering() {
 void to_trade(void) {
     // get good trade partner for offered 'mon
     u16 slot = var_8004;
-    u16 species = get_valid_species(slot);
+    u16 species = SPECIES_SLOWPOKE;//get_valid_species(slot);
+    
     var_8001 = party_player[slot].level;
     
     // generate trademon
