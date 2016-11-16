@@ -12,10 +12,13 @@ function upload {
          --header "Dropbox-API-Arg: {\"path\": \"$2\", \"mode\": {\".tag\": \"overwrite\"}, \"autorename\": false, \"client_modified\": \"$timestamp\"}" --data-binary @"$1" "$API_UPLOAD_URL"
 }
 
-if [ -n "$TRAVIS_BRANCH" ]
+if [ "$TRAVIS_PULL_REQUEST" = "false" ]
 then
-    for ext in "${PATCHES[@]}"
-    do
-        upload "$TRAVIS_BUILD_DIR/build/patch.$ext" "/community hack/patches/$TRAVIS_BRANCH.$ext"
-    done
+    if [ -n "$TRAVIS_BRANCH" ]
+    then
+        for ext in "${PATCHES[@]}"
+        do
+            upload "$TRAVIS_BUILD_DIR/build/patch.$ext" "/community hack/patches/$TRAVIS_BRANCH.$ext"
+        done
+    fi
 fi
