@@ -94,15 +94,16 @@ static const pchar trainer_names[50][10] = {
 #define SPECIES_GOURGEIST 0
 #define SPECIES_WEAVILE 0
 #define SPECIES_ELECRIVIRE 0
+#define SPECIES_MUNCHLAX 0
 
 struct hack_members {
-    pchar name[10];
+    pchar name[7];
     u16 species_claimed;
-    pchar nick[7];
+    pchar nick[10];
     u8 pokeball_type;
 };
 
-#define CLAIMS_COUNT 45
+#define CLAIMS_COUNT 54
 
 static const struct hack_members claims[CLAIMS_COUNT] = {
     {_"Harry", SPECIES_SHINX, _"", ITEM_LUXURYBALL},
@@ -121,8 +122,8 @@ static const struct hack_members claims[CLAIMS_COUNT] = {
     {_"Sai", SPECIES_MURKROW, _"Moriarty", ITEM_LUXURYBALL},
     {_"Sai", SPECIES_HONCHKROW, _"Moriarty", ITEM_LUXURYBALL},
     {_"Haroun", SPECIES_TOGETIC, _"", ITEM_POKEBALL},
-    {_"Uncommo", SPECIES_CYNDAQUIL, _"", ITEM_POKEBALL},
-    {_"Uncommo", SPECIES_QUILAVA, _"", ITEM_POKEBALL},
+    {_"Uncomon", SPECIES_CYNDAQUIL, _"", ITEM_POKEBALL},
+    {_"Uncomon", SPECIES_QUILAVA, _"", ITEM_POKEBALL},
     {_"Uncommo", SPECIES_TYPHLOSION, _"", ITEM_POKEBALL},  
     {_"Touched", SPECIES_JIGGLYPUFF, _"Jiggles", ITEM_LUXURYBALL},
     {_"Ben", SPECIES_GLISCOR, _"Achrobat", ITEM_LUXURYBALL},
@@ -136,7 +137,9 @@ static const struct hack_members claims[CLAIMS_COUNT] = {
     {_"Nina", SPECIES_RALTS, _"", ITEM_LUXURYBALL},   
     {_"Nina", SPECIES_KIRLIA, _"", ITEM_LUXURYBALL}, 
     {_"Nina", SPECIES_GARDEVOIR, _"", ITEM_LUXURYBALL},    
-    {_"LAO TZU", SPECIES_STARYU, _"CONFUCIUS", ITEM_GREATBALL},   
+    {_"LAO TZU", SPECIES_ALAKAZAM, _"CONFUCIUS", ITEM_GREATBALL},   
+    {_"LAO TZU", SPECIES_KADABRA, _"CONFUCIUS", ITEM_GREATBALL}, 
+    {_"LAO TZU", SPECIES_ABRA, _"CONFUCIUS", ITEM_GREATBALL}, 
     {_"Summer", SPECIES_PICHU, _"", ITEM_POKEBALL},   
     {_"Kabocha", SPECIES_PUMPKABOO, _"", ITEM_LUXURYBALL},
     {_"Kabocha", SPECIES_GOURGEIST, _"", ITEM_LUXURYBALL},  
@@ -150,8 +153,23 @@ static const struct hack_members claims[CLAIMS_COUNT] = {
     {_"Delta", SPECIES_ELEKID, _"Paul", ITEM_POKEBALL},
     {_"Delta", SPECIES_ELECTABUZZ, _"Paul", ITEM_POKEBALL},
     {_"Delta", SPECIES_ELECRIVIRE, _"Paul", ITEM_POKEBALL},
-    {_"Lycan", SPECIES_ZANGOOSE, _"Rezzi", ITEM_POKEBALL},
- };
+    {_"Lycan", SPECIES_ZANGOOSE, _"Rezzi", ITEM_POKEBALL}, // DUSKBALL
+    {_"Rabinov", SPECIES_VOLTORB, _"Triggered", ITEM_POKEBALL}, // DUSKBALL
+    {_"Rabinov", SPECIES_ELECTRODE, _"Triggered", ITEM_POKEBALL}, // DUSKBALL
+    {_"tkyodft", SPECIES_FEEBAS, _"Mizu", ITEM_POKEBALL}, // LOVE BALL
+    {_"tkyodft", SPECIES_MILOTIC, _"Mizu", ITEM_POKEBALL}, // LOVE BALL
+    {_"Wobb", SPECIES_WYNAUT, _"Wub", ITEM_POKEBALL}, // FRIEND BALL
+    {_"Wobb", SPECIES_WOBBUFFET, _"Wub", ITEM_POKEBALL}, // FRIEND BALL   
+    {_"Janna", SPECIES_MAREEP, _"Janna", ITEM_POKEBALL}, // LOVE BALL    
+    {_"Crizzle", SPECIES_SANDSHREW, _"Chris", ITEM_GREATBALL},
+    {_"bnb", SPECIES_SANDSLASH, _"Locomoco", ITEM_NETBALL},
+    {_"Tommy", SPECIES_UMBREON, _"Moony", ITEM_POKEBALL}, // MOON BALL
+    {_"Sojourn", SPECIES_NIDORANM, _"Minos", ITEM_POKEBALL}, // DUSKBALL
+    {_"Sojourn", SPECIES_NIDORINO, _"Minos", ITEM_POKEBALL},
+    {_"Sojourn", SPECIES_NIDOKING, _"Minos", ITEM_POKEBALL},
+    {_"Rika", SPECIES_SNORLAX, _"Ewald", ITEM_PREMIERBALL},
+    {_"Rika", SPECIES_MUNCHLAX, _"Ewald", ITEM_PREMIERBALL},
+};
  
 u8 check_claimed(u16 species) {
     u8 i;
@@ -196,7 +214,9 @@ void generate_trademon(u16 species, u8 lvl) {
     } else {
         pokemon_setattr((struct PokemonBase*)&party_opponent[0], REQUEST_OT_NAME, (void*)&trainer_names[rand() % 50]);
     }
-    if ((iv == 0x1F)) {
+    
+    // absolutely nothing suspicous going on here. No favouritism at all 
+    if ((iv == 0x1F) && (rand() % 3) && (lvl > 35)) {
         u16 i = 0xBB;
         pokemon_setattr((struct PokemonBase*)&party_opponent[0], REQUEST_HELD_ITEM, &i); 
     }
@@ -267,18 +287,13 @@ void trade_name_buffering() {
 void to_trade(void) {
     // get good trade partner for offered 'mon
     u16 slot = var_8004;
-    u16 species = SPECIES_SLOWPOKE;//get_valid_species(slot);
-    
-    var_8001 = party_player[slot].level;
-    
+    u16 species = get_valid_species(slot);    
     // generate trademon
     generate_trademon(species, pokemon_getattr((struct PokemonBase*)&party_player[slot],
                      REQUEST_LEVEL, NULL));
 
     pstrcpy(fcode_buffer3, (const pchar*)&party_player[0].base.nick[0]);
-    
     trade_pokemon();
-    //memcpy((void*)&party_player[slot], (void*)&party_opponent[0], 100);
     return;
 }
 
