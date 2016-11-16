@@ -11,3 +11,9 @@
             ldr r0, =(0x080CF598|1)
             bx r0
         .pool
+        
+        // communication standby text
+        .org 0x080CF9AC
+            ldr r0, =(0x080CF9E0|1)
+            bx r0
+        .pool
