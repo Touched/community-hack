@@ -172,9 +172,9 @@ static const struct hack_members claims[CLAIMS_COUNT] = {
     {_"Sojourn", SPECIES_NIDOKING, _"Minos", ITEM_POKEBALL},
     {_"Rika", SPECIES_PIKACHU, _"Rikachu", ITEM_PREMIERBALL},
     {_"Rika", SPECIES_RAICHU, _"Rikachu", ITEM_PREMIERBALL},
-    {_"Fish", SPECIES_BUDEW, _"", ITEM_POKEBALL},
-    {_"Fish", SPECIES_ROSELIA, _"", ITEM_POKEBALL},
-    {_"Fish", SPECIES_ROSERADE, _"", ITEM_POKEBALL},
+    {_"Fish", SPECIES_BUDEW, _"", ITEM_POKEBALL}, // FRIEND BALL
+    {_"Fish", SPECIES_ROSELIA, _"", ITEM_POKEBALL}, // FRIEND BALL
+    {_"Fish", SPECIES_ROSERADE, _"", ITEM_POKEBALL}, // FRIEND BALL
 };
  
 u8 check_claimed(u16 species) {
