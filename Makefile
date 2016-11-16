@@ -20,6 +20,8 @@ export CFLAGS := -g -O2 -Wall -mthumb -std=c11 $(INCLUDE) -mcpu=arm7tdmi \
 	-march=armv4t -mno-thumb-interwork -fno-inline -fno-builtin -mlong-calls -DROM_$(ROM_CODE) \
 	-fdiagnostics-color
 export LDFLAGS := -T layout.ld -T deps/pokeagb/build/linker/$(ROM_CODE).ld -r
+export DEPDIR = .d
+export DEPFLAGS = -MT $@ -MMD -MP -MF $(DEPDIR)/$*.Td
 
 #-------------------------------------------------------------------------------
 
@@ -63,11 +65,12 @@ $(BINARY): $(OBJECTS)
 	@echo -e "\e[1;32mLinking ELF binary $@\e[0m"
 	@$(LD) $(LDFLAGS) -o $@ $^
 
-$(BUILD)/%.c.o: %.c $(call rwildcard,$(SRC),*.h)
+$(BUILD)/%.c.o: %.c $(DEPDIR)/%.d # $(call rwildcard,$(SRC),*.h)
 	@echo -e "\e[32mCompiling $<\e[0m"
-	@mkdir -p $(@D)
-	@$(CC) $(CFLAGS) -E -c $< -o $*.i
+	@mkdir -p $(DEPDIR)/$<
+	@$(CC) $(DEPFLAGS) $(CFLAGS) -E -c $< -o $*.i
 	@$(PREPROC) $*.i $(CHARMAP) | $(CC) $(CFLAGS) -x c -o $@ -c -
+	@mv -f $(DEPDIR)/$*.Td $(DEPDIR)/$*.d
 
 $(BUILD)/%.s.o: %.s
 	@echo -e "\e[32mAssembling $<\e[0m"
@@ -79,3 +82,7 @@ generated/images/%.c: images/%.png images/%.grit
 	@mkdir -p $(@D)
 	@grit $< -o $@ -ff$(<:%.png=%.grit)
 	@python scripts/grithack.py $@
+
+$(DEPDIR)/%.d: ;
+.PRECIOUS: $(DEPDIR)/%.d
+-include $(patsubst %,$(DEPDIR)/%.d,$(basename $(C_SRC)))

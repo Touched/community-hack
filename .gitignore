@@ -2,3 +2,4 @@ build
 *.i
 src/generated
 roms
+.d
