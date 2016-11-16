@@ -270,7 +270,7 @@ void draw_hp_nums(struct Pokemon* pokemon, u8 obj_id, u8 t_id) {
     pstrcpy(string_buffer, empty_string);
     hp_string_to_oam(obj_id, tile_id - 1);
     
-    u16 max_hp = pokemon_getattr((struct PokemonBase *)pokemon, REQUEST_TOTL_HP, NULL);
+    u16 max_hp = pokemon_getattr((struct PokemonBase *)pokemon, REQUEST_TOTAL_HP, NULL);
     u16 c_hp = pokemon_getattr((struct PokemonBase *)pokemon, REQUEST_CURRENT_HP, NULL);
     fmt_int_10(string_buffer, c_hp, 0, 3);
     u16 str_len = pstrlen(string_buffer);
@@ -357,7 +357,7 @@ void draw_level(struct Pokemon* pokemon, u8 obj_id, u8 tile_id) {
 
 void draw_hp_bar(u8 oam_side_maybe, u8 obj_id, struct Pokemon* p) {
     load_gfxc_health_bar();
-    u16 max_hp = pokemon_getattr((struct PokemonBase *)p, REQUEST_TOTL_HP, NULL);
+    u16 max_hp = pokemon_getattr((struct PokemonBase *)p, REQUEST_TOTAL_HP, NULL);
     u16 c_hp = pokemon_getattr((struct PokemonBase *)p, REQUEST_CURRENT_HP, NULL);
     
     // syncs the data with dp11 structure index[0], which is the HP bar
