@@ -95,6 +95,9 @@ static const pchar trainer_names[50][10] = {
 #define SPECIES_WEAVILE 0
 #define SPECIES_ELECRIVIRE 0
 #define SPECIES_MUNCHLAX 0
+#define SPECIES_BUDEW 0
+#define SPECIES_ROSELIA 0
+#define SPECIES_ROSERADE 0
 
 struct hack_members {
     pchar name[7];
@@ -103,7 +106,7 @@ struct hack_members {
     u8 pokeball_type;
 };
 
-#define CLAIMS_COUNT 54
+#define CLAIMS_COUNT 66
 
 static const struct hack_members claims[CLAIMS_COUNT] = {
     {_"Harry", SPECIES_SHINX, _"", ITEM_LUXURYBALL},
@@ -167,8 +170,11 @@ static const struct hack_members claims[CLAIMS_COUNT] = {
     {_"Sojourn", SPECIES_NIDORANM, _"Minos", ITEM_POKEBALL}, // DUSKBALL
     {_"Sojourn", SPECIES_NIDORINO, _"Minos", ITEM_POKEBALL},
     {_"Sojourn", SPECIES_NIDOKING, _"Minos", ITEM_POKEBALL},
-    {_"Rika", SPECIES_SNORLAX, _"Ewald", ITEM_PREMIERBALL},
-    {_"Rika", SPECIES_MUNCHLAX, _"Ewald", ITEM_PREMIERBALL},
+    {_"Rika", SPECIES_PIKACHU, _"Rikachu", ITEM_PREMIERBALL},
+    {_"Rika", SPECIES_RAICHU, _"Rikachu", ITEM_PREMIERBALL},
+    {_"Fish", SPECIES_BUDEW, _"", ITEM_POKEBALL},
+    {_"Fish", SPECIES_ROSELIA, _"", ITEM_POKEBALL},
+    {_"Fish", SPECIES_ROSERADE, _"", ITEM_POKEBALL},
 };
  
 u8 check_claimed(u16 species) {
