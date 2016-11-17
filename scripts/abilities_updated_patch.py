@@ -8,7 +8,8 @@ def check_ability_exists(abilities, target_ability):
 
 # constants
 hidden_ability_index = 0x1A
-base_stats = 0x0825479E + hidden_ability_index
+base_stats_size = 0x1C
+base_stats = 0x08254784 + hidden_ability_index
 species_max = 412
 to_write = "// patch abilities\n\n"
 firered_abilities = []
@@ -26,7 +27,7 @@ with open('./../hiddenlist', 'r+') as f:
         # if hidden ability exists in generation 3 abilities list
         # and species less than species max, append
         if ((value > 0) and (int(temp[0]) < species_max)):
-            to_write += ("\t\t.org " + hex((int(temp[0])*28) + base_stats).upper().replace('X', 'x') + "\n" +
+            to_write += ("\t\t.org " + hex((int(temp[0])*base_stats_size) + base_stats).upper().replace('X', 'x') + "\n" +
                 "\t\t.byte " + hex(int(value)).upper().replace('X','x') + "// " + temp[1] + "\n")
 
 with open('./../patches/hidden_abilities/hiddenability.s', 'a+') as f:
