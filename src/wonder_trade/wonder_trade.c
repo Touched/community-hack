@@ -98,6 +98,10 @@ static const pchar trainer_names[50][10] = {
 #define SPECIES_BUDEW 0
 #define SPECIES_ROSELIA 0
 #define SPECIES_ROSERADE 0
+#define SPECIES_MISMAGIUS 0
+#define SPECIES_PETILIL 0
+#define SPECIES_LILLIGANT 0
+
 
 struct hack_members {
     pchar name[7];
@@ -106,7 +110,7 @@ struct hack_members {
     u8 pokeball_type;
 };
 
-#define CLAIMS_COUNT 66
+#define CLAIMS_COUNT 72
 
 static const struct hack_members claims[CLAIMS_COUNT] = {
     {_"Harry", SPECIES_SHINX, _"", ITEM_LUXURYBALL},
@@ -175,6 +179,12 @@ static const struct hack_members claims[CLAIMS_COUNT] = {
     {_"Fish", SPECIES_BUDEW, _"", ITEM_POKEBALL}, // FRIEND BALL
     {_"Fish", SPECIES_ROSELIA, _"", ITEM_POKEBALL}, // FRIEND BALL
     {_"Fish", SPECIES_ROSERADE, _"", ITEM_POKEBALL}, // FRIEND BALL
+    {_"Deo", SPECIES_MISMAGIUS, _"Magicackle", ITEM_LUXURYBALL}, // MOON BALL
+    {_"Deo", SPECIES_MISDREAVUS, _"Magicackle", ITEM_LUXURYBALL}, // MOON BALL
+    {_"Rudy", SPECIES_NUMEL, _"Vesuvius", ITEM_POKEBALL},
+    {_"Rudy", SPECIES_CAMERUPT, _"Vesuvius", ITEM_POKEBALL},
+    {_"Doesnt", SPECIES_LILLIGANT, _"Anna", ITEM_POKEBALL},
+    {_"Doesnt", SPECIES_PETILIL, _"Anna", ITEM_POKEBALL}   
 };
  
 u8 check_claimed(u16 species) {
@@ -256,7 +266,7 @@ u16 get_valid_species(u8 slot) {
     u16 current_index = 0;
     
     // loop through all available pokemon and fill valid species array
-    for (i = 1; i < POKEAGB_POKEMON_SLOTS; i++) {
+    for (i = 0; i < POKEAGB_POKEMON_SLOTS; i++) {
     
         u16 bst = get_bst(i);    
         if (player_bst > bst) {
@@ -293,12 +303,11 @@ void trade_name_buffering() {
 void to_trade(void) {
     // get good trade partner for offered 'mon
     u16 slot = var_8004;
+    var_8005 = var_8004;
     u16 species = get_valid_species(slot);    
     // generate trademon
     generate_trademon(species, pokemon_getattr((struct PokemonBase*)&party_player[slot],
                      REQUEST_LEVEL, NULL));
-
-    pstrcpy(fcode_buffer3, (const pchar*)&party_player[0].base.nick[0]);
     trade_pokemon();
     return;
 }
