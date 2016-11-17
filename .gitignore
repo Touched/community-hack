@@ -4,3 +4,4 @@ src/generated
 generated
 roms
 *.stackdump
+test.sh
