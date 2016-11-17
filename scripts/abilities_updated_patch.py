@@ -26,7 +26,6 @@ with open('./../hiddenlist', 'r+') as f:
         # if hidden ability exists in generation 3 abilities list
         # and species less than species max, append
         if ((value > 0) and (int(temp[0]) < species_max)):
-            print("passing" + temp[0])
             to_write += ("\t\t.org " + hex((int(temp[0])*28) + base_stats).upper().replace('X', 'x') + "\n" +
                 "\t\t.byte " + hex(int(value)).upper().replace('X','x') + "// " + temp[1] + "\n")
 
