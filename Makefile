@@ -65,8 +65,9 @@ $(BINARY): $(OBJECTS)
 	@echo -e "\e[1;32mLinking ELF binary $@\e[0m"
 	@$(LD) $(LDFLAGS) -o $@ $^
 
-$(BUILD)/%.c.o: %.c $(DEPDIR)/%.d # $(call rwildcard,$(SRC),*.h)
+$(BUILD)/%.c.o: %.c $(DEPDIR)/%.d
 	@echo -e "\e[32mCompiling $<\e[0m"
+	@mkdir -p $(@D)
 	@mkdir -p $(DEPDIR)/$<
 	@$(CC) $(DEPFLAGS) $(CFLAGS) -E -c $< -o $*.i
 	@$(PREPROC) $*.i $(CHARMAP) | $(CC) $(CFLAGS) -x c -o $@ -c -
