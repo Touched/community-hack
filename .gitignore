@@ -6,4 +6,6 @@ roms
 generated
 make.exe.stackdump
 test.sh
-
+*.stackdump
+test.sh
+*.d
