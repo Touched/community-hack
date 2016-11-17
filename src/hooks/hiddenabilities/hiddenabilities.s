@@ -5,6 +5,8 @@
     b_copy_species_ability_new_hook:
         push {lr}
         bl get_ability
+        ldr r1, =(0x2023D6A)
+        strb r0, [r1]
         pop {pc}
             
 
