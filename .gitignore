@@ -5,3 +5,4 @@ generated
 roms
 *.stackdump
 test.sh
+*.d
