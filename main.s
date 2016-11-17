@@ -18,6 +18,8 @@
         .include "patches/hm_remove.s"
 		.include "patches/pokenav.s"
         .include "patches/c1_ow.s"
+        .include "patches/pokepad.s"
+        .include "patches/hiddenabilities.s"
 
         // Only do this if you haven't repointed your battle script
 	// command table
