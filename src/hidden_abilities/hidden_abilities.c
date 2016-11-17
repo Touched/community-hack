@@ -1,6 +1,7 @@
 #include <pokeagb/pokeagb.h>
 
 u8 get_ability(u16 species, u8 ability_bit) {
+    u8 ability = 0;
     switch (ability_bit) {
         case 0:
             {
