@@ -3,3 +3,6 @@ build
 src/generated
 roms
 .d
+generated
+make.exe.stackdump
+test.sh
