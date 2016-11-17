@@ -19,4 +19,4 @@
         
     // disable help system
     .org 0x0800051A
-    .byte 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    .byte nop, nop, nop, nop, nop
