@@ -1,2 +1,3 @@
 /* We can reuse the script environment during the battle */
 extension_state = 0x03000F28;
+debug_print_buffer = 0x02022112;
