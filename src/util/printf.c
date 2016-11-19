@@ -23,24 +23,12 @@
 	replace outbyte(c) by your own function call.
 */
 
-extern char debug_print_buffer[2];
+#include <pokeagb/pokeagb.h>
 
-void outbyte(char ch) {
-    debug_print_buffer[0] = ch;
-    debug_print_buffer[1] = '\0';
-
-    __asm volatile(
-	"mov r2, %0\n"
-	"ldr r0, =0xC0DED00D\n"
-	"mov r1, #0\n"
-	"and r0, r0, r0\n"
-	:
-	:
-	"r" (debug_print_buffer) :
-	"r0", "r1", "r2");
-}
-
-#define putchar(c) outbyte(c)
+#define REG_DEBUG_ENABLE (volatile u16*) 0x4FFF780
+#define REG_DEBUG_FLAGS (volatile u16*) 0x4FFF700
+#define REG_DEBUG_STRING ((char*) 0x4FFF600)
+#define MGBA_LOG_INFO 3
 
 static void printchar(char **str, int c)
 {
@@ -48,7 +36,6 @@ static void printchar(char **str, int c)
         **str = c;
         ++(*str);
     }
-    else (void)putchar(c);
 }
 
 #define PAD_RIGHT 1
@@ -201,10 +188,22 @@ static int print(char **out, int *varg)
 
 /* assuming sizeof(void *) == sizeof(int) */
 
+static int vsprintf(char *out, int *varg)
+{
+    print(&out, varg);
+}
+
 int printf(const char *format, ...)
 {
+
     register int *varg = (int *)(&format);
-    return print(0, varg);
+
+    if (*REG_DEBUG_ENABLE != 0x1DEA) {
+        *REG_DEBUG_ENABLE = 0xC0DE;
+    }
+
+    vsprintf(REG_DEBUG_STRING, varg);
+    *REG_DEBUG_FLAGS = MGBA_LOG_INFO | 0x100;
 }
 
 int sprintf(char *out, const char *format, ...)
