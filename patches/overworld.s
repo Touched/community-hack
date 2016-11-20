@@ -15,8 +15,11 @@
         ldr r0, =overworld_trainer_battle_flags_hook|1
         bx r0
         .pool
-        
-        
-    // disable help system
-    .org 0x0800051A
-    .byte nop, nop, nop, nop, nop
+
+        // Disable help system
+        .org 0x0800051A
+        nop
+        nop
+        nop
+        nop
+        nop
