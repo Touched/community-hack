@@ -8,13 +8,13 @@ void vblank_cb_spq() {
 	gpu_pal_upload();
 }
 
-void vcb_pokenav() {
-	task_exec();
-	remoboxes_upload_tilesets();
-	objc_exec();
-	obj_sync_superstate();
-	process_palfade();
+
+void c2_pokenav() {
+	tilemaps_sync();
+	copy_queue_process();
+	gpu_pal_upload();
 }
+
 
 void handlers_clear() {
 	vblank_handler_set(0);
@@ -50,23 +50,6 @@ void reset_boxes() {
 	rboxes_free();
 }
 
-void setup_ioregs_bg() {
-	u8 i;
-	for (i = 0; i < 4; i ++) {
-		BG_CNT[i].priority = i;
-		BG_CNT[i].char_index = i;
-		BG_CNT[i].padding = 0;
-		BG_CNT[i].mosiac = 0;
-		BG_CNT[i].color = 0;
-		BG_CNT[i].map_index = (0x1F - i);
-		BG_CNT[i].screen_over = 0;
-		BG_CNT[i].size = 0;
-	}
-
-	lcd_io_set(0x50, 0x2F00);
-	lcd_io_set(0x52, 0x0F);
-}
-
 
 void setup() {
 	// callbacks
@@ -84,5 +67,4 @@ void setup() {
 	tasks_init();
 	// textboxes
 	reset_boxes();
-
 }
