@@ -266,8 +266,7 @@ u16 get_valid_species(u8 slot) {
     u16 current_index = 0;
     
     // loop through all available pokemon and fill valid species array
-    for (i = 0; i < POKEAGB_POKEMON_SLOTS; i++) {
-    
+    for (i = 1; i < POKEAGB_POKEMON_SLOTS; i++) {
         u16 bst = get_bst(i);    
         if (player_bst > bst) {
             bst = player_bst - bst;
