@@ -1,8 +1,14 @@
 build
 *.i
 src/generated
+<<<<<<< HEAD
 .d
 test.sh
 generated
 roms
 *.stackdump
+=======
+generated
+roms
+*.stackdump
+>>>>>>> a18c121c3cac0c11b90a7ce76fd49b9a1208e5a5
