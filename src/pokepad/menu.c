@@ -90,7 +90,7 @@ static void load_page_indicators(void)
         for (u8 i = 0; i < state->page_count; i++) {
             u8 id = template_instanciate_forward_search(&menu_page_indicator_template,
                                                         x + i * 8, 104, 0);
-            objects[id].private[0] = i;
+            objects[id].priv[0] = i;
         }
     }
 }
@@ -229,11 +229,11 @@ static bool setup(u8* trigger)
         gpu_tile_obj_alloc_tag_and_upload(&menu_arrow_tiles);
         state->arrow_id = template_instanciate_forward_search(&menu_arrow_template, 0, 0, 0);
         menu_arrow_update_position();
-        objects[state->arrow_id].private[0] = 1; /* Enable */
-        objects[state->arrow_id].private[2] = 1; /* Vertical */
-        objects[state->arrow_id].private[3] = 2; /* Distance */
-        objects[state->arrow_id].private[4] = 20; /* Speed */
-        objects[state->arrow_id].private[5] = 0; /* Phase */
+        objects[state->arrow_id].priv[0] = 1; /* Enable */
+        objects[state->arrow_id].priv[2] = 1; /* Vertical */
+        objects[state->arrow_id].priv[3] = 2; /* Distance */
+        objects[state->arrow_id].priv[4] = 20; /* Speed */
+        objects[state->arrow_id].priv[5] = 0; /* Phase */
 
         load_page_indicators();
 
@@ -266,11 +266,11 @@ static void callback(void)
 {
     struct PokepadMenuState* state = (struct PokepadMenuState*) pokepad_state->app_state;
 
-    if (super.buttons.new_remapped & KEY_LEFT) {
+    if (super.buttons_new_remapped & KEY_LEFT) {
         if (state->index > 0) {
             state->index -= 1;
         }
-    } else if (super.buttons.new_remapped & KEY_RIGHT) {
+    } else if (super.buttons_new_remapped & KEY_RIGHT) {
         if (state->index < state->app_count - 1) {
             state->index += 1;
         }
@@ -299,7 +299,7 @@ static void oac_page_indicator(struct Object* obj)
     struct PokepadMenuState* state = (struct PokepadMenuState*) pokepad_state->app_state;
 
     u8 tile = 1;
-    if (obj->private[0] == state->page) {
+    if (obj->priv[0] == state->page) {
         tile = 0;
     }
 

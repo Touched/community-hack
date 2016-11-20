@@ -346,7 +346,7 @@ static void pokepad_exit(void)
 
 static void pokepad_callback(void)
 {
-    if (super.buttons.new_remapped & KEY_B) {
+    if (super.buttons_new_remapped & KEY_B) {
         set_callback2(pokepad_exit);
     }
 

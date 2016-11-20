@@ -19,7 +19,7 @@ void c1_overworld_plus() {
         var_set(0x407B, 0x0);
     }
     
-    c1_overworld_normal(super.buttons.new_remapped, super.buttons.held_remapped);
+    c1_overworld_normal(super.buttons_new_remapped, super.buttons_held_remapped);
     return;   
 }
 

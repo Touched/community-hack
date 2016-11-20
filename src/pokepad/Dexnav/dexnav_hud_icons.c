@@ -268,7 +268,7 @@ void oei_1A_cave() {
     u8 obj_id = template_instanciate_reverse_search(&objt_cave, oe_state.effect_pos.x, oe_state.effect_pos.y, 0xFF); 
     if (obj_id != 64) {
         objects[obj_id].bitfield2 |= 2;
-        objects[obj_id].private[0] = 22;
+        objects[obj_id].priv[0] = 22;
     }
     
 }
