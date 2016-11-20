@@ -103,7 +103,7 @@ const struct ScrollArrows arrows = {
     1,
 };
 
-#define KEY_PRESSED(x) (super.buttons.new_remapped & x)
+#define KEY_PRESSED(x) (super.buttons_new_remapped & x)
 
 void mega_ui_menu(void);
 

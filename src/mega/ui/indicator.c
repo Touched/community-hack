@@ -57,10 +57,10 @@ void mega_ui_load_indicators(u8 state)
 
 void mega_ui_indicator_blink_callback(struct Object* object)
 {
-    if (object->private[0]++ >= FPS / 2) {
+    if (object->priv[0]++ >= FPS / 2) {
         /* Toggle visibility */
         object->bitfield2 ^= 4;
-        object->private[0] = 0;
+        object->priv[0] = 0;
     }
 }
 
@@ -72,7 +72,7 @@ void mega_ui_indicator_blinking(enum BattleBank bank, bool enable)
 
     if (enable) {
         object->callback = mega_ui_indicator_blink_callback;
-        object->private[0] = 0;
+        object->priv[0] = 0;
         object->bitfield2 &= ~4; /* show */
     } else {
         object->callback = oac_nullsub;

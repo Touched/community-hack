@@ -409,7 +409,7 @@ void draw_ailment(struct Pokemon* p, u8 obj_id, u8 tile_num, u8 type) {
 
 void draw_hp_box_elements(u8 obj_id, struct Pokemon* p, u8 battle_style) {
     // 0-4 value indicating ID for DP11 structure
-    u8 oam_side_maybe = objects[obj_id].private[6] & 0xFF;
+    u8 oam_side_maybe = objects[obj_id].priv[6] & 0xFF;
 
     // battle is single
     if (!battle_type_is_double()) {

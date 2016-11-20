@@ -42,8 +42,8 @@ static u32 multi_money_calc_for_trainer(u16 trainer_id)
     }
 
     struct TrainerMoneyRate* rate;
-    for (rate = trainer_class_money_rate; rate->class != trainer->class; rate++) {
-        if (rate->class == 0xFF) {
+    for (rate = trainer_class_money_rate; rate->trainer_class != trainer->trainer_class; rate++) {
+        if (rate->trainer_class == 0xFF) {
             /* Default to the first class's rate */
             rate = trainer_class_money_rate;
             break;
@@ -213,7 +213,7 @@ u8 multi_load_trainer_sprite(void)
 
 pchar* multi_buffer_trainer2_class(void)
 {
-    u16 trainer_id = trainer_data[multi_second_opponent_id()].class;
+    u16 trainer_id = trainer_data[multi_second_opponent_id()].trainer_class;
     return trainer_class_names[trainer_id];
 }
 
