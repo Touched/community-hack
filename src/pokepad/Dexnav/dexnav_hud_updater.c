@@ -121,28 +121,28 @@ void dexnav_hud_free() {
             break;
     };
     obj_free(&objects[(*PokePadState)->obj_id_species]);
-    obj_delete((*PokePadState)->obj_id_species);
+    obj_delete(&objects[(*PokePadState)->obj_id_species]);
     
     obj_free(&objects[(*PokePadState)->obj_id_sight]);
-    obj_delete((*PokePadState)->obj_id_sight);
+    obj_delete(&objects[(*PokePadState)->obj_id_sight]);
     
     obj_free(&objects[(*PokePadState)->obj_id_ability]);
-    obj_delete((*PokePadState)->obj_id_ability);
+    obj_delete(&objects[(*PokePadState)->obj_id_ability]);
     
     obj_free(&objects[(*PokePadState)->obj_id_move]);
-    obj_delete((*PokePadState)->obj_id_move);
+    obj_delete(&objects[(*PokePadState)->obj_id_move]);
     
     obj_free(&objects[(*PokePadState)->obj_id_item]);
-    obj_delete((*PokePadState)->obj_id_item);
+    obj_delete(&objects[(*PokePadState)->obj_id_item]);
     
     obj_free(&objects[(*PokePadState)->obj_id_potential[0]]);
-    obj_delete((*PokePadState)->obj_id_potential[0]);
+    obj_delete(&objects[(*PokePadState)->obj_id_potential[0]]);
     
     obj_free(&objects[(*PokePadState)->obj_id_potential[1]]);
-    obj_delete((*PokePadState)->obj_id_potential[1]);
+    obj_delete(&objects[(*PokePadState)->obj_id_potential[1]]);
     
     obj_free(&objects[(*PokePadState)->obj_id_potential[2]]);
-    obj_delete((*PokePadState)->obj_id_potential[2]);
+    obj_delete(&objects[(*PokePadState)->obj_id_potential[2]]);
   
     gpu_tile_obj_free_by_tag(0x4736);
     gpu_tile_obj_free_by_tag(0x61);
