@@ -5,8 +5,21 @@ void vblank_cb_spq() {
 	gpu_sprites_upload();
 	copy_queue_process();
 	gpu_pal_upload();
+    
 }
 
+void vblank_starter_select() {
+	gpu_sprites_upload();
+	copy_queue_process();
+	gpu_pal_upload();    
+}
+
+void c2_starter_select() {
+	task_exec();
+    objc_exec();
+    obj_sync_superstate();
+    process_palfade();
+}
 
 void c2_pokenav() {
 	tilemaps_sync();
@@ -45,16 +58,15 @@ void reset_bg_settings() {
 }
 
 void reset_boxes() {
-	remo_reset_acknowledgement_flags();
 	rboxes_free();
+	remo_reset_acknowledgement_flags();
 }
 
 
 void setup() {
+dp12_abort();
 	// callbacks
 	handlers_clear();
-	// BGs
-	reset_bg_settings();
 	// pals
 	reset_pal_settings();
 	// objs
@@ -66,4 +78,6 @@ void setup() {
 	tasks_init();
 	// textboxes
 	reset_boxes();
+    	// BGs
+	reset_bg_settings();
 }

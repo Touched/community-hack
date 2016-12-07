@@ -10,3 +10,5 @@
         .org 0x0802E118
         .word battle_extension_malloc_hook|1
         
+        .org 0x0871A250
+        .word starter_select_prelaunch|1
