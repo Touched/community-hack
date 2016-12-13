@@ -16,6 +16,7 @@
 	.include "patches/battle_bgs_pal/bgpals.s"
         .include "patches/battle_graphics.s"
 	.include "patches/hm_remove.s"
+        .include "patches/save.s"
 
         // Only do this if you haven't repointed your battle script
 	// command table
