@@ -30,7 +30,7 @@ void overworld_trainer_battle_flags(void)
     }
 
     /* TODO: Check if tag team mode was enabled */
-    battle_type_flags |= BATTLE_FLAG_TAG_TEAM | BATTLE_FLAG_DOUBLE;
+    // battle_type_flags |= BATTLE_FLAG_TAG_TEAM | BATTLE_FLAG_DOUBLE;
 }
 
 /*
