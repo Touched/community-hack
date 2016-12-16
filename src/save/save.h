@@ -3,6 +3,11 @@
 
 #include <pokeagb/pokeagb.h>
 
+#ifdef FLASH_SAVE_SECTORS
+#undef FLASH_SAVE_SECTORS
+#endif
+#define FLASH_SAVE_SECTORS 16
+
 #define OLD_SAVE_BLOCKS_SIZE (sizeof(struct SaveBlock1) + \
                               sizeof(struct SaveBlock2) + \
                               sizeof(struct SaveBlock3))
@@ -10,7 +15,7 @@
 #define NEW_SAVEBLOCK_MAX_SIZE ((FLASH_SAVE_SECTORS * FLASH_SECTOR_DATA_SIZE) - OLD_SAVE_BLOCKS_SIZE)
 
 struct SaveBlock4 {
-
+    u32 data[NEW_SAVEBLOCK_MAX_SIZE / 4];
 };
 
 STATIC_ASSERT(sizeof(struct SaveBlock4) <= NEW_SAVEBLOCK_MAX_SIZE,
