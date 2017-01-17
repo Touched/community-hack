@@ -15,18 +15,12 @@ static const struct TitlescreenImageConfig images[] = {
     { NULL, NULL },
 };
 
-
 static const struct TitlescreenFrameConfig frames[] = {
-    /* { 0, 2 * SCALE }, */
-    /* { 1, 2 * SCALE }, */
-    /* { 2, 1 * SCALE }, */
-    /* { 3, 10 * SCALE }, */
-    /* { 2, 3 * SCALE }, */
-    { 0, 7 },
-    { 1, 7 },
-    { 2, 3 },
-    { 3, 33 },
-    { 2, 10 },
+    { 0, 8 },
+    { 1, 8 },
+    { 2, 5 },
+    { 3, 41 },
+    { 2, 12 },
     { -1, -1 },
 };
 

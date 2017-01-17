@@ -13,9 +13,9 @@ static const struct TitlescreenImageConfig images[] = {
 
 
 static const struct TitlescreenFrameConfig frames[] = {
-    { 0, 10 },
-    { 1, 10 },
-    { 2, 10 },
+    { 0, 8 },
+    { 1, 8 },
+    { 2, 8 },
     { -1, -1 },
 };
 

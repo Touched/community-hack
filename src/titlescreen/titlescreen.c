@@ -70,14 +70,29 @@ static void fadeout(void) {
     process_palfade();
 }
 
+static const s16 path[74] = {
+    0, 192, 384, 576, 768, 768, 768, 768, // lugia1
+    1792, 1984, 2176, 2368, 2560, 2560, 2560, 2560, // lugia2
+    5120, 5120, 5120, 5120, 5120, // lugia3
+
+    6144, 6019, 5894, 5769, 5644, 5519, 5394, 5269, 5144, 5020, 4895, // lugia4
+    4770, 4645, 4476, 4289, 4102, 3914, 3727, 3540, 3352, 3165, 2978,
+    2791, 2603, 2416, 2229, 2041, 1854, 1667, 1479, 1292, 1105, 917,
+    730, 543, 355, 168, 0, 0, 0, 0,
+
+    0, 320, 640, 960, 1280, 1600, 1920, 2240, 2560, 2560, 2560, 2560, // lugia3
+};
+
 static void callback(void)
 {
     tilescreen_animation_step(&titlescreen_state->lugia, BG_LAYER_LUGIA);
     tilescreen_animation_step(&titlescreen_state->rocks, BG_LAYER_ROCKS);
 
-    /* Bounce lugia */
-    bgid_mod_y_offset(BG_LAYER_LUGIA, get_spring_animation(titlescreen_state->counter) / 2, 0);
-    titlescreen_state->counter += 6;
+    if (titlescreen_state->counter >= 74) {
+        titlescreen_state->counter = 0;
+    }
+
+    bgid_mod_y_offset(BG_LAYER_LUGIA, path[titlescreen_state->counter++], 0);
 
     if (KEYS_ALL_PRESSED(super.buttons_held_remapped, KEY_UP | KEY_B | KEY_SELECT)) {
         titlescreen_set_callback(c2_erase_save_menu);
@@ -181,8 +196,16 @@ void custom_titlescreen_setup(void)
         break;
 
     case 5:
+        lcd_io_set(REG_ID_DISPCNT, DISPCNT_OBJ | DISPCNT_OAM_1D | DISPCNT_WIN0);
+
+        lcd_io_set(REG_ID_WININ, WININ_BUILD(WIN_BG0 | WIN_BG1 | WIN_BG2 | WIN_BG3, 0));
+        lcd_io_set(REG_ID_WINOUT, WINOUT_BUILD(WIN_BG0, 0));
+        lcd_io_set(REG_ID_WIN0H, SCREEN_WIDTH);
+        lcd_io_set(REG_ID_WIN0V, (8 << 8) | (SCREEN_HEIGHT - 8));
+
+
         fade_screen(~0, 0, 0x10, 0x0, 0);
-        lcd_io_set(REG_ID_DISPCNT, DISPCNT_OBJ | DISPCNT_OAM_1D);
+
         bgid_mark_for_sync(0);
         bgid_mark_for_sync(1);
         bgid_mark_for_sync(2);
