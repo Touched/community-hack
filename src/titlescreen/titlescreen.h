@@ -1,6 +1,7 @@
 #ifndef TITLESCREEN_H
 #define TITLESCREEN_H
 
+#define BG_LAYER_LOGO 0
 #define BG_LAYER_LUGIA 1
 #define BG_LAYER_ROCKS 2
 #define BG_LAYER_SEA 3
@@ -44,6 +45,7 @@ struct TitlescreenState {
         u8 background[0x500];
         u8 lugia[0x500];
         u8 rocks[0x500];
+        u8 logo[0x500];
     } tilemaps;
 
     struct TitlescreenAnimation rocks;

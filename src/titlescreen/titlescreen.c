@@ -1,9 +1,12 @@
 #include <pokeagb/pokeagb.h>
 #include "titlescreen.h"
+#include "generated/images/titlescreen/logo.h"
 #include "generated/images/titlescreen/background.h"
 #include "generated/images/titlescreen/lugia1.h"
 #include "generated/images/titlescreen/rocks1.h"
 #include "util/debug.h"
+
+extern struct TitlescreenState* titlescreen_state;
 
 static void vblank(void)
 {
@@ -17,7 +20,7 @@ static const struct BgConfig bg_config[4] = {
         .padding = 0,
         .b_padding = 0,
         .priority = 0,
-        .palette = 0,
+        .palette = 1,
         .size = 0,
         .map_base = 31,
         .character_base = 0,
@@ -86,22 +89,30 @@ void custom_titlescreen_setup(void)
         bgid_set_tilemap(3, titlescreen_state->tilemaps.background);
         bgid_set_tilemap(BG_LAYER_LUGIA, titlescreen_state->tilemaps.lugia);
         bgid_set_tilemap(BG_LAYER_ROCKS, titlescreen_state->tilemaps.rocks);
+        bgid_set_tilemap(BG_LAYER_LOGO, titlescreen_state->tilemaps.logo);
 
         super.multi_purpose_state_tracker++;
         break;
 
     case 2:
+        // Logo Layer
+        gpu_copy_tilemap(BG_LAYER_LOGO, logoMap, logoMapLen, 0);
+        gpu_copy_to_tileset(BG_LAYER_LOGO, logoTiles, logoTilesLen, 0);
+        bgid_send_tilemap(BG_LAYER_LOGO);
+        gpu_pal_apply(logoPal, 0, logoPalLen);
+
         // Background layer
         gpu_copy_tilemap(3, backgroundMap, backgroundMapLen, 0);
         gpu_copy_to_tileset(3, backgroundTiles, backgroundTilesLen, 0);
         bgid_send_tilemap(3);
-        gpu_pal_apply(backgroundPal, 0, backgroundPalLen);
+        gpu_pal_apply(backgroundPal, logoPalLen / 2, backgroundPalLen);
+
         super.multi_purpose_state_tracker++;
         break;
 
     case 3:
         // Lugia layer
-        gpu_pal_apply(lugia1Pal, backgroundPalLen / 2, lugia1PalLen);
+        gpu_pal_apply(lugia1Pal, (logoPalLen + backgroundPalLen) / 2, lugia1PalLen);
         titlescreen_animation_init(&titlescreen_state->lugia, &lugia_animation_config);
         titlescreen_animation_load_image(&titlescreen_state->lugia, BG_LAYER_LUGIA, 0);
         super.multi_purpose_state_tracker++;
@@ -109,7 +120,7 @@ void custom_titlescreen_setup(void)
 
     case 4:
         // Rocks layer
-        gpu_pal_apply(rocks1Pal, (backgroundPalLen + lugia1PalLen) / 2, rocks1PalLen);
+        gpu_pal_apply(rocks1Pal, (logoPalLen + backgroundPalLen + lugia1PalLen) / 2, rocks1PalLen);
         titlescreen_animation_init(&titlescreen_state->rocks, &rocks_animation_config);
         titlescreen_animation_load_image(&titlescreen_state->rocks, BG_LAYER_ROCKS, 0);
         super.multi_purpose_state_tracker++;
