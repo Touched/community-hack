@@ -43,13 +43,15 @@ struct TitlescreenAnimation {
 struct TitlescreenState {
     struct {
         u8 background[0x500];
-        u8 lugia[0x500];
+        u8 lugia[0x600];
         u8 rocks[0x500];
         u8 logo[0x500];
     } tilemaps;
 
     struct TitlescreenAnimation rocks;
     struct TitlescreenAnimation lugia;
+
+    u32 counter;
 };
 
 void titlescreen_animation_init(struct TitlescreenAnimation* animation,

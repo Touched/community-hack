@@ -83,7 +83,7 @@ void custom_titlescreen_setup(void)
 
     case 1:
         init_malloc(dynamic_area, sizeof(dynamic_area));
-        titlescreen_state = malloc(sizeof(struct TitlescreenState));
+        titlescreen_state = malloc_and_clear(sizeof(struct TitlescreenState));
 
         // Configure tilemap
         bgid_set_tilemap(3, titlescreen_state->tilemaps.background);
@@ -142,6 +142,13 @@ void custom_titlescreen_setup(void)
     case 6:
         tilescreen_animation_step(&titlescreen_state->lugia, BG_LAYER_LUGIA);
         tilescreen_animation_step(&titlescreen_state->rocks, BG_LAYER_ROCKS);
+
+        /* Bounce lugia */
+        bgid_mod_y_offset(BG_LAYER_LUGIA,
+                          ((s16 (*)(s16)) (0x08044E6C|1))(titlescreen_state->counter) / 2, 0);
+
+        titlescreen_state->counter += 6;
+
         break;
 
     case 7:

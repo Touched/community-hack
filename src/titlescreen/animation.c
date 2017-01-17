@@ -73,9 +73,8 @@ void tilescreen_animation_step(struct TitlescreenAnimation* animation, u8 layer)
 {
     assert(animation);
 
-    if (animation->next_frame_countdown) {
-        animation->next_frame_countdown--;
-    } else {
+    if (--animation->next_frame_countdown == 0) {
+
         animation->frame_index++;
 
         if (animation->frame_index >= animation->frame_count) {

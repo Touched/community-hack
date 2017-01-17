@@ -17,11 +17,16 @@ static const struct TitlescreenImageConfig images[] = {
 
 
 static const struct TitlescreenFrameConfig frames[] = {
-    { 0, 2 * SCALE },
-    { 1, 2 * SCALE },
-    { 2, 1 * SCALE },
-    { 3, 10 * SCALE },
-    { 2, 3 * SCALE },
+    /* { 0, 2 * SCALE }, */
+    /* { 1, 2 * SCALE }, */
+    /* { 2, 1 * SCALE }, */
+    /* { 3, 10 * SCALE }, */
+    /* { 2, 3 * SCALE }, */
+    { 0, 7 },
+    { 1, 7 },
+    { 2, 3 },
+    { 3, 33 },
+    { 2, 10 },
     { -1, -1 },
 };
 
