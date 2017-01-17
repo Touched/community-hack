@@ -3,21 +3,21 @@
 #include "util/debug.h"
 
 void titlescreen_animation_init(struct TitlescreenAnimation* animation,
-                                struct TitlescreenAnimationConfig* config)
+                                const struct TitlescreenAnimationConfig* config)
 {
     assert(animation);
     assert(config);
 
     /* Count the number of frames */
     u8 images = 0;
-    for (struct TitlescreenImageConfig* image = config->images; image->tiles; image++) {
+    for (const struct TitlescreenImageConfig* image = config->images; image->tiles; image++) {
         images++;
     }
 
     assert(images > 0);
 
     u8 frames = 0;
-    for (struct TitlescreenFrameConfig* frame = config->frames; frame->index >= 0; frame++) {
+    for (const struct TitlescreenFrameConfig* frame = config->frames; frame->index >= 0; frame++) {
         frames++;
     }
 
@@ -36,7 +36,7 @@ void titlescreen_animation_init(struct TitlescreenAnimation* animation,
     /* Load image data */
     for (u8 i = 0; i < images; i++) {
         struct TitlescreenImage* image = &animation->images[i];
-        struct TitlescreenImageConfig* image_config = &config->images[i];
+        const struct TitlescreenImageConfig* image_config = &config->images[i];
 
         image->tiles.data = malloc_and_LZ77UnComp(image_config->tiles, &image->tiles.size);
         image->map.data = malloc_and_LZ77UnComp(image_config->map, &image->map.size);
@@ -82,7 +82,7 @@ void tilescreen_animation_step(struct TitlescreenAnimation* animation, u8 layer)
         }
 
         u8 index = animation->frame_index;
-        struct TitlescreenFrameConfig* frame = &animation->config->frames[index];
+        const struct TitlescreenFrameConfig* frame = &animation->config->frames[index];
 
         assert(frame->index < animation->image_count);
 

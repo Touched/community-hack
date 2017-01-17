@@ -55,10 +55,62 @@ static const struct BgConfig bg_config[4] = {
     }
 };
 
+static void titlescreen_set_callback(SuperCallback callback) {
+    titlescreen_animation_free(&titlescreen_state->lugia);
+    titlescreen_animation_free(&titlescreen_state->rocks);
+    free(titlescreen_state);
+    set_callback2(callback);
+}
+
+static void fadeout(void) {
+    if (!pal_fade_control.active) {
+        titlescreen_set_callback(c2_main_menu_or_new_game);
+    }
+
+    process_palfade();
+}
+
+static void callback(void)
+{
+    tilescreen_animation_step(&titlescreen_state->lugia, BG_LAYER_LUGIA);
+    tilescreen_animation_step(&titlescreen_state->rocks, BG_LAYER_ROCKS);
+
+    /* Bounce lugia */
+    bgid_mod_y_offset(BG_LAYER_LUGIA, get_spring_animation(titlescreen_state->counter) / 2, 0);
+    titlescreen_state->counter += 6;
+
+    if (KEYS_ALL_PRESSED(super.buttons_held_remapped, KEY_UP | KEY_B | KEY_SELECT)) {
+        titlescreen_set_callback(c2_erase_save_menu);
+    } else if (super.buttons_new_remapped & (KEY_A | KEY_START)) {
+        /* Initialization */
+        seed_from_timer1();
+        saveblock_randomize_position();
+        reset_save_mapped_memory();
+        flash_reset_globals();
+        flash_read(0);
+
+        if (!save_load_result || save_load_result == 2) {
+            initialize_savebocks();
+        }
+
+        audio_set_mono(saveblock2->options_sound);
+
+        /* Next screen */
+        fade_screen(~0, 0, 0x0, 0x10, 0);
+        set_callback2(fadeout);
+    }
+
+    task_exec();
+    objc_exec();
+    obj_sync_superstate();
+    process_palfade();
+}
+
 void custom_titlescreen_setup(void)
 {
     switch (super.multi_purpose_state_tracker) {
     case 0:
+        start_timer1();
         vblank_handler_set(vblank);
 
 	obj_and_aux_reset_all();
@@ -77,6 +129,8 @@ void custom_titlescreen_setup(void)
         bg_vram_setup(0, bg_config, 4);
 
 	tasks_init();
+        lcd_io_set(REG_ID_DISPCNT, 0);
+
 
         super.multi_purpose_state_tracker++;
         break;
@@ -101,7 +155,7 @@ void custom_titlescreen_setup(void)
         bgid_send_tilemap(BG_LAYER_LOGO);
         gpu_pal_apply(logoPal, 0, logoPalLen);
 
-        // Background layer
+        // background layer
         gpu_copy_tilemap(3, backgroundMap, backgroundMapLen, 0);
         gpu_copy_to_tileset(3, backgroundTiles, backgroundTilesLen, 0);
         bgid_send_tilemap(3);
@@ -127,6 +181,7 @@ void custom_titlescreen_setup(void)
         break;
 
     case 5:
+        fade_screen(~0, 0, 0x10, 0x0, 0);
         lcd_io_set(REG_ID_DISPCNT, DISPCNT_OBJ | DISPCNT_OAM_1D);
         bgid_mark_for_sync(0);
         bgid_mark_for_sync(1);
@@ -136,30 +191,11 @@ void custom_titlescreen_setup(void)
         gpu_sync_bg_show(1);
         gpu_sync_bg_show(2);
         gpu_sync_bg_show(3);
-        super.multi_purpose_state_tracker++;
-        break;
-
-    case 6:
-        tilescreen_animation_step(&titlescreen_state->lugia, BG_LAYER_LUGIA);
-        tilescreen_animation_step(&titlescreen_state->rocks, BG_LAYER_ROCKS);
-
-        /* Bounce lugia */
-        bgid_mod_y_offset(BG_LAYER_LUGIA,
-                          ((s16 (*)(s16)) (0x08044E6C|1))(titlescreen_state->counter) / 2, 0);
-
-        titlescreen_state->counter += 6;
-
-        break;
-
-    case 7:
-        titlescreen_animation_free(&titlescreen_state->lugia);
-        titlescreen_animation_free(&titlescreen_state->rocks);
-        free(titlescreen_state);
+        set_callback2(callback);
         break;
     }
 
     task_exec();
     objc_exec();
     obj_sync_superstate();
-    pal_fade_control_and_dead_struct_reset();
 }

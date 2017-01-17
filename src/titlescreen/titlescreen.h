@@ -55,7 +55,7 @@ struct TitlescreenState {
 };
 
 void titlescreen_animation_init(struct TitlescreenAnimation* animation,
-                                struct TitlescreenAnimationConfig* config);
+                                const struct TitlescreenAnimationConfig* config);
 
 void titlescreen_animation_free(struct TitlescreenAnimation* animation);
 
