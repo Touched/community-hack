@@ -16,43 +16,10 @@ static void vblank(void)
 }
 
 static const struct BgConfig bg_config[4] = {
-    {
-        .padding = 0,
-        .b_padding = 0,
-        .priority = 0,
-        .palette = 1,
-        .size = 0,
-        .map_base = 31,
-        .character_base = 0,
-        .bgid = 0
-    }, {
-        .padding = 0,
-        .b_padding = 0,
-        .priority = 1,
-        .palette = 0,
-        .size = 0,
-        .map_base = 30,
-        .character_base = 1,
-        .bgid = 1
-    }, {
-        .padding = 0,
-        .b_padding = 0,
-        .priority = 2,
-        .palette = 0,
-        .size = 0,
-        .map_base = 29,
-        .character_base = 2,
-        .bgid = 2
-    }, {
-        .padding = 0,
-        .b_padding = 0,
-        .priority = 3,
-        .palette = 0,
-        .size = 0,
-        .map_base = 28,
-        .character_base = 3,
-        .bgid = 3
-    }
+    { .palette = 1, .map_base = 31 },
+    { .priority = 1, .map_base = 30, .character_base = 1, .bgid = 1 },
+    { .priority = 2, .map_base = 29, .character_base = 2, .bgid = 2 },
+    { .priority = 3, .map_base = 28, .character_base = 3, .bgid = 3 },
 };
 
 static void titlescreen_set_callback(SuperCallback callback) {
@@ -202,7 +169,6 @@ void custom_titlescreen_setup(void)
         lcd_io_set(REG_ID_WINOUT, WINOUT_BUILD(WIN_BG0, 0));
         lcd_io_set(REG_ID_WIN0H, SCREEN_WIDTH);
         lcd_io_set(REG_ID_WIN0V, (8 << 8) | (SCREEN_HEIGHT - 8));
-
 
         fade_screen(~0, 0, 0x10, 0x0, 0);
 
