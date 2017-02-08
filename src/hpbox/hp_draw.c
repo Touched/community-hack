@@ -259,7 +259,7 @@ void outlined_font_draw(u8 obj_id, u8 tile_num, u16 size) {
 void draw_hp_nums(struct Pokemon* pokemon, u8 obj_id, u8 t_id) {
     //u8 tile_id = t_id;
     u8 tile_id = 30;
-    pchar empty_string[9] = _"!!!/!!!";//{0xAB, 0xAB, 0xAB, 0xBA, 0xAB, 0xAB, 0xAB, 0xFF};
+    pchar empty_string[9] = _("!!!/!!!");//{0xAB, 0xAB, 0xAB, 0xBA, 0xAB, 0xAB, 0xAB, 0xFF};
     pstrcpy(string_buffer, empty_string);
     hp_string_to_oam(obj_id, tile_id - 1);
 
@@ -284,7 +284,7 @@ void hp_nums_update(u8 obj_id, u16 new_hp, u8 t_id) {
     } else {
         // current HP
         pchar value[4];
-        pchar empty_value[4] = _"000";//{0xAB, 0xAB, 0xAB, 0xFF};
+        pchar empty_value[4] = _("000");//{0xAB, 0xAB, 0xAB, 0xFF};
         pstrcpy(string_buffer, empty_value);
         fmt_int_10(value, new_hp, 0, 3);
         u16 str_len = pstrlen(value);
@@ -341,7 +341,7 @@ void draw_gender(struct Pokemon* p, u8 obj_id, u8 tile_id) {
 void draw_level(struct Pokemon* pokemon, u8 obj_id, u8 tile_id) {
     u8 level = pokemon_getattr((struct PokemonBase *)pokemon, REQUEST_LEVEL, NULL);
     fmt_int_10(string_buffer, level, 0, 3);
-    pchar period [] = _"   ";
+    pchar period [] = _("   ");
     pstrcat(string_buffer, (pchar *)period);
     outlined_font_draw(obj_id, tile_id, 3 * TILE_SIZE);
     return;

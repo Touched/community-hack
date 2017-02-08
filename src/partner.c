@@ -9,21 +9,21 @@ static void (*multi_partner_table[COMMAND_MAX])(void);
 
 struct TagTeamPartner tag_team_partners[] = {
     {
-        .name = _"MAY",
+        .name = _("MAY"),
         .gender = GENDER_FEMALE,
         .class = 1,
         .sprite = 3,
         .party_size = 2,
         {
             {
-                .nickname = _"",
+                .nickname = _(""),
                 .species = SPECIES_CHARMELEON,
                 .item = ITEM_FIRESTONE,
                 .moves = { MOVE_FLAMETHROWER, MOVE_SURF },
                 .level = 40
             },
             {
-                .nickname = _"",
+                .nickname = _(""),
                 .species = SPECIES_DIGLETT,
                 .item = ITEM_ORANBERRY,
                 .moves = { MOVE_MUD_SHOT, MOVE_SURF },

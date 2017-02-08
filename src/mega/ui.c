@@ -53,8 +53,8 @@ bool mega_ui_is_disabled(void)
 
 void mega_ui_menu_draw_activation_text(void)
 {
-    const pchar deactivate[] = _"Press A to\ndeactivate";
-    const pchar activate[] = _"Press A to\nactivate";
+    const pchar deactivate[] = _("Press A to\ndeactivate");
+    const pchar activate[] = _("Press A to\nactivate");
     pchar* str = extension_state.mega_evolution->ui.activated[b_active_side] ? deactivate : activate;
 
     /* Draw to the same rbox that the "Switch which?" text is drawn to */
@@ -63,7 +63,7 @@ void mega_ui_menu_draw_activation_text(void)
 
 void mega_ui_menu_draw(void)
 {
-    const pchar mega_evolve[] = _"Mega Evolve";
+    const pchar mega_evolve[] = _("Mega Evolve");
 
     /* Erase the move names */
     for (u8 i = 0; i < 4; i++) {
