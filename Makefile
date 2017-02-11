@@ -12,6 +12,8 @@ export BINARY := $(BUILD)/linked.o
 export ARMIPS ?= armips
 export ROM_CODE := BPRE
 export LD := $(PREFIX)ld
+export AIF := deps/pokeruby/tools/aif2pcm/aif2pcm
+export BIN2C := deps/pokeruby/tools/bin2c/bin2c
 export PREPROC := deps/pokeruby/tools/preproc/preproc
 export CHARMAP := charmap.txt
 export INCLUDE := -I deps/pokeagb/build/include -I $(SRC) -I .
@@ -43,9 +45,9 @@ OBJECTS=$(addprefix $(BUILD)/,$(GEN_OBJ) $(C_OBJ) $(S_OBJ))
 
 #-------------------------------------------------------------------------------
 
-.PHONY: all clean test generated images patch
+.PHONY: all clean test generated images patch pokedex pokedex_generate
 
-all: main.s $(BINARY) $(call rwildcard,patches,*.s)
+all: pokedex main.s $(BINARY) $(call rwildcard,patches,*.s)
 	sh battle_backgrounds
 	@echo -e "\e[1;32mCreating ROM\e[0m"
 	$(ARMIPS) main.s
@@ -61,7 +63,7 @@ clean:
 test:
 	$(MAKE) -f test/Makefile
 
-$(BINARY): $(OBJECTS)
+$(BINARY): $(OBJECTS) $(BUILD)/pokedex/pokedex.o
 	@echo -e "\e[1;32mLinking ELF binary $@\e[0m"
 	@$(LD) $(LDFLAGS) -o $@ $^
 
@@ -83,6 +85,55 @@ generated/images/%.c: images/%.png images/%.grit
 	@mkdir -p $(@D)
 	@grit $< -o $@ -ff$(<:%.png=%.grit)
 	@python scripts/grithack.py $@
+
+#-------------------------------------------------------------------------------
+# Pokedex
+#-------------------------------------------------------------------------------
+
+POKEDEX_CRIES = $(wildcard pokedex/assets/*_cry.aif)
+
+POKEDEX_SPRITES = $(wildcard pokedex/assets/*_sprite.png)
+
+POKEDEX_ICONS = $(wildcard pokedex/assets/*_icon.png)
+
+POKEDEX_TABLE_SRC = pokedex/tables/sprites
+
+POKEDEX_ASSETS = $(POKEDEX_CRIES:%=$(BUILD)/generated/%.c.o) \
+	$(POKEDEX_ICONS:%=$(BUILD)/generated/%.c.o) \
+	$(POKEDEX_SPRITES:%=$(BUILD)/generated/%.c.o)
+
+POKEDEX_TABLES = $(POKEDEX_TABLE_SRC:%=$(BUILD)/generated/%.c.o)
+
+pokedex: pokedex/pokedex.lock $(BUILD)/pokedex/pokedex.o
+
+pokedex/pokedex.lock: pokedex/config.json
+	@python scripts/pokedex/generate.py pokedex/config.json generated/pokedex
+
+$(BUILD)/pokedex/pokedex.o: $(POKEDEX_ASSETS) $(POKEDEX_TABLES)
+	@echo -e "\e[32m[Pokedex] Linking...\e[0m"
+	@$(LD) -r -o $@ $^
+
+generated/pokedex/%_cry.aif.c: generated/pokedex/%_cry.aif.bin
+	@echo '#include <pokeagb/pokeagb.h>' > $@
+	@$(BIN2C) $< pokedex_assets_$(*F)_cry >> $@
+
+generated/pokedex/%_cry.aif.bin: pokedex/%_cry.aif
+	@mkdir -p $(@D)
+	@$(AIF) $< $@ --compress
+
+generated/pokedex/%_icon.png.c: pokedex/%_icon.png
+	@mkdir -p $(@D)
+	@grit $< -o $@ -p! -gB4 -gu8 -fh! -spokedex_assets_$(*F)_icon
+
+generated/pokedex/%_sprite.png.c: pokedex/%_sprite.png
+	@mkdir -p $(@D)
+	@bash scripts/pokedex/gensprite.sh $(BUILD) $(*F) $< $@
+
+$(BUILD)/generated/pokedex/%.c.o: generated/pokedex/%.c
+	@mkdir -p $(@D)
+	@$(CC) $(CFLAGS) -c $< -o $@
+
+#-------------------------------------------------------------------------------
 
 $(DEPDIR)/%.d: ;
 .PRECIOUS: $(DEPDIR)/%.d

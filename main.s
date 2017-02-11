@@ -17,6 +17,7 @@
         .include "patches/battle_graphics.s"
 	.include "patches/hm_remove.s"
         .include "patches/save.s"
+        .include "patches/pokedex_expansion.s"
 
         // Only do this if you haven't repointed your battle script
 	// command table

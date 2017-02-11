@@ -8,3 +8,6 @@
 [submodule "deps/armips"]
 	path = deps/armips
 	url = https://github.com/Kingcom/armips
+[submodule "deps/pokedex-data"]
+	path = deps/pokedex-data
+	url = https://github.com/Touched/pokedex-data

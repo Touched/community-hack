@@ -1,0 +1,15 @@
+{
+  "data": [
+    "deps/pokedex-data/tables"
+  ],
+  "assets": [
+    "deps/pokedex-data/data"
+  ],
+  "pokedex": {
+    "bulbasaur": 1,
+    "venusaur": 3,
+    "squirtle": 4,
+    "charmander": 7,
+    "blissey": 5
+  }
+}
