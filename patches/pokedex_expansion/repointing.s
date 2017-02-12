@@ -3,7 +3,10 @@
         .include "repointing/pokemon_shiny_palettes.s"
         .include "repointing/pokemon_front_sprites.s"
         .include "repointing/pokemon_back_sprites.s"
+        .include "repointing/pokemon_icons.s"
         .include "repointing/pokemon_base_stats.s"
 
         // TODO: Change the data structure to support large move indices
         // .include "repointing/pokemon_level_up_moves.s"
+
+        // TODO: Altitude and coordinate tables

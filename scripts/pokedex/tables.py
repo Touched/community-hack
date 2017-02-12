@@ -361,6 +361,29 @@ def generate_tables(config, output):
                 'Pal',
             ),
         ),
+        'icons': cgen.CFile(
+            cgen.CVariableDefinition(
+                'const void* expanded_pokemon_icons[SPECIES_MAX]',
+                cgen.CArray(mapenum(
+                    lambda key, value: cgen.CExternalVariable(
+                        'const void* pokedex_assets_{}_iconTiles'.format(key),
+                        '&pokedex_assets_{}_iconTiles'.format(key)
+                    ),
+                    enums['pokemon'],
+                    base_stats,
+                )),
+            ),
+
+            # TODO: Determine correct icon palette
+            cgen.CVariableDefinition(
+                'const u8 expanded_pokemon_icon_palettes[SPECIES_MAX]',
+                cgen.CArray(mapenum(
+                    lambda key, value: cgen.CConstant(0),
+                    enums['pokemon'],
+                    base_stats,
+                )),
+            ),
+        ),
     }
 
     os.makedirs(os.path.join(output, 'tables'), exist_ok=True)

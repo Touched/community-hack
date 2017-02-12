@@ -12,3 +12,14 @@
         // Pokemon names
         .org 0x08040FFE
         b 0x08041006
+
+        // Pokemon icons
+        .org 0x08096F90
+        nop
+
+        .org 0x08096E7A
+        nop
+        nop
+
+        .org 0x080971DA
+        nop

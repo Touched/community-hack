@@ -96,7 +96,8 @@ POKEDEX_SPRITES = $(wildcard pokedex/assets/*_sprite.png)
 
 POKEDEX_ICONS = $(wildcard pokedex/assets/*_icon.png)
 
-POKEDEX_TABLE_SRC = pokedex/tables/sprites pokedex/tables/names pokedex/tables/base_stats
+POKEDEX_TABLE_SRC = pokedex/tables/sprites pokedex/tables/names pokedex/tables/base_stats \
+	pokedex/tables/icons
 
 POKEDEX_ASSETS = $(POKEDEX_CRIES:%=$(BUILD)/generated/%.c.o) \
 	$(POKEDEX_ICONS:%=$(BUILD)/generated/%.c.o) \
