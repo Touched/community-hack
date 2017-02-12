@@ -110,7 +110,7 @@ def getter(value, *path, default=None):
 
 def to_constant(prefix, value):
     constant = strip_accents(value).upper()
-    constant = constant.translate({ ord(c): None for c in string.punctuation })
+    constant = constant.translate({ ord(c): None for c in string.punctuation + '’' })
     constant = re.sub(r'[\s]+', '_', constant)
 
     return prefix + constant
@@ -256,12 +256,20 @@ def generate_tables(config, output):
     abilities = config.get_table('abilities')
     base_stats = config.get_table('base')
     items = config.get_table('items')
+    learnsets = config.get_table('learnsets')
+    moves = config.get_table('moves')
 
     enums = {
         'pokemon': {},
         'abilities': {},
         'items': {},
+        'moves': {},
     }
+
+    def get_learnset(id, type, generation=7):
+        return [move for move in learnsets.get(id) or []
+                if move['type'] == type and move['generation'] == generation]
+
 
     def build_enum(it, key, prefix, builder, null=None):
         for id, value in it.items():
@@ -288,6 +296,7 @@ def generate_tables(config, output):
         lambda id, x: x.get('name')['english'], null='none'
     )
     build_enum(items, 'items', 'ITEM_', lambda id, x: x.get('name')['english'], null='none')
+    build_enum(moves, 'moves', 'MOVE_', lambda id, x: x.get('name')['english'], null='none')
 
     def mapenum(fn, enum, d):
         f = lambda key, value: (cgen.CConstant(enum[key]), fn(key, value))
@@ -384,6 +393,37 @@ def generate_tables(config, output):
                 )),
             ),
         ),
+        'learnset': cgen.CFile(
+            # Build level up moves
+            cgen.CVariableDefinition(
+                'const struct ExtendedLevelUpMove* expanded_pokemon_level_up_moves[SPECIES_MAX]',
+                cgen.CArray(mapenum(
+                    lambda key, value: cgen.CDefinedVariable(
+                        cgen.CVariableDefinition(
+                            'static const struct ExtendedLevelUpMove {}_level_up[]'.format(key),
+                            cgen.CArray(map(
+                                lambda move: cgen.CStructure([
+                                    cgen.CConstant(enums['moves'][move['id']]),
+                                    cgen.CConstant(move['level'])
+                                ]),
+
+                                # Level up moves in order of learning with sentinel
+                                sorted(
+                                    [*get_learnset(key, 'level', 7), {
+                                        'level': 255,
+                                        'id': None,
+                                    }],
+                                    key=lambda move: move['level']
+                                ),
+                            )),
+                        ),
+                        '{}_level_up'.format(key)
+                    ),
+                    enums['pokemon'],
+                    base_stats,
+                )),
+            ),
+        ),
     }
 
     os.makedirs(os.path.join(output, 'tables'), exist_ok=True)
@@ -391,11 +431,25 @@ def generate_tables(config, output):
        with open(os.path.join(output, 'tables', '{}.c'.format(name)), 'w') as outfile:
           print('#include <pokeagb/pokeagb.h>', file=outfile)
           print('#include "species.h"', file=outfile)
+          print('#include "moves.h"', file=outfile)
+          print('#include "pokedex_expansion/structures.h"', file=outfile)
           outfile.write(table.generate_file())
 
     # Build species enum
     with open(os.path.join(output, 'tables', 'species.h'), 'w') as outfile:
         build_species_enum(config, pokedex, outfile)
+
+
+    with open(os.path.join(output, 'tables', 'moves.h'), 'w') as outfile:
+        print('#ifndef GENERATED_POKEDEX_MOVES_H', file=outfile)
+        print('#define GENERATED_POKEDEX_MOVES_H', file=outfile)
+        for id, name in enums['moves'].items():
+            if id == None:
+                continue
+
+            print('#define', name, moves[id]['index'], file=outfile)
+
+        print('#endif /* GENERATED_POKEDEX_MOVES_H */', file=outfile)
 
 
     # notes:

@@ -10,3 +10,4 @@
         // .include "repointing/pokemon_level_up_moves.s"
 
         // TODO: Altitude and coordinate tables
+        // TODO: Pokedex data
