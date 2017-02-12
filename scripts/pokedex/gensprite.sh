@@ -5,32 +5,47 @@ ID=$2
 INPUT=$3
 OUTPUT=$4
 
-function temp {
-    mktemp -p $BUILD --suffix=$1
-}
-
-function cropgrit {
+function cropgrit_multi {
     PNG=$1
-    SYMBOL=$2
-    DIMENSIONS=$3
-    TEMP_C=$(temp ".c")
-    TEMP_PNG=$(temp ".png")
-    shift 3
+    SYMBOL_BASE=$2
+    shift 2
+    IMAGES=$@
 
-    # Force an invalid crop to fail
-    if convert $PNG -regard-warnings -quiet -crop $DIMENSIONS $TEMP_PNG; then
-        grit $TEMP_PNG -s$SYMBOL -o $TEMP_C -fh! $@
-        cat $TEMP_C
-    fi
+    WORKDIR=$(mktemp -p $BUILD -d)
+    CROPPED=()
 
-    rm -f $TEMP_C
-    rm -f $TEMP_PNG
+    for image in $IMAGES; do
+        DIMENSIONS=${image%,*}; NAME=${image#*,};
+        TEMPFILE=$WORKDIR/${SYMBOL_BASE}_${NAME}.png
+
+        # Force an invalid crop to fail
+        if convert $PNG -regard-warnings -quiet -crop $DIMENSIONS $TEMPFILE; then
+            CROPPED+=(${SYMBOL_BASE}_${NAME}.png)
+        fi
+    done
+
+    # Grit dumps non-shared assets into the current directory, so
+    # start a subshell in the working directory before running it.
+    (cd $WORKDIR &&
+         grit ${CROPPED[@]} -gB4 -gu8 -gzl -pS -pzl -fa -ftc -fh! \
+              -O${SYMBOL_BASE}_sprite_palette.c -S${SYMBOL_BASE}_sprite_normal)
+
+    # Create the shiny palette separately
+    convert $PNG -crop 64x64+64+0 $WORKDIR/${SYMBOL_BASE}_sprite_shiny.png
+    grit $WORKDIR/${SYMBOL_BASE}_sprite_shiny.png -gB4 -g! -pzl -ftc -fh! \
+         -o$WORKDIR/${SYMBOL_BASE}_sprite_shiny.c
+
+    cat $(ls $WORKDIR/*.c)
+
+    rm -rf $WORKDIR
 }
 
-# Concatenate resources into output file
-cropgrit $INPUT ${ID}_sprite_front 64x64+0+0 -p! -gzl -gB4 -gu8 > $OUTPUT
-cropgrit $INPUT ${ID}_sprite_back 64x64+128+0 -p! -gzl -gB4 -gu8 >> $OUTPUT
-cropgrit $INPUT ${ID}_sprite_normal 64x64+0+0 -g! -gB4 -pzl -pn 16 >> $OUTPUT
-cropgrit $INPUT ${ID}_sprite_shiny 64x64+64+0 -g! -gB5 -pzl -pn 16 >> $OUTPUT
-cropgrit $INPUT ${ID}_sprite_female_front 64x64+0+64 -p! -gB4 -gu8 >> $OUTPUT
-cropgrit $INPUT ${ID}_sprite_female_back 64x64+128+64 -p! -gB4 -gu8 >> $OUTPUT
+NORMAL_SPRITES=(
+    '64x64+0+0,sprite_front'
+    '64x64+128+0,sprite_back'
+    '64x64+0+64,sprite_female_front'
+    '64x64+128+64,sprite_female_back'
+)
+
+# The palette is shared between the front and back sprites
+cropgrit_multi $INPUT $ID ${NORMAL_SPRITES[@]} > $OUTPUT
