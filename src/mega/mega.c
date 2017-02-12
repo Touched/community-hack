@@ -50,9 +50,9 @@ void mega_evolve_bank(enum BattleBank bank, union MegaEvolutionEntry* entry)
 
     /* Mega Evolutions only have one ability */
     struct PokemonBaseStat* base = &pokemon_base_stats[species];
-    battler->ability_id = base->ability[0];
-    battler->type1 = base->type[0];
-    battler->type2 = base->type[1];
+    battler->ability_id = base->abilities[0];
+    battler->type1 = base->types[0];
+    battler->type2 = base->types[1];
 
     /* TODO: Redraw the healthbar */
 }

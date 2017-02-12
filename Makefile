@@ -96,7 +96,7 @@ POKEDEX_SPRITES = $(wildcard pokedex/assets/*_sprite.png)
 
 POKEDEX_ICONS = $(wildcard pokedex/assets/*_icon.png)
 
-POKEDEX_TABLE_SRC = pokedex/tables/sprites
+POKEDEX_TABLE_SRC = pokedex/tables/sprites pokedex/tables/names pokedex/tables/base_stats
 
 POKEDEX_ASSETS = $(POKEDEX_CRIES:%=$(BUILD)/generated/%.c.o) \
 	$(POKEDEX_ICONS:%=$(BUILD)/generated/%.c.o) \
@@ -128,10 +128,6 @@ generated/pokedex/%_icon.png.c: pokedex/%_icon.png
 generated/pokedex/%_sprite.png.c: pokedex/%_sprite.png
 	@mkdir -p $(@D)
 	@bash scripts/pokedex/gensprite.sh $(BUILD) $(*F) $< $@
-
-$(BUILD)/generated/pokedex/%.c.o: generated/pokedex/%.c
-	@mkdir -p $(@D)
-	@$(CC) $(CFLAGS) -c $< -o $@
 
 #-------------------------------------------------------------------------------
 

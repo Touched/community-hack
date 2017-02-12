@@ -160,7 +160,7 @@ class CString(CValue):
         self.data = str(data)
 
     def generate(self, indent=0):
-        return '_"' + repr(self.data)[1:-1] + '"'
+        return '_("' + repr(self.data)[1:-1] + '")'
 
 
 def coerce(data):

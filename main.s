@@ -23,6 +23,10 @@
 	// command table
         .include "patches/move_commands.s"
 
+        // Starters
+        .org 0x08169BB5
+        .halfword 413
+
         .org 0x09000000
         .importobj "build/linked.o"
         .close

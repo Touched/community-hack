@@ -362,7 +362,7 @@ void draw_hp_bar(u8 oam_side_maybe, u8 obj_id, struct Pokemon* p) {
         u16 species = pokemon_getattr((struct PokemonBase *)p, REQUEST_SPECIES, NULL);
         u8 level = pokemon_getattr((struct PokemonBase *)p, REQUEST_LEVEL, NULL);
         u32 total_exp = pokemon_getattr((struct PokemonBase *)p, REQUEST_EXP_POINTS, NULL);
-        u32 species_exp_index = (pokemon_base_stats[species].exp_growth * 0x194);
+        u32 species_exp_index = (pokemon_base_stats[species].exp_curve * 0x194);
         u32 *exp_have = (u32*) (0x8253AE4 + (species_exp_index + (level * 4)));
         u32 *exp_needed = (u32*) (0x8253AE8 + (species_exp_index + (level * 4)));
 

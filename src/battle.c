@@ -1,4 +1,5 @@
 #include <pokeagb/pokeagb.h>
+#include "generated/pokedex/tables/species.h"
 #include "battle.h"
 #include "partner.h"
 #include "mega/mega.h"
