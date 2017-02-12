@@ -49,8 +49,14 @@ OBJECTS=$(addprefix $(BUILD)/,$(GEN_OBJ) $(C_OBJ) $(S_OBJ))
 
 all: pokedex main.s $(BINARY) $(call rwildcard,patches,*.s)
 	sh battle_backgrounds
-	@echo -e "\e[1;32mCreating ROM\e[0m"
-	$(ARMIPS) main.s
+	@echo -e "\e[1;32mCreating ROM...\e[0m"
+
+	@echo -e "\n\e[1mSpace Usage:"
+	@$(PREFIX)size $(BINARY) | \
+		awk 'FNR==2 {printf "\t%d B\n\t%.2f KiB\n\t%.2f MiB\n",$$4,$$4/1024,$$4/1024/1024;}'
+	@echo -e "\e[21m"
+
+	@$(ARMIPS) main.s
 
 patch: all
 	deps/patch/patch ups roms/BPRE0.gba build/multi.gba build/patch.ups
