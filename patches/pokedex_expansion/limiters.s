@@ -8,3 +8,7 @@
         // Pokemon palettes
         .org 0x08044104
         b 0x08044110
+
+        // Pokemon names
+        .org 0x08040FFE
+        b 0x08041006
