@@ -184,7 +184,8 @@ static const struct hack_members claims[CLAIMS_COUNT] = {
     {_"Rudy", SPECIES_NUMEL, _"Vesuvius", ITEM_POKEBALL},
     {_"Rudy", SPECIES_CAMERUPT, _"Vesuvius", ITEM_POKEBALL},
     {_"Doesnt", SPECIES_LILLIGANT, _"Anna", ITEM_POKEBALL},
-    {_"Doesnt", SPECIES_PETILIL, _"Anna", ITEM_POKEBALL}   
+    {_"Doesnt", SPECIES_PETILIL, _"Anna", ITEM_POKEBALL},
+    {_"Mitch", SPECIES_GALLADE, _"HunterX", ITEM_POKEBALL},
 };
  
 u8 check_claimed(u16 species) {
